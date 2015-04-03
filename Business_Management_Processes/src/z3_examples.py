@@ -39,3 +39,4 @@ s.pop()
 print s
 print "Solving restored set of constraints..."
 print s.check()
+print s.model()
