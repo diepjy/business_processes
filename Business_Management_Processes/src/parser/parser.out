@@ -2,567 +2,211 @@ Created by PLY version 3.4 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    NODE
-    BEGIN
-    TASKS
     RPAREN
-    OPTION
-    USERS
-    OPTION_FLAG
+    NEW_NODE
     SOD
-    COLON
     LPAREN
     SENIORITY
-    COMMA
     BEFORE
     BOD
 
 Grammar
 
-Rule 0     S' -> task
-Rule 1     task -> NEW_NODE END
+Rule 0     S' -> begin
+Rule 1     begin -> TASKS COLON node
+Rule 2     begin -> USERS COLON node
+Rule 3     begin_user -> <empty>
+Rule 4     node -> NODE END
+Rule 5     node -> NODE COMMA node
+Rule 6     node -> NODE option
+Rule 7     option -> OPTION option
+Rule 8     option -> OPTION COMMA node
+Rule 9     option -> OPTION END
 
 Terminals, with rules where they appear
 
 BEFORE               : 
-BEGIN                : 
 BOD                  : 
-COLON                : 
-COMMA                : 
-END                  : 1
+COLON                : 1 2
+COMMA                : 5 8
+END                  : 4 9
 LPAREN               : 
-NEW_NODE             : 1
-NODE                 : 
-OPTION               : 
-OPTION_FLAG          : 
+NEW_NODE             : 
+NODE                 : 4 5 6
+OPTION               : 7 8 9
 RPAREN               : 
 SENIORITY            : 
 SOD                  : 
-TASKS                : 
-USERS                : 
+TASKS                : 1
+USERS                : 2
 error                : 
 
 Nonterminals, with rules where they appear
 
-task                 : 0
+begin                : 0
+begin_user           : 
+node                 : 1 2 5 8
+option               : 6 7
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . task
-    (1) task -> . NEW_NODE END
-
-    NEW_NODE        shift and go to state 1
-
-    task                           shift and go to state 2
-
-state 1
-
-    (1) task -> NEW_NODE . END
-
-    END             shift and go to state 3
-
-
-state 2
-
-    (0) S' -> task .
-
-
-
-state 3
-
-    (1) task -> NEW_NODE END .
-
-    $end            reduce using rule 1 (task -> NEW_NODE END .)
-
-               : 1 2 8 12 12 0
-node_pair            : 4 5 6 7 9
-option_flag          : 8 9
-
-Parsing method: LALR
-
-state 0
-
-    (0) S' -> . node
-    (1) node -> . TASKS COLON NEW_NODE node COMMA
-    (2) node -> . USERS COLON NEW_NODE node COMMA
-    (3) node -> . TASKS COLON
-    (4) node -> . BEFORE COLON NEW_NODE node_pair COMMA
-    (5) node -> . SOD COLON NEW_NODE node_pair COMMA
-    (6) node -> . SENIORITY COLON NEW_NODE node_pair COMMA
-    (7) node -> . BOD COLON NEW_NODE node_pair COMMA
-    (8) node -> . NEW_NODE node option_flag
-    (9) node -> . NEW_NODE node_pair option_flag
-    (11) node -> . NEW_NODE NODE END
+    (0) S' -> . begin
+    (1) begin -> . TASKS COLON node
+    (2) begin -> . USERS COLON node
 
     TASKS           shift and go to state 2
     USERS           shift and go to state 3
-    BEFORE          shift and go to state 8
-    SOD             shift and go to state 5
-    SENIORITY       shift and go to state 6
-    BOD             shift and go to state 7
-    NEW_NODE        shift and go to state 4
 
-    node                           shift and go to state 1
+    begin                          shift and go to state 1
 
 state 1
 
-    (0) S' -> node .
+    (0) S' -> begin .
 
 
 
 state 2
 
-    (1) node -> TASKS . COLON NEW_NODE node COMMA
-    (3) node -> TASKS . COLON
+    (1) begin -> TASKS . COLON node
 
-    COLON           shift and go to state 9
+    COLON           shift and go to state 4
 
 
 state 3
 
-    (2) node -> USERS . COLON NEW_NODE node COMMA
+    (2) begin -> USERS . COLON node
 
-    COLON           shift and go to state 10
+    COLON           shift and go to state 5
 
 
 state 4
 
-    (8) node -> NEW_NODE . node option_flag
-    (9) node -> NEW_NODE . node_pair option_flag
-    (11) node -> NEW_NODE . NODE END
-    (1) node -> . TASKS COLON NEW_NODE node COMMA
-    (2) node -> . USERS COLON NEW_NODE node COMMA
-    (3) node -> . TASKS COLON
-    (4) node -> . BEFORE COLON NEW_NODE node_pair COMMA
-    (5) node -> . SOD COLON NEW_NODE node_pair COMMA
-    (6) node -> . SENIORITY COLON NEW_NODE node_pair COMMA
-    (7) node -> . BOD COLON NEW_NODE node_pair COMMA
-    (8) node -> . NEW_NODE node option_flag
-    (9) node -> . NEW_NODE node_pair option_flag
-    (11) node -> . NEW_NODE NODE END
-    (12) node_pair -> . LPAREN node COMMA node RPAREN COMMA
+    (1) begin -> TASKS COLON . node
+    (4) node -> . NODE END
+    (5) node -> . NODE COMMA node
+    (6) node -> . NODE option
 
-    NODE            shift and go to state 12
-    TASKS           shift and go to state 2
-    USERS           shift and go to state 3
-    BEFORE          shift and go to state 8
-    SOD             shift and go to state 5
-    SENIORITY       shift and go to state 6
-    BOD             shift and go to state 7
-    NEW_NODE        shift and go to state 4
-    LPAREN          shift and go to state 14
+    NODE            shift and go to state 7
 
-    node                           shift and go to state 11
-    node_pair                      shift and go to state 13
+    node                           shift and go to state 6
 
 state 5
 
-    (5) node -> SOD . COLON NEW_NODE node_pair COMMA
+    (2) begin -> USERS COLON . node
+    (4) node -> . NODE END
+    (5) node -> . NODE COMMA node
+    (6) node -> . NODE option
 
-    COLON           shift and go to state 15
+    NODE            shift and go to state 7
 
+    node                           shift and go to state 8
 
 state 6
 
-    (6) node -> SENIORITY . COLON NEW_NODE node_pair COMMA
+    (1) begin -> TASKS COLON node .
 
-    COLON           shift and go to state 16
+    $end            reduce using rule 1 (begin -> TASKS COLON node .)
 
 
 state 7
 
-    (7) node -> BOD . COLON NEW_NODE node_pair COMMA
+    (4) node -> NODE . END
+    (5) node -> NODE . COMMA node
+    (6) node -> NODE . option
+    (7) option -> . OPTION option
+    (8) option -> . OPTION COMMA node
+    (9) option -> . OPTION END
 
-    COLON           shift and go to state 17
+    END             shift and go to state 9
+    COMMA           shift and go to state 11
+    OPTION          shift and go to state 12
 
+    option                         shift and go to state 10
 
 state 8
 
-    (4) node -> BEFORE . COLON NEW_NODE node_pair COMMA
+    (2) begin -> USERS COLON node .
 
-    COLON           shift and go to state 18
+    $end            reduce using rule 2 (begin -> USERS COLON node .)
 
 
 state 9
 
-    (1) node -> TASKS COLON . NEW_NODE node COMMA
-    (3) node -> TASKS COLON .
+    (4) node -> NODE END .
 
-    NEW_NODE        shift and go to state 19
-    $end            reduce using rule 3 (node -> TASKS COLON .)
-    COMMA           reduce using rule 3 (node -> TASKS COLON .)
-    RPAREN          reduce using rule 3 (node -> TASKS COLON .)
-    OPTION          reduce using rule 3 (node -> TASKS COLON .)
+    $end            reduce using rule 4 (node -> NODE END .)
 
 
 state 10
 
-    (2) node -> USERS COLON . NEW_NODE node COMMA
+    (6) node -> NODE option .
 
-    NEW_NODE        shift and go to state 20
+    $end            reduce using rule 6 (node -> NODE option .)
 
 
 state 11
 
-    (8) node -> NEW_NODE node . option_flag
-    (10) option_flag -> . OPTION OPTION_FLAG
+    (5) node -> NODE COMMA . node
+    (4) node -> . NODE END
+    (5) node -> . NODE COMMA node
+    (6) node -> . NODE option
 
-    OPTION          shift and go to state 21
+    NODE            shift and go to state 7
 
-    option_flag                    shift and go to state 22
+    node                           shift and go to state 13
 
 state 12
 
-    (11) node -> NEW_NODE NODE . END
+    (7) option -> OPTION . option
+    (8) option -> OPTION . COMMA node
+    (9) option -> OPTION . END
+    (7) option -> . OPTION option
+    (8) option -> . OPTION COMMA node
+    (9) option -> . OPTION END
 
-    END             shift and go to state 23
+    COMMA           shift and go to state 15
+    END             shift and go to state 14
+    OPTION          shift and go to state 12
 
+    option                         shift and go to state 16
 
 state 13
 
-    (9) node -> NEW_NODE node_pair . option_flag
-    (10) option_flag -> . OPTION OPTION_FLAG
+    (5) node -> NODE COMMA node .
 
-    OPTION          shift and go to state 21
+    $end            reduce using rule 5 (node -> NODE COMMA node .)
 
-    option_flag                    shift and go to state 24
 
 state 14
 
-    (12) node_pair -> LPAREN . node COMMA node RPAREN COMMA
-    (1) node -> . TASKS COLON NEW_NODE node COMMA
-    (2) node -> . USERS COLON NEW_NODE node COMMA
-    (3) node -> . TASKS COLON
-    (4) node -> . BEFORE COLON NEW_NODE node_pair COMMA
-    (5) node -> . SOD COLON NEW_NODE node_pair COMMA
-    (6) node -> . SENIORITY COLON NEW_NODE node_pair COMMA
-    (7) node -> . BOD COLON NEW_NODE node_pair COMMA
-    (8) node -> . NEW_NODE node option_flag
-    (9) node -> . NEW_NODE node_pair option_flag
-    (11) node -> . NEW_NODE NODE END
+    (9) option -> OPTION END .
 
-    TASKS           shift and go to state 2
-    USERS           shift and go to state 3
-    BEFORE          shift and go to state 8
-    SOD             shift and go to state 5
-    SENIORITY       shift and go to state 6
-    BOD             shift and go to state 7
-    NEW_NODE        shift and go to state 4
+    $end            reduce using rule 9 (option -> OPTION END .)
 
-    node                           shift and go to state 25
 
 state 15
 
-    (5) node -> SOD COLON . NEW_NODE node_pair COMMA
+    (8) option -> OPTION COMMA . node
+    (4) node -> . NODE END
+    (5) node -> . NODE COMMA node
+    (6) node -> . NODE option
 
-    NEW_NODE        shift and go to state 26
+    NODE            shift and go to state 7
 
+    node                           shift and go to state 17
 
 state 16
 
-    (6) node -> SENIORITY COLON . NEW_NODE node_pair COMMA
+    (7) option -> OPTION option .
 
-    NEW_NODE        shift and go to state 27
+    $end            reduce using rule 7 (option -> OPTION option .)
 
 
 state 17
 
-    (7) node -> BOD COLON . NEW_NODE node_pair COMMA
+    (8) option -> OPTION COMMA node .
 
-    NEW_NODE        shift and go to state 28
-
-
-state 18
-
-    (4) node -> BEFORE COLON . NEW_NODE node_pair COMMA
-
-    NEW_NODE        shift and go to state 29
-
-
-state 19
-
-    (1) node -> TASKS COLON NEW_NODE . node COMMA
-    (1) node -> . TASKS COLON NEW_NODE node COMMA
-    (2) node -> . USERS COLON NEW_NODE node COMMA
-    (3) node -> . TASKS COLON
-    (4) node -> . BEFORE COLON NEW_NODE node_pair COMMA
-    (5) node -> . SOD COLON NEW_NODE node_pair COMMA
-    (6) node -> . SENIORITY COLON NEW_NODE node_pair COMMA
-    (7) node -> . BOD COLON NEW_NODE node_pair COMMA
-    (8) node -> . NEW_NODE node option_flag
-    (9) node -> . NEW_NODE node_pair option_flag
-    (11) node -> . NEW_NODE NODE END
-
-    TASKS           shift and go to state 2
-    USERS           shift and go to state 3
-    BEFORE          shift and go to state 8
-    SOD             shift and go to state 5
-    SENIORITY       shift and go to state 6
-    BOD             shift and go to state 7
-    NEW_NODE        shift and go to state 4
-
-    node                           shift and go to state 30
-
-state 20
-
-    (2) node -> USERS COLON NEW_NODE . node COMMA
-    (1) node -> . TASKS COLON NEW_NODE node COMMA
-    (2) node -> . USERS COLON NEW_NODE node COMMA
-    (3) node -> . TASKS COLON
-    (4) node -> . BEFORE COLON NEW_NODE node_pair COMMA
-    (5) node -> . SOD COLON NEW_NODE node_pair COMMA
-    (6) node -> . SENIORITY COLON NEW_NODE node_pair COMMA
-    (7) node -> . BOD COLON NEW_NODE node_pair COMMA
-    (8) node -> . NEW_NODE node option_flag
-    (9) node -> . NEW_NODE node_pair option_flag
-    (11) node -> . NEW_NODE NODE END
-
-    TASKS           shift and go to state 2
-    USERS           shift and go to state 3
-    BEFORE          shift and go to state 8
-    SOD             shift and go to state 5
-    SENIORITY       shift and go to state 6
-    BOD             shift and go to state 7
-    NEW_NODE        shift and go to state 4
-
-    node                           shift and go to state 31
-
-state 21
-
-    (10) option_flag -> OPTION . OPTION_FLAG
-
-    OPTION_FLAG     shift and go to state 32
-
-
-state 22
-
-    (8) node -> NEW_NODE node option_flag .
-
-    $end            reduce using rule 8 (node -> NEW_NODE node option_flag .)
-    COMMA           reduce using rule 8 (node -> NEW_NODE node option_flag .)
-    RPAREN          reduce using rule 8 (node -> NEW_NODE node option_flag .)
-    OPTION          reduce using rule 8 (node -> NEW_NODE node option_flag .)
-
-
-state 23
-
-    (11) node -> NEW_NODE NODE END .
-
-    $end            reduce using rule 11 (node -> NEW_NODE NODE END .)
-    COMMA           reduce using rule 11 (node -> NEW_NODE NODE END .)
-    RPAREN          reduce using rule 11 (node -> NEW_NODE NODE END .)
-    OPTION          reduce using rule 11 (node -> NEW_NODE NODE END .)
-
-
-state 24
-
-    (9) node -> NEW_NODE node_pair option_flag .
-
-    $end            reduce using rule 9 (node -> NEW_NODE node_pair option_flag .)
-    COMMA           reduce using rule 9 (node -> NEW_NODE node_pair option_flag .)
-    RPAREN          reduce using rule 9 (node -> NEW_NODE node_pair option_flag .)
-    OPTION          reduce using rule 9 (node -> NEW_NODE node_pair option_flag .)
-
-
-state 25
-
-    (12) node_pair -> LPAREN node . COMMA node RPAREN COMMA
-
-    COMMA           shift and go to state 33
-
-
-state 26
-
-    (5) node -> SOD COLON NEW_NODE . node_pair COMMA
-    (12) node_pair -> . LPAREN node COMMA node RPAREN COMMA
-
-    LPAREN          shift and go to state 14
-
-    node_pair                      shift and go to state 34
-
-state 27
-
-    (6) node -> SENIORITY COLON NEW_NODE . node_pair COMMA
-    (12) node_pair -> . LPAREN node COMMA node RPAREN COMMA
-
-    LPAREN          shift and go to state 14
-
-    node_pair                      shift and go to state 35
-
-state 28
-
-    (7) node -> BOD COLON NEW_NODE . node_pair COMMA
-    (12) node_pair -> . LPAREN node COMMA node RPAREN COMMA
-
-    LPAREN          shift and go to state 14
-
-    node_pair                      shift and go to state 36
-
-state 29
-
-    (4) node -> BEFORE COLON NEW_NODE . node_pair COMMA
-    (12) node_pair -> . LPAREN node COMMA node RPAREN COMMA
-
-    LPAREN          shift and go to state 14
-
-    node_pair                      shift and go to state 37
-
-state 30
-
-    (1) node -> TASKS COLON NEW_NODE node . COMMA
-
-    COMMA           shift and go to state 38
-
-
-state 31
-
-    (2) node -> USERS COLON NEW_NODE node . COMMA
-
-    COMMA           shift and go to state 39
-
-
-state 32
-
-    (10) option_flag -> OPTION OPTION_FLAG .
-
-    $end            reduce using rule 10 (option_flag -> OPTION OPTION_FLAG .)
-    OPTION          reduce using rule 10 (option_flag -> OPTION OPTION_FLAG .)
-    COMMA           reduce using rule 10 (option_flag -> OPTION OPTION_FLAG .)
-    RPAREN          reduce using rule 10 (option_flag -> OPTION OPTION_FLAG .)
-
-
-state 33
-
-    (12) node_pair -> LPAREN node COMMA . node RPAREN COMMA
-    (1) node -> . TASKS COLON NEW_NODE node COMMA
-    (2) node -> . USERS COLON NEW_NODE node COMMA
-    (3) node -> . TASKS COLON
-    (4) node -> . BEFORE COLON NEW_NODE node_pair COMMA
-    (5) node -> . SOD COLON NEW_NODE node_pair COMMA
-    (6) node -> . SENIORITY COLON NEW_NODE node_pair COMMA
-    (7) node -> . BOD COLON NEW_NODE node_pair COMMA
-    (8) node -> . NEW_NODE node option_flag
-    (9) node -> . NEW_NODE node_pair option_flag
-    (11) node -> . NEW_NODE NODE END
-
-    TASKS           shift and go to state 2
-    USERS           shift and go to state 3
-    BEFORE          shift and go to state 8
-    SOD             shift and go to state 5
-    SENIORITY       shift and go to state 6
-    BOD             shift and go to state 7
-    NEW_NODE        shift and go to state 4
-
-    node                           shift and go to state 40
-
-state 34
-
-    (5) node -> SOD COLON NEW_NODE node_pair . COMMA
-
-    COMMA           shift and go to state 41
-
-
-state 35
-
-    (6) node -> SENIORITY COLON NEW_NODE node_pair . COMMA
-
-    COMMA           shift and go to state 42
-
-
-state 36
-
-    (7) node -> BOD COLON NEW_NODE node_pair . COMMA
-
-    COMMA           shift and go to state 43
-
-
-state 37
-
-    (4) node -> BEFORE COLON NEW_NODE node_pair . COMMA
-
-    COMMA           shift and go to state 44
-
-
-state 38
-
-    (1) node -> TASKS COLON NEW_NODE node COMMA .
-
-    $end            reduce using rule 1 (node -> TASKS COLON NEW_NODE node COMMA .)
-    COMMA           reduce using rule 1 (node -> TASKS COLON NEW_NODE node COMMA .)
-    RPAREN          reduce using rule 1 (node -> TASKS COLON NEW_NODE node COMMA .)
-    OPTION          reduce using rule 1 (node -> TASKS COLON NEW_NODE node COMMA .)
-
-
-state 39
-
-    (2) node -> USERS COLON NEW_NODE node COMMA .
-
-    $end            reduce using rule 2 (node -> USERS COLON NEW_NODE node COMMA .)
-    COMMA           reduce using rule 2 (node -> USERS COLON NEW_NODE node COMMA .)
-    RPAREN          reduce using rule 2 (node -> USERS COLON NEW_NODE node COMMA .)
-    OPTION          reduce using rule 2 (node -> USERS COLON NEW_NODE node COMMA .)
-
-
-state 40
-
-    (12) node_pair -> LPAREN node COMMA node . RPAREN COMMA
-
-    RPAREN          shift and go to state 45
-
-
-state 41
-
-    (5) node -> SOD COLON NEW_NODE node_pair COMMA .
-
-    $end            reduce using rule 5 (node -> SOD COLON NEW_NODE node_pair COMMA .)
-    COMMA           reduce using rule 5 (node -> SOD COLON NEW_NODE node_pair COMMA .)
-    RPAREN          reduce using rule 5 (node -> SOD COLON NEW_NODE node_pair COMMA .)
-    OPTION          reduce using rule 5 (node -> SOD COLON NEW_NODE node_pair COMMA .)
-
-
-state 42
-
-    (6) node -> SENIORITY COLON NEW_NODE node_pair COMMA .
-
-    $end            reduce using rule 6 (node -> SENIORITY COLON NEW_NODE node_pair COMMA .)
-    COMMA           reduce using rule 6 (node -> SENIORITY COLON NEW_NODE node_pair COMMA .)
-    RPAREN          reduce using rule 6 (node -> SENIORITY COLON NEW_NODE node_pair COMMA .)
-    OPTION          reduce using rule 6 (node -> SENIORITY COLON NEW_NODE node_pair COMMA .)
-
-
-state 43
-
-    (7) node -> BOD COLON NEW_NODE node_pair COMMA .
-
-    $end            reduce using rule 7 (node -> BOD COLON NEW_NODE node_pair COMMA .)
-    COMMA           reduce using rule 7 (node -> BOD COLON NEW_NODE node_pair COMMA .)
-    RPAREN          reduce using rule 7 (node -> BOD COLON NEW_NODE node_pair COMMA .)
-    OPTION          reduce using rule 7 (node -> BOD COLON NEW_NODE node_pair COMMA .)
-
-
-state 44
-
-    (4) node -> BEFORE COLON NEW_NODE node_pair COMMA .
-
-    $end            reduce using rule 4 (node -> BEFORE COLON NEW_NODE node_pair COMMA .)
-    COMMA           reduce using rule 4 (node -> BEFORE COLON NEW_NODE node_pair COMMA .)
-    RPAREN          reduce using rule 4 (node -> BEFORE COLON NEW_NODE node_pair COMMA .)
-    OPTION          reduce using rule 4 (node -> BEFORE COLON NEW_NODE node_pair COMMA .)
-
-
-state 45
-
-    (12) node_pair -> LPAREN node COMMA node RPAREN . COMMA
-
-    COMMA           shift and go to state 46
-
-
-state 46
-
-    (12) node_pair -> LPAREN node COMMA node RPAREN COMMA .
-
-    COMMA           reduce using rule 12 (node_pair -> LPAREN node COMMA node RPAREN COMMA .)
-    OPTION          reduce using rule 12 (node_pair -> LPAREN node COMMA node RPAREN COMMA .)
+    $end            reduce using rule 8 (option -> OPTION COMMA node .)
 

@@ -5,9 +5,9 @@ _tabversion = '3.2'
 
 _lr_method = 'LALR'
 
-_lr_signature = '\x12\xdd\xcf\x90\x8f|\xc5\xfb_FW\xe4\xd6\xbd\x0e\xe6'
+_lr_signature = 'TRg\xe9\x9d\xae\xe0f\x9c\x13QF\xd1r\x0c\x8a'
     
-_lr_action_items = {'NODE':([4,],[12,]),'OPTION':([9,11,13,22,23,24,32,38,39,41,42,43,44,46,],[-3,21,21,-8,-11,-9,-10,-1,-2,-5,-6,-7,-4,-12,]),'TASKS':([0,4,14,19,20,33,],[2,2,2,2,2,2,]),'RPAREN':([9,22,23,24,32,38,39,40,41,42,43,44,],[-3,-8,-11,-9,-10,-1,-2,45,-5,-6,-7,-4,]),'SOD':([0,4,14,19,20,33,],[5,5,5,5,5,5,]),'NEW_NODE':([0,4,9,10,14,15,16,17,18,19,20,33,],[4,4,19,20,4,26,27,28,29,4,4,4,]),'USERS':([0,4,14,19,20,33,],[3,3,3,3,3,3,]),'OPTION_FLAG':([21,],[32,]),'COLON':([2,3,5,6,7,8,],[9,10,15,16,17,18,]),'LPAREN':([4,26,27,28,29,],[14,14,14,14,14,]),'SENIORITY':([0,4,14,19,20,33,],[6,6,6,6,6,6,]),'$end':([1,9,22,23,24,32,38,39,41,42,43,44,],[0,-3,-8,-11,-9,-10,-1,-2,-5,-6,-7,-4,]),'BOD':([0,4,14,19,20,33,],[7,7,7,7,7,7,]),'END':([12,],[23,]),'COMMA':([9,22,23,24,25,30,31,32,34,35,36,37,38,39,41,42,43,44,45,46,],[-3,-8,-11,-9,33,38,39,-10,41,42,43,44,-1,-2,-5,-6,-7,-4,46,-12,]),'BEFORE':([0,4,14,19,20,33,],[8,8,8,8,8,8,]),}
+_lr_action_items = {'NODE':([4,5,11,15,],[7,7,7,7,]),'OPTION':([7,12,],[12,12,]),'TASKS':([0,],[2,]),'END':([7,12,],[9,14,]),'USERS':([0,],[3,]),'COMMA':([7,12,],[11,15,]),'COLON':([2,3,],[4,5,]),'$end':([1,6,8,9,10,13,14,16,17,],[0,-1,-2,-4,-6,-5,-9,-7,-8,]),}
 
 _lr_action = { }
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'node':([0,4,14,19,20,33,],[1,11,25,30,31,40,]),'node_pair':([4,26,27,28,29,],[13,34,35,36,37,]),'option_flag':([11,13,],[22,24,]),}
+_lr_goto_items = {'node':([4,5,11,15,],[6,8,13,17,]),'begin':([0,],[1,]),'option':([7,12,],[10,16,]),}
 
 _lr_goto = { }
 for _k, _v in _lr_goto_items.items():
@@ -25,17 +25,14 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> node","S'",1,None,None,None),
-  ('node -> TASKS COLON NEW_NODE node COMMA','node',5,'p_begin_tasks_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',8),
-  ('node -> USERS COLON NEW_NODE node COMMA','node',5,'p_begin_tasks_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',9),
-  ('node -> TASKS COLON','node',2,'p_begin_task_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',14),
-  ('node -> BEFORE COLON NEW_NODE node_pair COMMA','node',5,'p_begin_before_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',24),
-  ('node -> SOD COLON NEW_NODE node_pair COMMA','node',5,'p_begin_sod_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',29),
-  ('node -> SENIORITY COLON NEW_NODE node_pair COMMA','node',5,'p_begin_seniority_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',34),
-  ('node -> BOD COLON NEW_NODE node_pair COMMA','node',5,'p_begin_bod_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',39),
-  ('node -> NEW_NODE node option_flag','node',3,'p_option_node_flags','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',44),
-  ('node -> NEW_NODE node_pair option_flag','node',3,'p_option_node_pair_flags','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',49),
-  ('option_flag -> OPTION OPTION_FLAG','option_flag',2,'p_option_flag','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',54),
-  ('node -> NEW_NODE NODE END','node',3,'p_end_task_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',59),
-  ('node_pair -> LPAREN node COMMA node RPAREN COMMA','node_pair',6,'p_node_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',64),
+  ("S' -> begin","S'",1,None,None,None),
+  ('begin -> TASKS COLON node','begin',3,'p_begin','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',12),
+  ('begin -> USERS COLON node','begin',3,'p_begin','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',13),
+  ('begin_user -> <empty>','begin_user',0,'p_user','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',25),
+  ('node -> NODE END','node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',33),
+  ('node -> NODE COMMA node','node',3,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',34),
+  ('node -> NODE option','node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',35),
+  ('option -> OPTION option','option',2,'p_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',39),
+  ('option -> OPTION COMMA node','option',3,'p_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',40),
+  ('option -> OPTION END','option',2,'p_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',41),
 ]
