@@ -14,23 +14,15 @@ def p_begin(p):
 	if p[1] not in rules_used and p[1] == 'Tasks':
 		p[0] = p[3]
 		rules_used.append(p[1])
-		print rules_used
+		# print rules_used
 	elif p[1] not in rules_used and p[1] == 'Users':
 		p[0] = p[3]
 		rules_used.append(p[1])
 	else:
 		p_error(p)
 
-def p_user(p):
-	'begin_user : '
-	if p[1] not in rules_used:
-		p[0] = p[3]
-		rules_used.append(p[1])
-	else:
-		p_error(p)
-
 def p_task_node(p):
-	'''node : NODE END
+	'''node : NODE end
 			| NODE COMMA node
 			| NODE option'''
 	p[0] = p[1]
@@ -38,7 +30,12 @@ def p_task_node(p):
 def p_option(p):
 	'''option : OPTION option
 			  | OPTION COMMA node
-			  | OPTION END'''
+			  | OPTION end'''
+	p[0] = p[1]
+
+def p_end(p):
+	'''end : END
+		   | END begin'''
 	p[0] = p[1]
 
 def p_error(p):
