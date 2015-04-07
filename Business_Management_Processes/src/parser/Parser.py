@@ -8,7 +8,16 @@ tasks = []
 users = []
 before = []
 seniority = []
+sod = []
 # user pairs and task pairs should be indexes???
+
+smt = ''''''
+smt_sort_task = '(declare-sort Task)'
+smt_sort_user = '(declare-sort User)'
+smt_fun_before = '(declare-fun before (Task Task) Bool)'
+smt_fun_seniority = '(declare-fun seniority (User User) Bool)'
+smt_fun_sod = '(declare-fun sod (Task) User)'
+smt_fun_bod = '(declare-fun bod (Task) User)'
 
 def p_prog(p):
 	'''prog : begin
@@ -111,6 +120,7 @@ while True:
         break
     if not s: continue
     result = parser.parse(s)
+	# Collect results to SMT solver
     rules_used = []
     tasks = []
     users = []
