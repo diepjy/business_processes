@@ -57,7 +57,7 @@ def t_error(t):
 import ply.lex as lex
 
 lexer = lex.lex()
-lexer.input('Tasks: \'p\' -o, \'x\'; Users: \'p\' -o, \'x\';')
+lexer.input('Tasks: \'p\' -o, \'x\'; Users: \'p\' -o, \'x\'; Before (\'t1\',\'t2\');')
 while True:
     tok = lexer.token()
     if not tok: break
