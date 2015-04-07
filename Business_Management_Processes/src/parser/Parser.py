@@ -7,16 +7,16 @@ rules_used = []
 tasks = []
 users = []
 before = []
+seniority = []
 # user pairs and task pairs should be indexes???
 
 def p_prog(p):
 	'''prog : begin
-			| begin before'''
+			| begin rules'''
 
 def p_begin(p):
 	'''begin : TASKS COLON task_node
 			 | USERS COLON user_node'''
-			 # | BEFORE COLON task_node_pair'''
 	if p[1] not in rules_used and p[1] == 'Tasks':
 		p[0] = p[3]
 		rules_used.append(p[1])
@@ -27,18 +27,16 @@ def p_begin(p):
 		rules_used.append(p[1])
 		print 'rules used users'
 		print rules_used
-	# elif p[1] == 'Before' and 'Tasks' in rules_used:
-	# 	p[0] = p[3]
-	# 	rules_used.append(p[1])
-	# 	print 'rules used before'
-	# 	print rules_used
 	else:
 		print "p error here"
 		p_error(p)
 
-def p_before(p):
-	'''before : BEFORE COLON task_node_pair'''
-	p[0] = p[1]
+def p_rules(p):
+	'''rules : BEFORE COLON task_node_pair
+			 | SENIORITY COLON user_node_pair
+			 | SOD COLON task_node_pair
+			 | BOD COLON task_node_pair'''
+	p[0] = p[3]
 
 def p_task_pair(p):
 	'''task_node_pair : LPAREN NODE COMMA NODE RPAREN END
@@ -51,6 +49,17 @@ def p_task_pair(p):
 		before.append(p[0])
 		print 'before'
 		print before
+	else:
+		p_error(p)
+
+def p_user_pair(p):
+	'''user_node_pair : LPAREN NODE COMMA NODE RPAREN END
+					  | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair'''
+	if p[2] in users and p[4] in users:
+		p[0] = [p[2]] + [p[4]]
+		seniority.append(p[0])
+		print "seniroity"
+		print seniority
 	else:
 		p_error(p)
 
@@ -69,7 +78,8 @@ def p_user_node(p):
 			| NODE user_option'''
 	p[0] = p[1]
 	users.append(p[0])
-	print "users" + users
+	print "users"
+	print users
 
 def p_task_option(p):
 	'''task_option : OPTION task_option
