@@ -5,7 +5,7 @@ _tabversion = '3.2'
 
 _lr_method = 'LALR'
 
-_lr_signature = '\xb5z\xe4~\xf7J\x03\x07=}}\x8e\x17&\xd3\xec'
+_lr_signature = '\xdc\x934\x9d\x9c\xa9O\xc8\xe3n\x0b[\xe6\x965\xe4'
     
 _lr_action_items = {'NODE':([10,11,20,23,28,33,37,43,46,47,],[16,18,35,36,16,18,16,18,50,51,]),'OPTION':([16,18,27,32,],[27,32,27,32,]),'TASKS':([0,29,],[2,2,]),'END':([16,18,27,32,52,53,],[29,29,29,29,55,57,]),'SOD':([1,17,19,26,29,30,31,34,38,39,40,41,42,44,45,48,49,],[5,-3,-4,-13,-25,-15,-16,-18,-21,-19,-14,-26,-22,-24,-17,-20,-23,]),'RPAREN':([50,51,],[52,53,]),'COLON':([2,3,5,7,8,9,],[10,11,12,13,14,15,]),'LPAREN':([12,13,14,15,54,56,],[20,23,20,20,20,23,]),'SENIORITY':([1,17,19,26,29,30,31,34,38,39,40,41,42,44,45,48,49,],[7,-3,-4,-13,-25,-15,-16,-18,-21,-19,-14,-26,-22,-24,-17,-20,-23,]),'BEFORE':([1,17,19,26,29,30,31,34,38,39,40,41,42,44,45,48,49,],[9,-3,-4,-13,-25,-15,-16,-18,-21,-19,-14,-26,-22,-24,-17,-20,-23,]),'BOD':([1,17,19,26,29,30,31,34,38,39,40,41,42,44,45,48,49,],[8,-3,-4,-13,-25,-15,-16,-18,-21,-19,-14,-26,-22,-24,-17,-20,-23,]),'$end':([1,4,6,17,19,21,22,24,25,26,29,30,31,34,38,39,40,41,42,44,45,48,49,55,57,58,59,],[-1,0,-2,-3,-4,-7,-6,-8,-5,-13,-25,-15,-16,-18,-21,-19,-14,-26,-22,-24,-17,-20,-23,-9,-11,-10,-12,]),'COMMA':([16,18,27,32,35,36,52,53,],[28,33,37,43,46,47,54,56,]),'USERS':([0,29,],[3,3,]),}
 
@@ -26,30 +26,30 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> prog","S'",1,None,None,None),
-  ('prog -> begin','prog',1,'p_prog','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',14),
-  ('prog -> begin rules','prog',2,'p_prog','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',15),
-  ('begin -> TASKS COLON task_node','begin',3,'p_begin','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',18),
-  ('begin -> USERS COLON user_node','begin',3,'p_begin','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',19),
-  ('rules -> BEFORE COLON task_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',40),
-  ('rules -> SENIORITY COLON user_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',41),
-  ('rules -> SOD COLON task_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',42),
-  ('rules -> BOD COLON task_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',43),
-  ('task_node_pair -> LPAREN NODE COMMA NODE RPAREN END','task_node_pair',6,'p_task_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',47),
-  ('task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA task_node_pair','task_node_pair',7,'p_task_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',48),
-  ('user_node_pair -> LPAREN NODE COMMA NODE RPAREN END','user_node_pair',6,'p_user_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',61),
-  ('user_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair','user_node_pair',7,'p_user_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',62),
-  ('task_node -> NODE end','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',72),
-  ('task_node -> NODE COMMA task_node','task_node',3,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',73),
-  ('task_node -> NODE task_option','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',74),
-  ('user_node -> NODE end','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',81),
-  ('user_node -> NODE COMMA user_node','user_node',3,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',82),
-  ('user_node -> NODE user_option','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',83),
-  ('task_option -> OPTION task_option','task_option',2,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',89),
-  ('task_option -> OPTION COMMA task_node','task_option',3,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',90),
-  ('task_option -> OPTION end','task_option',2,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',91),
-  ('user_option -> OPTION user_option','user_option',2,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',95),
-  ('user_option -> OPTION COMMA user_node','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',96),
-  ('user_option -> OPTION end','user_option',2,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',97),
-  ('end -> END','end',1,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',101),
-  ('end -> END begin','end',2,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',102),
+  ('prog -> begin','prog',1,'p_prog','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',26),
+  ('prog -> begin rules','prog',2,'p_prog','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',27),
+  ('begin -> TASKS COLON task_node','begin',3,'p_begin','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',30),
+  ('begin -> USERS COLON user_node','begin',3,'p_begin','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',31),
+  ('rules -> BEFORE COLON task_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',45),
+  ('rules -> SENIORITY COLON user_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',46),
+  ('rules -> SOD COLON task_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',47),
+  ('rules -> BOD COLON task_node_pair','rules',3,'p_rules','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',48),
+  ('task_node_pair -> LPAREN NODE COMMA NODE RPAREN END','task_node_pair',6,'p_task_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',52),
+  ('task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA task_node_pair','task_node_pair',7,'p_task_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',53),
+  ('user_node_pair -> LPAREN NODE COMMA NODE RPAREN END','user_node_pair',6,'p_user_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',62),
+  ('user_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair','user_node_pair',7,'p_user_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',63),
+  ('task_node -> NODE end','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',71),
+  ('task_node -> NODE COMMA task_node','task_node',3,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',72),
+  ('task_node -> NODE task_option','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',73),
+  ('user_node -> NODE end','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',80),
+  ('user_node -> NODE COMMA user_node','user_node',3,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',81),
+  ('user_node -> NODE user_option','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',82),
+  ('task_option -> OPTION task_option','task_option',2,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',91),
+  ('task_option -> OPTION COMMA task_node','task_option',3,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',92),
+  ('task_option -> OPTION end','task_option',2,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',93),
+  ('user_option -> OPTION user_option','user_option',2,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',97),
+  ('user_option -> OPTION COMMA user_node','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',98),
+  ('user_option -> OPTION end','user_option',2,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',99),
+  ('end -> END','end',1,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',103),
+  ('end -> END begin','end',2,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/Parser.py',104),
 ]
