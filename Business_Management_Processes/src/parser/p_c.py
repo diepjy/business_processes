@@ -22,15 +22,12 @@ class p_c(object):
 
         self.smt = ""
 
-    def __getattr__(self, attr):
-        return p_c.smt + attr
-
     # TODO: option flags
 
     def p_prog(self, p):
         '''prog : begin
                 | begin rules'''
-        print "in prog" + p_c.smt
+        p_c.smt = p_c.smt.translate(None, '!@#$\'')
         return p_c.smt
 
     def p_begin(self, p):
@@ -43,7 +40,7 @@ class p_c(object):
             p_c.smt = p_c.smt_sort_task + p_c.smt
         elif p[1] not in self.rules_used and p[1] == 'Users':
             p[0] = p[3]
-            self.smt = self.smt_sort_user + self.smt
+            p_c.smt = p_c.smt_sort_user + p_c.smt
         else:
             print "p error here"
             self.p_error(p)
@@ -54,6 +51,16 @@ class p_c(object):
                  | SOD COLON task_node_pair
                  | BOD COLON task_node_pair'''
         p[0] = p[3]
+        if p[0] == 'Before':
+            p_c.smt = self.smt_fun_before + p_c.smt
+        elif p[0] == 'Seniority':
+            p_c.smt = self.smt_fun_seniority + p_c.smt
+        elif p[0] == 'SoD':
+            p_c.smt = self.smt_fun_sod + p_c.smt
+        elif p[0] == 'BoD':
+            p_c.smt = self.smt_fun_bod + p_c.smt
+        else:
+            self.p_error(p)
 
     def p_task_pair(self, p):
         '''task_node_pair : LPAREN NODE COMMA NODE RPAREN END
@@ -79,7 +86,7 @@ class p_c(object):
                 | NODE task_option'''
         p[0] = p[1]
         self.tasks.append(p[0])
-        self.smt = "(declare-const " + p[0] + " Tasks)\n" + self.smt
+        p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -87,8 +94,7 @@ class p_c(object):
                 | NODE user_option'''
         p[0] = p[1]
         self.users.append(p[0])
-        global smt
-        smt = "(declare-const " + p[0] + " Users) \n" + smt
+        p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
 
     def p_task_option(p):
         '''task_option : OPTION task_option
