@@ -30,11 +30,6 @@ class p_c(object):
         '''prog : begin
                 | begin rules'''
         p_c.smt = p_c.smt.translate(None, '!@#$\'')
-        print p_c.tasks
-        print p_c.rules_used
-        p_c.tasks = []
-        p_c.users = []
-        p_c.rules_used = []
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node
@@ -48,8 +43,6 @@ class p_c(object):
             p_c.smt = p_c.smt_sort_user + p_c.smt
             p_c.rules_used.append(p[1])
             p[0] = p[3]
-            print "user"
-            print p_c.smt
         else:
             self.p_error(p)
 
@@ -123,15 +116,28 @@ class p_c(object):
     def p_task_option(self,p):
         '''task_option : OPTION task_option
                   | OPTION COMMA task_node
-                  | OPTION end'''
+                  | OPTION end
+                  '''
         p[0] = p[1]
 
     def p_user_option(self, p):
         '''user_option : OPTION user_option
-              | OPTION COMMA user_node
+              | OPTION COMMA
+              | OPTION COLON users_global_option
               | OPTION end
-              | OPTION '''
+              '''
         p[0] = p[1]
+
+    def p_users_global_option(self, p):
+        '''users_global_option : ALLOCATE end'''
+        p[0] = p[1]
+        print p[0]
+        # print p[0]
+        # if p[0] == 'allocate':
+        #     print()
+        # else:
+        #     self.p_error(p)
+
 
     def p_end(self, p):
         '''end : END
@@ -146,3 +152,4 @@ class p_c(object):
 
     def p_error(self, p):
         print "Syntax error in input!"
+        print p

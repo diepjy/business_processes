@@ -77,12 +77,19 @@ while True:
 
     s = z3.Solver ()
     import sys
-    if len (sys.argv) >= 2: s.push ()
-    s.add (f)
+    if len(sys.argv) >= 2:
+        s.push()
+    s.add(f)
     # s.add (e)
     print 'Result of first check', s.check ()
     m = s.model()
     print m
+
+    # Do the allocation of users and tasks if not specified
+    # s.push()
+    print my_parse.users
+    # Loop through all users and allocate them to a task
+    # Use BOTTOM user to verify
 
     # Parse output into readable
     a = list ()

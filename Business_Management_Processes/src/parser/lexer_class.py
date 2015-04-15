@@ -8,7 +8,9 @@ class lexer_class(object):
         'Before' : 'BEFORE',
         'SoD' : 'SOD',
         'Seniority' : 'SENIORITY',
-        'BoD' : 'BOD'
+        'BoD' : 'BOD',
+        'users' : 'USERS_OPTION',
+        'allocate' : 'ALLOCATE'
     }
 
     # List of token names
@@ -16,7 +18,6 @@ class lexer_class(object):
         'COLON',
         'NODE',
         'OPTION',
-        'NEW_NODE',
         'COMMA',
         'LPAREN',
         'RPAREN',
@@ -27,7 +28,7 @@ class lexer_class(object):
     t_COLON = r':'
     t_NODE = r'(%s|%s)' % (r'"(\\"|[^"])*"', r"'(\\'|[^'])*'")
     t_OPTION = r'-[a-zA-Z_][a-zA-Z0-9_]*'
-    t_NEW_NODE = r'\t'
+    # t_OPTION = r'-'
     t_COMMA = r','
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
