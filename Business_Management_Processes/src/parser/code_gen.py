@@ -53,7 +53,8 @@ while True:
         s = raw_input('busines_process > ')
     except EOFError:
         break
-    if not s: continue
+    if not s:
+        continue
     lexer.input(s)
     for token in lexer:
             print(token)
@@ -61,33 +62,17 @@ while True:
     print t
 
     # Collect results to SMT solver
-    # print "smt is in code gen" + p_c.smt
     my_parse = MyParse()
-    # original = MyParse.smt
     original = my_parse.smt
     print original
 
-#     original = """
-# (declare-sort Task)
-# (declare-const approve Task)
-# (declare-const send Task)
-# (declare-sort User)
-# (declare-const alice User)
-# (declare-const bob User)
-# (declare-fun alloc_user (Task) User)
-# (assert (not(= (alloc_user approve) (alloc_user send))))
-#  """
-
     f = z3.parse_smt2_string(original)
-
-    # e = z3.parse_smt2_string (extra)
 
     s = z3.Solver ()
     import sys
     if len(sys.argv) >= 2:
         s.push()
     s.add(f)
-    # s.add (e)
     print 'Result of first check', s.check ()
     m = s.model()
     print m
@@ -95,40 +80,22 @@ while True:
     # Do the allocation of users and tasks if not specified
     alloc_user_task = ""
     if my_parse.allocate_users:
-        print 'push'
-        s.push()
-        print my_parse.users
         # Loop through all users and allocate them to a task
         # Use BOTTOM user to verify
         user_list = my_parse.users
         task_list = my_parse.tasks
-        print task_list
-        for u in user_list:
-            u.translate(None, '!@#$\'u')
-            print u
-            alloc_user_task += "(assert (alloc (" + ")))"
-        print user_list
-        print task_list
 
-        print 'carteasian product'
         c = []
-        f = []
         for i in code_gen.product(code_gen(), user_list, task_list):
-            print i
             c.append(i)
-        print c
-
-    # Parse output into readable
-    a = list ()
-    # for k in m:
-    #     a.append (k() == m[k])
-    #
-    # for x in a: s.add (x)
-    # print 'Result of second check', s.check ()
-    #
-    # s2 = z3.Solver ()
-    # s2.add (f)
-    # # s2.add (e)
-    # for x in a: s2.add (x)
-    # print 'Independent result', s2.check ()
+        for cs in c:
+            alloc_user_task += "(assert (alloc " + cs[0] + " " + cs[1] + "))\n"
+            # alloc_user_task += "(assert (alloc " + "u4" + " " + "t3" + "))\n"
+            print alloc_user_task
+            e = z3.parse_smt2_string(original + alloc_user_task)
+            # s.push()
+            s.add(e)
+            print 'result of push', s.check()
+            print s.model()
+            print original + alloc_user_task
 
