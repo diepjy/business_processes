@@ -16,7 +16,7 @@ class p_c(object):
     tasks = []
     users = []
 
-    ended = False
+    allocate_users = False
 
     def __init__(self):
         self.before = []
@@ -81,7 +81,7 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN COMMA task_node_pair'''
         if p[2] in p_c.tasks and p[4] in p_c.tasks:
             p[0] = [p[2]] + [p[4]]
-            p_c.smt = "assert (not (= (alloc " + p[2] + ") (alloc" + p[4] + ")))" + p_c.smt
+            p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n" #+ p_c.smt
             # self.before.append(p[0])
         else:
             self.p_error(p)
@@ -103,6 +103,7 @@ class p_c(object):
         if p[0] not in p_c.tasks:
             p_c.tasks.append(p[0])
             p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
+            print p_c.tasks
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -131,12 +132,12 @@ class p_c(object):
     def p_users_global_option(self, p):
         '''users_global_option : ALLOCATE end'''
         p[0] = p[1]
-        print p[0]
-        # print p[0]
-        # if p[0] == 'allocate':
-        #     print()
-        # else:
-        #     self.p_error(p)
+        if p[0] == 'allocate':
+            # go through each user and
+            print p[0]
+            p_c.allocate_users = True
+        else:
+            self.p_error(p)
 
 
     def p_end(self, p):

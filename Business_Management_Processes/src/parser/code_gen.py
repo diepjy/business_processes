@@ -5,6 +5,7 @@ from p_c import p_c
 from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
+import itertools
 
 class MyParse(p_c):
 
@@ -37,6 +38,12 @@ class code_gen(object):
         self.parser.parse(code, lexer=self.lexer)
         print 'get_smt' + MyParse.smt
         return MyParse.smt
+
+    def product(self,*args):
+        if not args:
+            return iter(((),)) # yield tuple()
+        return (items + (item,)
+                for items in self.product(*args[:-1]) for item in args[-1])
 
 lexer = lex(module=lexer_class(), optimize=1)
 parser = yacc(module=MyParse(), start='prog', optimize=1)
@@ -86,10 +93,30 @@ while True:
     print m
 
     # Do the allocation of users and tasks if not specified
-    # s.push()
-    print my_parse.users
-    # Loop through all users and allocate them to a task
-    # Use BOTTOM user to verify
+    alloc_user_task = ""
+    if my_parse.allocate_users:
+        print 'push'
+        s.push()
+        print my_parse.users
+        # Loop through all users and allocate them to a task
+        # Use BOTTOM user to verify
+        user_list = my_parse.users
+        task_list = my_parse.tasks
+        print task_list
+        for u in user_list:
+            u.translate(None, '!@#$\'u')
+            print u
+            alloc_user_task += "(assert (alloc (" + ")))"
+        print user_list
+        print task_list
+
+        print 'carteasian product'
+        c = []
+        f = []
+        for i in code_gen.product(code_gen(), user_list, task_list):
+            print i
+            c.append(i)
+        print c
 
     # Parse output into readable
     a = list ()
@@ -104,3 +131,4 @@ while True:
     # # s2.add (e)
     # for x in a: s2.add (x)
     # print 'Independent result', s2.check ()
+
