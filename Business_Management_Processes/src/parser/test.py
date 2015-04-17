@@ -148,6 +148,7 @@ s.add (f)
 s.add (e)
 print 'Result of first check', s.check ()
 m = s.model ()
+print m
 a = list ()
 for k in m:
     a.append (k() == m[k])

@@ -64,22 +64,7 @@ while True:
     # Collect results to SMT solver
     my_parse = MyParse()
     original = my_parse.smt
-#     original = '''
-# (declare-sort Task)
-# (declare-const t1 Task)
-# (declare-const t2 Task)
-# (declare-sort User)
-# (declare-fun alloc (User Task) Bool)
-# (declare-fun alloc_user (Task) User)
-# (declare-const u1 User)
-# (assert (not (= (alloc_user t1) (alloc_user t2))))
-# (push)
-# (assert (= (alloc_user t2) u1))
-# (push)
-# (assert (= (alloc_user t1) u1))
-# (pop)
-# (check-sat)
-# '''
+
     print original
 
     f = z3.parse_smt2_string(original)
@@ -130,4 +115,43 @@ while True:
     print original_extra
 
     print s.check()
-    print s.model()
+    m = s.model()
+    print m
+    m.num_sorts()
+    print "sort index*********"
+    print m.get_universe(m.get_sort(1))
+    z3_task_universe = m.get_universe(m.get_sort(1))
+    print "eval *********************"
+    print z3_task_universe
+    print m.evaluate(z3_task_universe[0])
+
+    a = list()
+    alloc_user_eval = ""
+    alloc_user_aux = ""
+    alloc_user_eval_index = -1
+    alloc_user_aux_index = -1
+    i = 0
+    for ms in m:
+        print ms
+        str_ms = str(ms)
+        if str_ms == "alloc_user":
+            alloc_user_eval = ms
+            alloc_user_eval_index = i
+        if "alloc_user!" in str_ms:
+            alloc_user_aux = ms
+            alloc_user_aux_index = i
+            print alloc_user_aux
+        a.append(ms)
+        i += 1
+    print a
+
+    f1 = m[a[alloc_user_eval_index]]
+    # f1_str = str(f1[0])
+    print str(f1)
+    print alloc_user_aux
+    if str(alloc_user_aux) in str(f1):
+        f2 = m[a[alloc_user_aux_index]]
+        print f2
+        alloc_table = []
+        alloc_table = str(f2).split(",")
+        print alloc_table

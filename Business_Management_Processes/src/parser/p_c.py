@@ -12,6 +12,8 @@ class p_c(object):
     smt_fun_alloc = "(declare-fun alloc (User Task) Bool)\n"
     smt_fun_alloc_user = "(declare-fun alloc_user (Task) User) \n"
 
+    smt_const_bottom = "(declare-const bottom User) \n"
+
     rules_used = []
     tasks = []
     users = []
@@ -39,6 +41,8 @@ class p_c(object):
             p[0] = p[3]
             p_c.rules_used.append(p[1])
         elif p[1] not in p_c.rules_used and p[1] == 'Users':
+            p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
+            p_c.smt = p_c.smt_const_bottom + p_c.smt
             p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
             p_c.smt = p_c.smt_fun_alloc + p_c.smt
             p_c.smt = p_c.smt_sort_user + p_c.smt
