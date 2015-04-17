@@ -79,15 +79,12 @@ class p_c(object):
         if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
             p[0] = [p[2]] + [p[4]]
             p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n" #+ p_c.smt
-            print p_c.smt
-            # self.before.append(p[0])
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END
                           | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair'''
         if p[2] in p_c.users and p[4] in p_c.users:
             p[0] = [p[2]] + [p[4]]
-            # self.seniority.append(p[0])
         else:
             self.p_error(p)
 
@@ -139,7 +136,6 @@ class p_c(object):
                | END prog
                '''
         p[0] = p[1]
-        print p_c.tasks
         if len(p) == 2:
             p_c.tasks = []
             p_c.users = []

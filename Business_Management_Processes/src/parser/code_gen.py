@@ -56,14 +56,30 @@ while True:
     if not s:
         continue
     lexer.input(s)
-    for token in lexer:
-            print(token)
+    # for token in lexer:
+            # print(token)
     t = parser.parse(s, lexer=lexer)
-    print t
+    # print t
 
     # Collect results to SMT solver
     my_parse = MyParse()
     original = my_parse.smt
+#     original = '''
+# (declare-sort Task)
+# (declare-const t1 Task)
+# (declare-const t2 Task)
+# (declare-sort User)
+# (declare-fun alloc (User Task) Bool)
+# (declare-fun alloc_user (Task) User)
+# (declare-const u1 User)
+# (assert (not (= (alloc_user t1) (alloc_user t2))))
+# (push)
+# (assert (= (alloc_user t2) u1))
+# (push)
+# (assert (= (alloc_user t1) u1))
+# (pop)
+# (check-sat)
+# '''
     print original
 
     f = z3.parse_smt2_string(original)
@@ -77,6 +93,8 @@ while True:
     m = s.model()
     print m
 
+    print "*********************************************"
+
     # Do the allocation of users and tasks if not specified
     alloc_user_task = ""
     if my_parse.allocate_users:
@@ -88,14 +106,28 @@ while True:
         c = []
         for i in code_gen.product(code_gen(), user_list, task_list):
             c.append(i)
+        original_extra = original
         for cs in c:
-            alloc_user_task += "(assert (alloc " + cs[0] + " " + cs[1] + "))\n"
-            # alloc_user_task += "(assert (alloc " + "u4" + " " + "t3" + "))\n"
-            print alloc_user_task
-            e = z3.parse_smt2_string(original + alloc_user_task)
-            # s.push()
+            s.push()
+            original_extra += "(push)\n"
+            alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
+            original_extra += alloc_user_task
+            e = z3.parse_smt2_string(original_extra)
             s.add(e)
-            print 'result of push', s.check()
-            print s.model()
-            print original + alloc_user_task
+            check = s.check()
+            print 'result of push', check
+            if check == sat:
+                m = s.model()
+                print m
+            elif check == unsat:
+                original_extra += "(pop)\n"
+                e = z3.parse_smt2_string(original_extra)
+                s.pop()
+                s.add(e)
+                print s.check()
+                print original_extra
 
+    print original_extra
+
+    print s.check()
+    print s.model()
