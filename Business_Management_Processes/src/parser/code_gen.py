@@ -131,46 +131,18 @@ while True:
     print "-----------------------------------"
     print s.model()[z3_user_universe[0]]
 
-    a = list()
-    alloc_user_eval = ""
-    alloc_user_aux = ""
-    alloc_user_eval_index = -1
-    alloc_user_aux_index = -1
-    eval_task = []
-    eval_user = []
-    i = 0
+    model_map = []
+    Task = DeclareSort('Task')
     for ms in m:
-        print ms
-        print m[ms]
-        if "Task" in str(m[ms]):
-            eval_task.append(m[ms])
-        if "User" in str(m[ms]):
-            eval_user.append(m[ms])
+        # print ms
+        # print m[ms]
+        model_map.append((ms, m[ms]))
         str_ms = str(ms)
         if str_ms == "alloc_user":
-            alloc_user_eval = ms
-            alloc_user_eval_index = i
-            Task = DeclareSort('Task')
-            t2 = Const('t2', Task)
-            print "eval f"
-            print m.eval(ms(t2))
-        if "alloc_user!" in str_ms:
-            alloc_user_aux = ms
-            alloc_user_aux_index = i
-            print alloc_user_aux
-        a.append(ms)
-        i += 1
-    print a
-    print eval_task
-    print eval_user
+            for model in model_map:
+                if 't' in str(model[0]):
+                    print str(model[0])
+                    t = Const(str(model[0]), Task)
+                    print m.eval(ms(t))
 
-    f1 = m[a[alloc_user_eval_index]]
-    # f1_str = str(f1[0])
-    print str(f1)
-    print alloc_user_aux
-    if str(alloc_user_aux) in str(f1):
-        f2 = m[a[alloc_user_aux_index]]
-        print f2
-        alloc_table = []
-        alloc_table = str(f2).split(",")
-        print alloc_table
+    print model_map
