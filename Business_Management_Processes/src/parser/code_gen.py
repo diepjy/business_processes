@@ -82,11 +82,11 @@ while True:
 
     # Do the allocation of users and tasks if not specified
     alloc_user_task = ""
+    user_list = my_parse.users
+    task_list = my_parse.tasks
     if my_parse.allocate_users:
         # Loop through all users and allocate them to a task
         # Use BOTTOM user to verify
-        user_list = my_parse.users
-        task_list = my_parse.tasks
 
         c = []
         for i in code_gen.product(code_gen(), user_list, task_list):
@@ -112,37 +112,70 @@ while True:
                 print s.check()
                 print original_extra
 
-    print original_extra
-
     print s.check()
     m = s.model()
     print m
-    m.num_sorts()
-    print "sort index*********"
-    print m.get_sort(0)
-    z3_task_universe = m.get_universe(m.get_sort(0))
-    print m.get_sort(1)
-    z3_user_universe = m.get_universe(m.get_sort(1))
-    print "eval *********************"
-    print z3_task_universe
-    print z3_user_universe
-    print m.evaluate(z3_task_universe[1])
-    print m.evaluate(z3_user_universe[1])
+    # m.num_sorts()
+    # print "sort index*********"
+    # print m.get_sort(0)
+    # z3_task_universe = m.get_universe(m.get_sort(0))
+    # print m.get_sort(1)
+    # z3_user_universe = m.get_universe(m.get_sort(1))
+    # print "eval *********************"
+    # print z3_task_universe
+    # print z3_user_universe
+    # print m.evaluate(z3_task_universe[1])
+    # print m.evaluate(z3_user_universe[1])
     print "-----------------------------------"
-    print s.model()[z3_user_universe[0]]
+    # print s.model()[z3_user_universe[0]]
 
-    model_map = []
+    model_map_task = []
+    model_map_user = []
+    solution_map = []
     Task = DeclareSort('Task')
+    case_bottom_user = False
     for ms in m:
-        # print ms
-        # print m[ms]
-        model_map.append((ms, m[ms]))
+        print ms
+        print m[ms]
+        # print task_list
+        # print user_list
+        if str(ms) in task_list:
+            model_map_task.append((ms, m[ms]))
+        if str(ms) in user_list:
+            model_map_user.append((ms, m[ms]))
         str_ms = str(ms)
         if str_ms == "alloc_user":
-            for model in model_map:
-                if 't' in str(model[0]):
-                    print str(model[0])
-                    t = Const(str(model[0]), Task)
-                    print m.eval(ms(t))
-
-    print model_map
+            for model_task in model_map_task:
+                print "model task is ", str(model_task[0])
+                t = Const(str(model_task[0]), Task)
+                user_solution = m.eval(ms(t))
+                print "user solution is "
+                print "user solution is", user_solution
+                print "model_map_user is", model_map_user
+                print t
+                if str(user_solution) == "User!val!0":
+                    print "cannot assign"
+                    case_bottom_user = True;
+                    break;
+                for model_user in model_map_user:
+                    print "str(user_solution) is ", str(user_solution)
+                    if str(model_user[1]) == str(user_solution):
+                        print "in model_user loop"
+                        print model_user[1]
+                        print user_solution
+                        solution_map.append((t, model_user[0]))
+                    # elif "User!val!0" == str(user_solution):
+    #                 else:
+    #                     # Hit bottom user, unable to create model given existing workflow
+    #                     case_bottom_user = True
+    #                     break;
+    #             if case_bottom_user:
+    #                 break;
+    #     if case_bottom_user:
+    #         break;
+    if case_bottom_user:
+        print "cannot assign"
+        print solution_map
+    else:
+        print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+        print solution_map
