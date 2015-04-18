@@ -119,20 +119,33 @@ while True:
     print m
     m.num_sorts()
     print "sort index*********"
-    print m.get_universe(m.get_sort(1))
-    z3_task_universe = m.get_universe(m.get_sort(1))
+    print m.get_sort(0)
+    z3_task_universe = m.get_universe(m.get_sort(0))
+    print m.get_sort(1)
+    z3_user_universe = m.get_universe(m.get_sort(1))
     print "eval *********************"
     print z3_task_universe
-    print m.evaluate(z3_task_universe[0])
+    print z3_user_universe
+    print m.evaluate(z3_task_universe[1])
+    print m.evaluate(z3_user_universe[1])
+    print "-----------------------------------"
+    print s.model()[z3_user_universe[0]]
 
     a = list()
     alloc_user_eval = ""
     alloc_user_aux = ""
     alloc_user_eval_index = -1
     alloc_user_aux_index = -1
+    eval_task = []
+    eval_user = []
     i = 0
     for ms in m:
         print ms
+        print m[ms]
+        if "Task" in str(m[ms]):
+            eval_task.append(m[ms])
+        if "User" in str(m[ms]):
+            eval_user.append(m[ms])
         str_ms = str(ms)
         if str_ms == "alloc_user":
             alloc_user_eval = ms
@@ -144,6 +157,8 @@ while True:
         a.append(ms)
         i += 1
     print a
+    print eval_task
+    print eval_user
 
     f1 = m[a[alloc_user_eval_index]]
     # f1_str = str(f1[0])
