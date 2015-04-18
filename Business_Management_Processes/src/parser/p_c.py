@@ -1,5 +1,7 @@
 __author__ = 'joanna'
 
+from bin.z3 import *
+
 class p_c(object):
     smt = ""
 
@@ -19,6 +21,9 @@ class p_c(object):
     users = []
 
     allocate_users = False
+
+    # task = Sort('task')
+    # user = Sort('user')
 
     def __init__(self):
         self.before = []

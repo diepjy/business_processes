@@ -150,6 +150,10 @@ while True:
         if str_ms == "alloc_user":
             alloc_user_eval = ms
             alloc_user_eval_index = i
+            Task = DeclareSort('Task')
+            t2 = Const('t2', Task)
+            print "eval f"
+            print m.eval(ms(t2))
         if "alloc_user!" in str_ms:
             alloc_user_aux = ms
             alloc_user_aux_index = i
