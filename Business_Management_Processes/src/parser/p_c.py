@@ -60,8 +60,8 @@ class p_c(object):
     def p_rules(self, p):
         '''rules : BEFORE COLON task_node_pair
                  | SENIORITY COLON user_node_pair
-                 | BOD COLON task_node_pair
-                 | SOD COLON sod_task_node_pair'''
+                 | SOD COLON sod_task_node_pair
+                 | BOD COLON task_node_pair'''
         if p[1] == 'Before':
             # p_c.smt = self.smt_fun_before + p_c.smt
             p[0] = p[3]
@@ -79,7 +79,7 @@ class p_c(object):
         '''task_node_pair : LPAREN NODE COMMA NODE RPAREN END
                      | LPAREN NODE COMMA NODE RPAREN COMMA task_node_pair'''
         if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
-            p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
+            p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
             p[0] = [p[2]] + [p[4]]
             # self.before.append(p[0])
 

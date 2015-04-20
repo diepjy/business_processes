@@ -166,10 +166,10 @@ while True:
                 # print "user solution is", user_solution
                 # print "model_map_user is", model_map_user
                 # print t
-                if str(user_solution) == "User!val!0":
-                    print "cannot assign"
-                    case_bottom_user = True;
-                    break;
+                # if str(user_solution) == "User!val!0":
+                #     print "cannot assign"
+                #     case_bottom_user = True
+                #     break;
                 for model_user in model_map_user:
                     # print "str(user_solution) is ", str(user_solution)
                     if str(model_user[1]) == str(user_solution):
@@ -177,6 +177,10 @@ while True:
                         # print model_user[1]
                         # print user_solution
                         solution_map.append((t, model_user[0]))
+                    # elif any(str(user_solution) in modelu[1] for modelu in model_map_user):
+                    #     print "cannot assign"
+                    #     case_bottom_user = True
+                    #     break
                     # elif "User!val!0" == str(user_solution):
     #                 else:
     #                     # Hit bottom user, unable to create model given existing workflow
