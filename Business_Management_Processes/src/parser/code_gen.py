@@ -97,6 +97,19 @@ while True:
             original_extra += "(push)\n"
             alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
             original_extra += alloc_user_task
+            unique_assignment = "(assert (=> (= (alloc_user " + cs[1] + ") " + cs[0] + ")"
+            bracket = ""
+            for css in c:
+                if css[0] != cs[0]:
+                    # print "css is ", css
+                    # print "cs is ", cs
+                    implication = "(and (not (= (alloc_user " + cs[1] + ") " + css[0] + "))"
+                    unique_assignment += implication
+                    bracket += ")"
+            print unique_assignment + bracket
+            unique_assignment += bracket + ")) \n"
+            original_extra += unique_assignment
+            # unique task allocation
             e = z3.parse_smt2_string(original_extra)
             s.add(e)
             check = s.check()
@@ -135,8 +148,8 @@ while True:
     Task = DeclareSort('Task')
     case_bottom_user = False
     for ms in m:
-        print ms
-        print m[ms]
+        # print ms
+        # print m[ms]
         # print task_list
         # print user_list
         if str(ms) in task_list:
@@ -146,23 +159,23 @@ while True:
         str_ms = str(ms)
         if str_ms == "alloc_user":
             for model_task in model_map_task:
-                print "model task is ", str(model_task[0])
+                # print "model task is ", str(model_task[0])
                 t = Const(str(model_task[0]), Task)
                 user_solution = m.eval(ms(t))
-                print "user solution is "
-                print "user solution is", user_solution
-                print "model_map_user is", model_map_user
-                print t
+                # print "user solution is "
+                # print "user solution is", user_solution
+                # print "model_map_user is", model_map_user
+                # print t
                 if str(user_solution) == "User!val!0":
                     print "cannot assign"
                     case_bottom_user = True;
                     break;
                 for model_user in model_map_user:
-                    print "str(user_solution) is ", str(user_solution)
+                    # print "str(user_solution) is ", str(user_solution)
                     if str(model_user[1]) == str(user_solution):
-                        print "in model_user loop"
-                        print model_user[1]
-                        print user_solution
+                        # print "in model_user loop"
+                        # print model_user[1]
+                        # print user_solution
                         solution_map.append((t, model_user[0]))
                     # elif "User!val!0" == str(user_solution):
     #                 else:
