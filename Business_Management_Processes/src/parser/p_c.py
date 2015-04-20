@@ -85,7 +85,7 @@ class p_c(object):
 
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
-                     | LPAREN NODE COMMA NODE RPAREN COMMA task_node_pair'''
+                     | LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair'''
         if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
             p[0] = [p[2]] + [p[4]]
             p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
