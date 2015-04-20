@@ -43,8 +43,9 @@ class p_c(object):
                  | USERS COLON user_node'''
         if p[1] not in p_c.rules_used and p[1] == 'Tasks':
             p_c.smt = p_c.smt_sort_task + p_c.smt
-            p[0] = p[3]
             p_c.rules_used.append(p[1])
+            p[0] = p[3]
+            print p_c.rules_used
         elif p[1] not in p_c.rules_used and p[1] == 'Users':
             p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
             p_c.users.append('bottom');
@@ -58,37 +59,39 @@ class p_c(object):
             self.p_error(p)
 
     def p_rules(self, p):
-        '''rules : BEFORE COLON task_node_pair
-                 | SENIORITY COLON user_node_pair
+        '''rules : BEFORE COLON before_task_node_pair
+                 | BOD COLON bod_task_node_pair
                  | SOD COLON sod_task_node_pair
-                 | BOD COLON task_node_pair'''
-        if p[1] == 'Before':
-            # p_c.smt = self.smt_fun_before + p_c.smt
-            p[0] = p[3]
-        elif p[1] == 'Seniority':
-            # p_c.smt = self.smt_fun_seniority + p_c.smt
-            p[0] = p[3]
-        elif p[1] == 'SoD':
-            # p_c.smt = self.smt_fun_sod + p_c.smt
-            p[0] = p[3]
-        elif p[1] == 'BoD':
-            # p_c.smt = self.smt_fun_bod + p_c.smt
-            p[0] = p[3]
+                 | SENIORITY COLON user_node_pair
+        '''
+        print p[1]
+        p[0] = p[3]
 
-    def p_task_pair(self, p):
-        '''task_node_pair : LPAREN NODE COMMA NODE RPAREN END
-                     | LPAREN NODE COMMA NODE RPAREN COMMA task_node_pair'''
+    def p_before_task_pair(self, p):
+        '''before_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
+                     | LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair'''
         if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
-            p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
+            p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
             p[0] = [p[2]] + [p[4]]
             # self.before.append(p[0])
+
+    def p_bod_task_pair(self, p):
+        '''bod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
+                     | LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair'''
+        print "bod****"
+        # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
+        p[0] = [p[2]] + [p[4]]
+        p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
 
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
                      | LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair'''
-        if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
-            p[0] = [p[2]] + [p[4]]
-            p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
+        print "sod"
+        print p[2]
+        print p_c.tasks
+        # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
+        p[0] = [p[2]] + [p[4]]
+        p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END
@@ -146,12 +149,12 @@ class p_c(object):
                | END prog
                '''
         p[0] = p[1]
-        if len(p) == 2:
-            p_c.tasks = []
-            p_c.users = []
-            p_c.rules_used = []
-            p_c.smt = ""
-            p_c.allocate_users = False
+        # if len(p) == 2:
+            # p_c.tasks = []
+            # p_c.users = []
+            # p_c.rules_used = []
+            # p_c.smt = ""
+            # p_c.allocate_users = False
 
     def p_end_rule(self, p):
         '''end_rule : END
