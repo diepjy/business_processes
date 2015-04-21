@@ -11,7 +11,7 @@ class p_c(object):
     smt_fun_before = "(declare-fun before (Task Task) Bool) \n"
     smt_fun_seniority = "(declare-fun seniority (User User) Bool) \n"
 
-    smt_fun_alloc = "(declare-fun alloc (User Task) Bool)\n"
+    smt_fun_allowed = "(declare-fun allowed (User Task) Bool)\n"
     smt_fun_alloc_user = "(declare-fun alloc_user (Task) User) \n"
 
     smt_const_bottom = "(declare-const bottom User) \n"
@@ -36,6 +36,7 @@ class p_c(object):
     def p_prog(self, p):
         '''prog : begin
                 | begin rules'''
+        # p[0] = p[1] + ', '.join(p[2])
         p_c.smt = p_c.smt.translate(None, '!@#$\'')
 
     def p_begin(self, p):
@@ -47,12 +48,14 @@ class p_c(object):
             p[0] = p[3]
             print p_c.rules_used
         elif p[1] not in p_c.rules_used and p[1] == 'Users':
+            p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
             p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
-            p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
-            p_c.users.append('bottom');
+            p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
+            p_c.users.append('bottom')
+            p_c.smt = p_c.smt_fun_seniority + p_c.smt
             p_c.smt = p_c.smt_const_bottom + p_c.smt
             p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
-            p_c.smt = p_c.smt_fun_alloc + p_c.smt
+            p_c.smt = p_c.smt_fun_allowed + p_c.smt
             p_c.smt = p_c.smt_sort_user + p_c.smt
             p_c.rules_used.append(p[1])
             p[0] = p[3]
@@ -65,7 +68,6 @@ class p_c(object):
                  | SOD COLON sod_task_node_pair
                  | SENIORITY COLON user_node_pair
         '''
-        print p[1]
         p[0] = p[3]
 
     def p_before_task_pair(self, p):
@@ -93,14 +95,15 @@ class p_c(object):
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
+        print [p[2]] + [p[4]]
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END
                           | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair'''
-        if p[2] in p_c.users and p[4] in p_c.users:
-            p[0] = [p[2]] + [p[4]]
-        else:
-            self.p_error(p)
+        # if p[2] in p_c.users and p[4] in p_c.users:
+        p[0] = [p[2]] + [p[4]]
+        p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
+
 
     def p_task_node(self, p):
         '''task_node : NODE end
@@ -127,6 +130,16 @@ class p_c(object):
                   | OPTION end
                   '''
         p[0] = p[1]
+        print p[1]
+        #Minimum security level - anyone senior can be allocated a task
+        # lv=0 -> anyone can be allocated
+        # lv=1 -> only those senior to juniors at 0 can be allocated
+        # etc
+        if "min_sec_lv" in p[0]:
+            print p[0]
+            print p_c.tasks
+
+    # def task_option_assignment(self, p, t):
 
     def p_user_option(self, p):
         '''user_option : OPTION user_option
@@ -140,7 +153,6 @@ class p_c(object):
         '''users_global_option : ALLOCATE end_rule'''
         p[0] = p[1]
         if p[0] == 'allocate':
-            # go through each user and
             p_c.allocate_users = True
         else:
             self.p_error(p)

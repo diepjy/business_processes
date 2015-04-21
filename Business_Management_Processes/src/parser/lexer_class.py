@@ -10,7 +10,7 @@ class lexer_class(object):
         'Seniority' : 'SENIORITY',
         'BoD' : 'BOD',
         'users' : 'USERS_OPTION',
-        'allocate' : 'ALLOCATE'
+        'allocate' : 'ALLOCATE',
     }
 
     # List of token names
