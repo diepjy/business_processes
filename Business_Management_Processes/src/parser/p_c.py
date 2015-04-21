@@ -19,6 +19,7 @@ class p_c(object):
     rules_used = []
     tasks = []
     users = []
+    task = ""
 
     allocate_users = False
 
@@ -81,7 +82,6 @@ class p_c(object):
     def p_bod_task_pair(self, p):
         '''bod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
                      | LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair'''
-        print "bod****"
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
@@ -89,13 +89,11 @@ class p_c(object):
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
                      | LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair'''
-        print "sod"
-        print p[2]
+        print "sod", p[2]
         print p_c.tasks
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
-        print [p[2]] + [p[4]]
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END
@@ -110,6 +108,8 @@ class p_c(object):
                 | NODE COMMA task_node
                 | NODE task_option'''
         p[0] = p[1]
+        p_c.task = p[0]
+        print "task is ", p_c.task
         if p[0] not in p_c.tasks:
             p_c.tasks.append(p[0].replace("'", ""))
             p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
@@ -130,13 +130,13 @@ class p_c(object):
                   | OPTION end
                   '''
         p[0] = p[1]
-        print p[1]
+        print "task option", p[1]
         #Minimum security level - anyone senior can be allocated a task
         # lv=0 -> anyone can be allocated
         # lv=1 -> only those senior to juniors at 0 can be allocated
         # etc
         if "min_sec_lv" in p[0]:
-            print p[0]
+            print "min sec lv", p[0]
             print p_c.tasks
 
     # def task_option_assignment(self, p, t):
@@ -159,7 +159,7 @@ class p_c(object):
 
     def p_end(self, p):
         '''end : END
-               | END prog
+               | END begin
                '''
         p[0] = p[1]
         # if len(p) == 2:
@@ -170,8 +170,7 @@ class p_c(object):
             # p_c.allocate_users = False
 
     def p_end_rule(self, p):
-        '''end_rule : END
-                    | END rules'''
+        '''end_rule : END rules'''
         if len(p) == 0:
             p[0] = p[1]
         else:
