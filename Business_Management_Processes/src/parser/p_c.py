@@ -48,6 +48,7 @@ class p_c(object):
             print p_c.rules_used
         elif p[1] not in p_c.rules_used and p[1] == 'Users':
             p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
+            p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
             p_c.users.append('bottom');
             p_c.smt = p_c.smt_const_bottom + p_c.smt
             p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
