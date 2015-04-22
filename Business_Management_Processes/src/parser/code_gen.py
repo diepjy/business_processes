@@ -47,6 +47,22 @@ class code_gen(object):
 
 lexer = lex(module=lexer_class(), optimize=1)
 parser = yacc(module=MyParse(), start='prog', optimize=1)
+my_parse = MyParse()
+user_list = my_parse.users
+task_list = my_parse.tasks
+
+def get_task_options(d):
+    smt_options = ""
+    for key, value in d.iteritems():
+        print key
+        print value
+        if value == ";":
+            print "no options set"
+        else:
+            if value == "-min_sec_lv":
+                smt_options += "(assert)"
+    print smt_options
+    return smt_options
 
 # while True:
 # try:
@@ -56,13 +72,12 @@ s = raw_input('busines_process > ')
 # if not s:
 #     continue
 lexer.input(s)
-# for token in lexer:
-#         print(token)
+for token in lexer:
+        print(token)
 t = parser.parse(s, lexer=lexer)
 print t
 
 # Collect results to SMT solver
-my_parse = MyParse()
 original = my_parse.smt
 
 print original
@@ -78,12 +93,15 @@ print 'Result of first check', s.check ()
 m = s.model()
 print m
 
+print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
+
+# go through the options and check if they are possible given the basic model
+get_task_options(my_parse.dict_tasks)
+
 print "*********************************************"
 
 # Do the allocation of users and tasks if not specified
 alloc_user_task = ""
-user_list = my_parse.users
-task_list = my_parse.tasks
 if my_parse.allocate_users:
     # Loop through all users and allocate them to a task
     # Use BOTTOM user to verify
@@ -142,6 +160,7 @@ print m
 print "-----------------------------------"
 # print s.model()[z3_user_universe[0]]
 
+#Assignment and verification
 model_map_task = []
 model_map_user = []
 solution_map = []

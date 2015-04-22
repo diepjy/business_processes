@@ -19,6 +19,8 @@ class p_c(object):
     rules_used = []
     tasks = []
     users = []
+    dict_tasks = { }
+    dict_users = { }
     task = ""
 
     allocate_users = False
@@ -35,33 +37,33 @@ class p_c(object):
     # TODO: option flags
 
     def p_prog(self, p):
-        '''prog : begin
-                | begin rules'''
+        '''prog : begin'''
+                # | begin rules'''
         # p[0] = p[1] + ', '.join(p[2])
         p_c.smt = p_c.smt.translate(None, '!@#$\'')
 
     def p_begin(self, p):
-        '''begin : TASKS COLON task_node
-                 | USERS COLON user_node'''
-        if p[1] not in p_c.rules_used and p[1] == 'Tasks':
-            p_c.smt = p_c.smt_sort_task + p_c.smt
-            p_c.rules_used.append(p[1])
-            p[0] = p[3]
-            print p_c.rules_used
-        elif p[1] not in p_c.rules_used and p[1] == 'Users':
-            p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
-            p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
-            p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
-            p_c.users.append('bottom')
-            p_c.smt = p_c.smt_fun_seniority + p_c.smt
-            p_c.smt = p_c.smt_const_bottom + p_c.smt
-            p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
-            p_c.smt = p_c.smt_fun_allowed + p_c.smt
-            p_c.smt = p_c.smt_sort_user + p_c.smt
-            p_c.rules_used.append(p[1])
-            p[0] = p[3]
-        else:
-            self.p_error(p)
+        '''begin : TASKS COLON task_node USERS COLON user_node
+                 | TASKS COLON task_node USERS COLON user_node rules'''
+        # if p[1] not in p_c.rules_used and p[1] == 'Tasks':
+            # p_c.rules_used.append(p[1])
+            # p[0] = p[3]
+            # print p_c.rules_used
+        # elif p[1] not in p_c.rules_used and p[1] == 'Users':
+        p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
+        p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
+        p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
+        p_c.users.append('bottom')
+        p_c.smt = p_c.smt_fun_seniority + p_c.smt
+        p_c.smt = p_c.smt_const_bottom + p_c.smt
+        p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
+        p_c.smt = p_c.smt_fun_allowed + p_c.smt
+        p_c.smt = p_c.smt_sort_user + p_c.smt
+        p_c.smt = p_c.smt_sort_task + p_c.smt
+        # p_c.rules_used.append(p[1])
+        p[0] = p[3] + p[6]
+        # else:
+        #     self.p_error(p)
 
     def p_rules(self, p):
         '''rules : BEFORE COLON before_task_node_pair
@@ -110,9 +112,13 @@ class p_c(object):
         p[0] = p[1]
         p_c.task = p[0]
         print "task is ", p_c.task
-        if p[0] not in p_c.tasks:
-            p_c.tasks.append(p[0].replace("'", ""))
-            p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
+        # if p[0] not in p_c.tasks:
+        p_c.tasks.append(p[0].replace("'", ""))
+        if len(p) == 3:
+            p_c.dict_tasks[p[1].replace("'", "")] = p[2]
+            # p_c.dict_tasks.
+        print "p_c.dict_tasks", p_c.dict_tasks
+        p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -125,9 +131,9 @@ class p_c(object):
             p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
 
     def p_task_option(self,p):
-        '''task_option : OPTION task_option
-                  | OPTION COMMA task_node
-                  | OPTION end
+        '''task_option : OPTION COLON op task_option
+                  | OPTION COLON op COMMA task_node
+                  | OPTION COLON op end
                   '''
         p[0] = p[1]
         print "task option", p[1]
@@ -139,7 +145,10 @@ class p_c(object):
             print "min sec lv", p[0]
             print p_c.tasks
 
-    # def task_option_assignment(self, p, t):
+    def p_op(self, p):
+        '''op : EQ NODE'''
+        print p[0]
+
 
     def p_user_option(self, p):
         '''user_option : OPTION user_option
@@ -162,12 +171,6 @@ class p_c(object):
                | END begin
                '''
         p[0] = p[1]
-        # if len(p) == 2:
-            # p_c.tasks = []
-            # p_c.users = []
-            # p_c.rules_used = []
-            # p_c.smt = ""
-            # p_c.allocate_users = False
 
     def p_end_rule(self, p):
         '''end_rule : END rules'''
@@ -178,3 +181,4 @@ class p_c(object):
 
     def p_error(self, p):
         print "Syntax error in input!"
+        print p

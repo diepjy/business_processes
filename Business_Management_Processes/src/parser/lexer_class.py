@@ -21,30 +21,32 @@ class lexer_class(object):
         'COMMA',
         'LPAREN',
         'RPAREN',
-        'END'
+        'END',
+        'EQ',
+        'GEQ',
+        'LEQ',
+        'NEQ'
+        ''
     ] + list(reserved.values())
 
     # Regular expression rules for simple tokens
     t_COLON = r':'
     t_NODE = r'(%s|%s)' % (r'"(\\"|[^"])*"', r"'(\\'|[^'])*'")
     t_OPTION = r'-[a-zA-Z_][a-zA-Z0-9_]*'
-    # t_OPTION = r'-'
     t_COMMA = r','
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
     t_END = r';'
+    t_EQ = r'='
+    t_GEQ = r'>'
+    t_LEQ = r'<'
+    t_NEQ = r'!='
 
     # Check for reserved words
     def t_ID(self, t):
         r'[a-zA-Z_][a-zA-Z_0-9]*'
         t.type = self.reserved.get(t.value,'ID')
         return t
-
-    # List of tasks
-    tasks = {}
-
-    # List of Users
-    users = {}
 
     # Define a rule so we can track line numbers
     def t_newline(self,t):
