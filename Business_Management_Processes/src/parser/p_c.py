@@ -21,7 +21,7 @@ class p_c(object):
     users = []
     dict_tasks = { }
     dict_users = { }
-    task = ""
+    dict_seniority = { }
 
     allocate_users = False
 
@@ -115,6 +115,7 @@ class p_c(object):
         # if p[0] not in p_c.tasks:
         p_c.tasks.append(p[0].replace("'", ""))
         if len(p) == 3:
+            print p[2]
             p_c.dict_tasks[p[1].replace("'", "")] = p[2]
             # p_c.dict_tasks.
         print "p_c.dict_tasks", p_c.dict_tasks
@@ -135,18 +136,24 @@ class p_c(object):
                   | OPTION COLON op COMMA task_node
                   | OPTION COLON op end
                   '''
-        p[0] = p[1]
-        print "task option", p[1]
+        print p[3]
+        p[0] = p[1] + p[3]
+        # print "task option", p[1]
         #Minimum security level - anyone senior can be allocated a task
         # lv=0 -> anyone can be allocated
         # lv=1 -> only those senior to juniors at 0 can be allocated
         # etc
-        if "min_sec_lv" in p[0]:
+        if "min_sec_lv" in p[1]:
             print "min sec lv", p[0]
             print p_c.tasks
+            # p_c.dict_tasks[p]
 
     def p_op(self, p):
-        '''op : EQ NODE'''
+        '''op : EQ NODE
+              | GEQ NODE
+              | LEQ NODE
+              | NEQ NODE'''
+        p[0] = p[1] + p[2]
         print p[0]
 
 

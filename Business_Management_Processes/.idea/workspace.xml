@@ -16,7 +16,7 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/Business_Management_Processes$order_discount.coverage" NAME="order_discount Coverage Results" MODIFIED="1429283600861" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$test.coverage" NAME="test Coverage Results" MODIFIED="1429274648187" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
-    <SUITE FILE_PATH="coverage/Business_Management_Processes$code_gen.coverage" NAME="code_gen Coverage Results" MODIFIED="1429710240986" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
+    <SUITE FILE_PATH="coverage/Business_Management_Processes$code_gen.coverage" NAME="code_gen Coverage Results" MODIFIED="1429711792474" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$z3_examples__1_.coverage" NAME="z3_examples (1) Coverage Results" MODIFIED="1424038524184" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$eg.coverage" NAME="eg Coverage Results" MODIFIED="1424033541328" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$function_eg.coverage" NAME="function_eg Coverage Results" MODIFIED="1424036728138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
@@ -49,20 +49,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="p_c.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="p_c.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/parser/p_c.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.290322" vertical-offset="2250" max-vertical-offset="3402">
-              <caret line="141" column="49" selection-start-line="141" selection-start-column="49" selection-end-line="141" selection-end-column="49" />
+            <state vertical-scroll-proportion="0.4355301" vertical-offset="2368" max-vertical-offset="3528">
+              <caret line="140" column="17" selection-start-line="140" selection-start-column="17" selection-end-line="140" selection-end-column="17" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="code_gen.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="code_gen.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/parser/code_gen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.89589906" vertical-offset="1228" max-vertical-offset="3852">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1228" max-vertical-offset="3852">
               <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
               <folding>
                 <element signature="e#23#43#0" expanded="true" />
@@ -619,7 +619,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23505977" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2777778" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.46450618" sideWeight="0.4996016" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3472222" sideWeight="0.4996016" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -997,21 +997,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/parser/p_c.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.290322" vertical-offset="2250" max-vertical-offset="3402">
-          <caret line="141" column="49" selection-start-line="141" selection-start-column="49" selection-end-line="141" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/parser/code_gen.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.89589906" vertical-offset="1228" max-vertical-offset="3852">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1228" max-vertical-offset="3852">
           <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
           <folding>
             <element signature="e#23#43#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/parser/p_c.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4355301" vertical-offset="2368" max-vertical-offset="3528">
+          <caret line="140" column="17" selection-start-line="140" selection-start-column="17" selection-end-line="140" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
