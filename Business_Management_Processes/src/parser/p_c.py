@@ -16,6 +16,9 @@ class p_c(object):
 
     smt_const_bottom = "(declare-const bottom User) \n"
 
+    smt_fun_seniority_transitivity = "(assert (forall ((u1 User) (u2 User) (u3 User)) (=> (and (seniority u1 u2) (seniority u2 u3)) (seniority u1 u3))))\n"
+    # smt_fun_less_senior_not_allowed = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (=(alloc_user t) u1) (seniority u1 u2)) (not(=(alloc_user t) u2)))))\n"
+
     rules_used = []
     tasks = []
     users = []
@@ -50,7 +53,9 @@ class p_c(object):
             # p[0] = p[3]
             # print p_c.rules_used
         # elif p[1] not in p_c.rules_used and p[1] == 'Users':
-        p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
+        p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
+        # p_c.smt = p_c.smt_fun_less_senior_not_allowed + p_c.smt
+        #p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
         p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
         p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
         p_c.users.append('bottom')
@@ -91,8 +96,6 @@ class p_c(object):
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
                      | LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair'''
-        print "sod", p[2]
-        print p_c.tasks
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
@@ -111,14 +114,12 @@ class p_c(object):
                 | NODE task_option'''
         p[0] = p[1]
         p_c.task = p[0]
-        print "task is ", p_c.task
         # if p[0] not in p_c.tasks:
         p_c.tasks.append(p[0].replace("'", ""))
         if len(p) == 3:
-            print p[2]
             p_c.dict_tasks[p[1].replace("'", "")] = p[2]
             # p_c.dict_tasks.
-        print "p_c.dict_tasks", p_c.dict_tasks
+        # print "p_c.dict_tasks", p_c.dict_tasks
         p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
 
     def p_user_node(self, p):
@@ -136,17 +137,14 @@ class p_c(object):
                   | OPTION COLON op COMMA task_node
                   | OPTION COLON op end
                   '''
-        print p[3]
         p[0] = p[1] + p[3]
-        # print "task option", p[1]
         #Minimum security level - anyone senior can be allocated a task
         # lv=0 -> anyone can be allocated
         # lv=1 -> only those senior to juniors at 0 can be allocated
         # etc
-        if "min_sec_lv" in p[1]:
-            print "min sec lv", p[0]
-            print p_c.tasks
-            # p_c.dict_tasks[p]
+        # if "min_sec_lv" in p[1]:
+        #     print "min sec lv", p[0]
+        #     print p_c.tasks
 
     def p_op(self, p):
         '''op : EQ NODE

@@ -58,9 +58,26 @@ def get_task_options(d):
         print value
         if value == ";":
             print "no options set"
-        else:
-            if value == "-min_sec_lv":
-                smt_options += "(assert)"
+        elif "-min_sec_lv" in value:
+                for t in task_list:
+                    if t in value:
+                        print "t is in ", t
+                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User)) " \
+                                       "(=> " \
+                                       "(and " \
+                                       "(and " \
+                                       "(and " \
+                                       "(and (not(seniority u5 u3)) " \
+                                       "(not(seniority u3 u5))" \
+                                       ")" \
+                                       "(seniority u5 u4))" \
+                                       "(seniority u3 u4))" \
+                                       "(or(=(alloc_user t4) u3) (=(alloc_user t4) u5)))" \
+                                       "(or(=(alloc_user t3) u3) (=(alloc_user t3) u5))" \
+                                       ")" \
+                                       "))" \
+                                       "\n" + "(assert (not(seniority u5 u3)))\n" \
+                                              "(assert (not(seniority u3 u5)))\n"
     print smt_options
     return smt_options
 
@@ -72,8 +89,8 @@ s = raw_input('busines_process > ')
 # if not s:
 #     continue
 lexer.input(s)
-for token in lexer:
-        print(token)
+# for token in lexer:
+#         print(token)
 t = parser.parse(s, lexer=lexer)
 print t
 
@@ -96,7 +113,14 @@ print m
 print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
 
 # go through the options and check if they are possible given the basic model
-get_task_options(my_parse.dict_tasks)
+smt_options = get_task_options(my_parse.dict_tasks)
+# print original + smt_options
+original += smt_options
+print "original with options:", original
+o = z3.parse_smt2_string(original)
+s.add(o)
+print "after options added check", s.check()
+print s.model()
 
 print "*********************************************"
 
