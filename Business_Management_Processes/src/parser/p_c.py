@@ -18,6 +18,11 @@ class p_c(object):
 
     smt_fun_seniority_transitivity = "(assert (forall ((u1 User) (u2 User) (u3 User)) (=> (and (seniority u1 u2) (seniority u2 u3)) (seniority u1 u3))))\n"
     # smt_fun_less_senior_not_allowed = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (=(alloc_user t) u1) (seniority u1 u2)) (not(=(alloc_user t) u2)))))\n"
+    smt_indirect_hierarchy = "(assert (forall ((u5 User) (u4 User) (u3 User) (u2 User) (u User)) " \
+                            "(=> " \
+                            "(and (and (and (and (and (and (seniority u3 u4) (seniority u3 u2)) (seniority u5 u4)) (seniority u u5)) (seniority u u3)) (not(= u u3))) (not(= u u3)))" \
+                            "(and (and (seniority u5 u2) (not(seniority u5 u3))) (not(seniority u3 u5)))" \
+                            ")))"
 
     rules_used = []
     tasks = []
@@ -53,6 +58,7 @@ class p_c(object):
             # p[0] = p[3]
             # print p_c.rules_used
         # elif p[1] not in p_c.rules_used and p[1] == 'Users':
+        p_c.smt = p_c.smt_indirect_hierarchy + p_c.smt
         p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
         # p_c.smt = p_c.smt_fun_less_senior_not_allowed + p_c.smt
         #p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
@@ -106,6 +112,7 @@ class p_c(object):
         # if p[2] in p_c.users and p[4] in p_c.users:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
+        p_c.smt += "(assert (not(seniority " + p[4] + " " + p[2] + "))) \n"
 
 
     def p_task_node(self, p):

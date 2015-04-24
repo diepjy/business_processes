@@ -72,12 +72,28 @@ def get_task_options(d):
                                        ")" \
                                        "(seniority u5 u4))" \
                                        "(seniority u3 u4))" \
-                                       "(or(=(alloc_user t4) u3) (=(alloc_user t4) u5)))" \
-                                       "(or(=(alloc_user t3) u3) (=(alloc_user t3) u5))" \
+                                       "(or(=(alloc_user " \
+                                       + t + \
+                                       ") u3) (=(alloc_user " \
+                                       + t + \
+                                       ") u5)))" \
+                                       "(or(=(alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + key + \
+                                       ") u5))" \
                                        ")" \
                                        "))" \
-                                       "\n" + "(assert (not(seniority u5 u3)))\n" \
-                                              "(assert (not(seniority u3 u5)))\n"
+                                       "\n" + "(assert (not(seniority " \
+                                              "u5" \
+                                              " " \
+                                              "u3" \
+                                              ")))\n" \
+                                              "(assert (not(seniority " \
+                                              "u3" \
+                                              " " \
+                                              "u5" \
+                                              ")))\n"
     print smt_options
     return smt_options
 
