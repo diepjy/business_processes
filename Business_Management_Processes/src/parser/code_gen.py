@@ -89,6 +89,17 @@ def get_task_options(d):
     print smt_options
     return smt_options
 
+def unique_users_axiom():
+    c = []
+    unique_users = ""
+    for i in code_gen.product(code_gen(), user_list, user_list):
+        c.append(i)
+    print c
+    for cs in c:
+        if cs[0] != cs[1]:
+            unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))"
+    print unique_users
+
 # while True:
 # try:
 s = raw_input('busines_process > ')
@@ -158,6 +169,8 @@ print s.model()
 
 print "*********************************************"
 
+unique_users_axiom()
+
 # Do the allocation of users and tasks if not specified
 alloc_user_task = ""
 if my_parse.allocate_users:
@@ -168,23 +181,25 @@ if my_parse.allocate_users:
     for i in code_gen.product(code_gen(), user_list, task_list):
         c.append(i)
     original_extra = original
+    print c
     for cs in c:
         s.push()
         original_extra += "(push)\n"
         alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
         original_extra += alloc_user_task
-        unique_assignment = "(assert (=> (= (alloc_user " + cs[1] + ") " + cs[0] + ")"
-        bracket = ""
-        for css in c:
-            if css[0] != cs[0]:
-                # print "css is ", css
-                # print "cs is ", cs
-                implication = "(and (not (= (alloc_user " + cs[1] + ") " + css[0] + "))"
-                unique_assignment += implication
-                bracket += ")"
-        print unique_assignment + bracket
-        unique_assignment += bracket + ")) \n"
-        original_extra += unique_assignment
+        # unique_assignment = "(assert (=> (= (alloc_user " + cs[1] + ") " + cs[0] + ")"
+        # bracket = ""
+        # print c
+        # for css in c:
+        #     if css[0] != cs[0]:
+        #         # print "css is ", css
+        #         # print "cs is ", cs
+        #         implication = "(and (not (= (alloc_user " + cs[1] + ") " + css[0] + "))"
+        #         unique_assignment += implication
+        #         bracket += ")"
+        # print unique_assignment + bracket
+        # unique_assignment += bracket + ")) \n"
+        # original_extra += unique_assignment
         # unique task allocation
         e = z3.parse_smt2_string(original_extra)
         s.add(e)
