@@ -14,7 +14,7 @@ class p_c(object):
     smt_fun_allowed = "(declare-fun allowed (User Task) Bool)\n"
     smt_fun_alloc_user = "(declare-fun alloc_user (Task) User) \n"
 
-    smt_const_bottom = "(declare-const bottom User) \n"
+    #smt_const_bottom = "(declare-const bottom User) \n"
 
     smt_fun_seniority_transitivity = "(assert (forall ((u1 User) (u2 User) (u3 User)) (=> (and (seniority u1 u2) (seniority u2 u3)) (seniority u1 u3))))\n"
     # smt_fun_less_senior_not_allowed = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (=(alloc_user t) u1) (seniority u1 u2)) (not(=(alloc_user t) u2)))))\n"
@@ -62,11 +62,11 @@ class p_c(object):
         p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
         # p_c.smt = p_c.smt_fun_less_senior_not_allowed + p_c.smt
         #p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
-        p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
+        #p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
         p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
-        p_c.users.append('bottom')
+        #p_c.users.append('bottom')
         p_c.smt = p_c.smt_fun_seniority + p_c.smt
-        p_c.smt = p_c.smt_const_bottom + p_c.smt
+        #p_c.smt = p_c.smt_const_bottom + p_c.smt
         p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
         p_c.smt = p_c.smt_fun_allowed + p_c.smt
         p_c.smt = p_c.smt_sort_user + p_c.smt

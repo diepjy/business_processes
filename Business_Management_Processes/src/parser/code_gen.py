@@ -59,41 +59,33 @@ def get_task_options(d):
         if value == ";":
             print "no options set"
         elif "-min_sec_lv" in value:
-                for t in task_list:
-                    if t in value:
-                        print "t is in ", t
-                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User)) " \
-                                       "(=> " \
-                                       "(and " \
-                                       "(and " \
-                                       "(and " \
-                                       "(and (not(seniority u5 u3)) " \
-                                       "(not(seniority u3 u5))" \
-                                       ")" \
-                                       "(seniority u5 u4))" \
-                                       "(seniority u3 u4))" \
-                                       "(or(=(alloc_user " \
-                                       + t + \
-                                       ") u3) (=(alloc_user " \
-                                       + t + \
-                                       ") u5)))" \
-                                       "(or(=(alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
-                                       + key + \
-                                       ") u5))" \
-                                       ")" \
-                                       "))" \
-                                       "\n" + "(assert (not(seniority " \
-                                              "u5" \
-                                              " " \
-                                              "u3" \
-                                              ")))\n" \
-                                              "(assert (not(seniority " \
-                                              "u3" \
-                                              " " \
-                                              "u5" \
-                                              ")))\n"
+            for t in task_list:
+                if t in value:
+                    print "t is in ", t
+                    smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User)) " \
+                                   "(=> " \
+                                   "(and " \
+                                   "(and " \
+                                   "(and " \
+                                   "(and (not(seniority u5 u3)) " \
+                                   "(not(seniority u3 u5))" \
+                                   ")" \
+                                   "(seniority u5 u4))" \
+                                   "(seniority u3 u4))" \
+                                   "(or(=(alloc_user " \
+                                   + t + \
+                                   ") u3) (=(alloc_user " \
+                                   + t + \
+                                   ") u5)))" \
+                                   "(or(=(alloc_user " \
+                                   + key + \
+                                   ") u3) (=(alloc_user " \
+                                   + key + \
+                                   ") u5))" \
+                                   ")" \
+                                   "))" \
+                                   "\n"
+
     print smt_options
     return smt_options
 
@@ -132,6 +124,32 @@ print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
 smt_options = get_task_options(my_parse.dict_tasks)
 # print original + smt_options
 original += smt_options
+
+print "original with options:", original
+o = z3.parse_smt2_string(original)
+s.add(o)
+print "after options added check", s.check()
+print s.model()
+
+# Go through all combinations of seniority available
+print my_parse.users
+smt_seniors = original
+c = []
+for i in code_gen.product(code_gen(), user_list, user_list):
+    c.append(i)
+print c
+for cs in c:
+    if cs[0] != cs[1]:
+        s.push()
+        original += "(push)\n"
+        original += "(assert (not(seniority " + cs[0] + " " + cs[1] + ")))\n"
+        sn = z3.parse_smt2_string(original)
+        s.add(sn)
+        if s.check() == unsat:
+            original += "(pop)\n"
+            s.pop()
+print c
+
 print "original with options:", original
 o = z3.parse_smt2_string(original)
 s.add(o)
