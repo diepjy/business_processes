@@ -97,8 +97,9 @@ def unique_users_axiom():
     print c
     for cs in c:
         if cs[0] != cs[1]:
-            unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))"
+            unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))\n"
     print unique_users
+    return unique_users
 
 # while True:
 # try:
@@ -169,7 +170,11 @@ print s.model()
 
 print "*********************************************"
 
-unique_users_axiom()
+original += unique_users_axiom()
+unique = z3.parse_smt2_string(original)
+s.add(unique)
+print "after options added check", s.check()
+print s.model()
 
 # Do the allocation of users and tasks if not specified
 alloc_user_task = ""
@@ -266,14 +271,14 @@ for ms in m:
                     # print user_solution
                     solution_map.append((t, model_user[0]))
                 # elif "User!val!0" == str(user_solution):
-#                 else:
-#                     # Hit bottom user, unable to create model given existing workflow
-#                     case_bottom_user = True
-#                     break;
-#             if case_bottom_user:
-#                 break;
-#     if case_bottom_user:
-#         break;
+                else:
+                    # Hit bottom user, unable to create model given existing workflow
+                    case_bottom_user = True
+                    break;
+            if case_bottom_user:
+                break;
+    if case_bottom_user:
+        break;
 if case_bottom_user:
     print "cannot assign"
     print solution_map
