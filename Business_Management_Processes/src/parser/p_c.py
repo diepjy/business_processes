@@ -22,10 +22,14 @@ class p_c(object):
                             "(=> " \
                             "(and (and (and (and (and (and (seniority u3 u4) (seniority u3 u2)) (seniority u5 u4)) (seniority u u5)) (seniority u u3)) (not(= u u3))) (not(= u u3)))" \
                             "(and (and (seniority u5 u2) (not(seniority u5 u3))) (not(seniority u3 u5)))" \
-                            ")))"
+                            ")))\n"
     smt_unique_user_task_alloc = "(assert (forall ((u1 User) (u2 User) (t Task)) " \
                                  "(=> (and (=(alloc_user t) u1) (not(= u1 u2))) (not(=(alloc_user t) u2)))" \
-                                 "))"
+                                 "))\n"
+
+    smt_unique_users_axiom = "(assert (forall ((u1 User) (u2 User))" \
+                   "(=> (not(= u1 u2)) (not(= u2 u1)))" \
+                   "))\n"
 
     rules_used = []
     tasks = []
@@ -61,6 +65,7 @@ class p_c(object):
             # p[0] = p[3]
             # print p_c.rules_used
         # elif p[1] not in p_c.rules_used and p[1] == 'Users':
+        p_c.smt = p_c.smt_unique_users_axiom + p_c.smt
         p_c.smt = p_c.smt_unique_user_task_alloc + p_c.smt
         p_c.smt = p_c.smt_indirect_hierarchy + p_c.smt
         p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
@@ -116,7 +121,7 @@ class p_c(object):
         # if p[2] in p_c.users and p[4] in p_c.users:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
-        p_c.smt += "(assert (not(seniority " + p[4] + " " + p[2] + "))) \n"
+        # p_c.smt += "(assert (not(seniority " + p[4] + " " + p[2] + "))) \n"
 
 
     def p_task_node(self, p):

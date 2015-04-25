@@ -54,50 +54,82 @@ task_list = my_parse.tasks
 def get_task_options(d):
     smt_options = ""
     for key, value in d.iteritems():
-        print key
-        print value
+        print "key", key
+        print "value", value
         if value == ";":
             print "no options set"
         elif "-min_sec_lv" in value:
-            for t in task_list:
-                if t in value:
-                    print "t is in ", t
-                    smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User)) " \
-                                   "(=> " \
-                                   "(and " \
-                                   "(and " \
-                                   "(and " \
-                                   "(and (not(seniority u5 u3)) " \
-                                   "(not(seniority u3 u5))" \
-                                   ")" \
-                                   "(seniority u5 u4))" \
-                                   "(seniority u3 u4))" \
-                                   "(or(=(alloc_user " \
-                                   + t + \
-                                   ") u3) (=(alloc_user " \
-                                   + t + \
-                                   ") u5)))" \
-                                   "(or(=(alloc_user " \
-                                   + key + \
-                                   ") u3) (=(alloc_user " \
-                                   + key + \
-                                   ") u5))" \
-                                   ")" \
-                                   "))" \
-                                   "\n"
+            if "=" in value and "!=" not in value:
+                print "= seniority"
+                print "value is ", value
+                for t in task_list:
+                    if t in value:
+                        print "t is in ", t
+                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User)) " \
+                                       "(=> " \
+                                       "(and " \
+                                       "(and " \
+                                       "(and " \
+                                       "(and (not(seniority u5 u3)) " \
+                                       "(not(seniority u3 u5))" \
+                                       ")" \
+                                       "(seniority u5 u4))" \
+                                       "(seniority u3 u4))" \
+                                       "(or(=(alloc_user " \
+                                       + t + \
+                                       ") u3) (=(alloc_user " \
+                                       + t + \
+                                       ") u5)))" \
+                                       "(or(=(alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + key + \
+                                       ") u5))" \
+                                       ")" \
+                                       "))" \
+                                       "\n"
+            elif ">" in value:
+                # More senior allocation
+                print ">>>>>>> seniority"
+                for t in task_list:
+                    if t in value:
+                        print "t is in ", t
+                        smt_options += "(assert (forall ((u1 User) (u2 User) (u3 User))" \
+                                       "(=> " \
+                                       "(and" \
+                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
+                                       "(not(= u3 u2)))" \
+                                       "(and (=(alloc_user " \
+                                       + key + \
+                                       ") u2) (=(alloc_user " \
+                                       + t + \
+                                       ") u3))" \
+                                       ")" \
+                                       "))\n"
+            elif "<" in value:
+                print "<<<<<<< seniority"
+                for t in task_list:
+                    if t in value:
+                        print "t is in ", t
+                        smt_options += "(assert (forall ((u1 User) (u2 User)) " \
+                                       "(=> (and (=(alloc_user " \
+                                       + key+ \
+                                       ") u1) (seniority u1 u2)) " \
+                                       "(and(=(alloc_user " \
+                                       + t + \
+                                       ") u2) (not(=(alloc_user t6) u1))))\n" \
+                                       "))"
+            elif "!=" in value:
+                print "!!!!!!! seniority"
 
     print smt_options
     return smt_options
 
 def unique_users_axiom():
     c = []
-    unique_users = ""
-    for i in code_gen.product(code_gen(), user_list, user_list):
-        c.append(i)
-    print c
-    for cs in c:
-        if cs[0] != cs[1]:
-            unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))\n"
+    unique_users = "(assert (forall ((u1 User) (u2 User))" \
+                   "(=> (not(= u1 u2)) (not(= u2 u1)))" \
+                   "))"
     print unique_users
     return unique_users
 
@@ -170,11 +202,13 @@ print s.model()
 
 print "*********************************************"
 
-original += unique_users_axiom()
-unique = z3.parse_smt2_string(original)
-s.add(unique)
-print "after options added check", s.check()
-print s.model()
+# original += unique_users_axiom()
+# unique = z3.parse_smt2_string(original)
+# s.add(unique)
+# print "after options added check", s.check()
+# print s.model()
+
+print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 
 # Do the allocation of users and tasks if not specified
 alloc_user_task = ""
@@ -270,18 +304,31 @@ for ms in m:
                     # print model_user[1]
                     # print user_solution
                     solution_map.append((t, model_user[0]))
-                # elif "User!val!0" == str(user_solution):
-                else:
-                    # Hit bottom user, unable to create model given existing workflow
-                    case_bottom_user = True
-                    break;
-            if case_bottom_user:
-                break;
-    if case_bottom_user:
-        break;
+    #             # elif "User!val!0" == str(user_solution):
+    #             else:
+    #                 # Hit bottom user, unable to create model given existing workflow
+    #                 case_bottom_user = True
+    #                 break;
+    #         if case_bottom_user:
+    #             break;
+    # if case_bottom_user:
+    #     break;
 if case_bottom_user:
     print "cannot assign"
     print solution_map
 else:
     print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
     print solution_map
+    print my_parse.tasks
+    # # make a copy of the task list by slicing
+    # checking = my_parse.tasks[:]
+    # print checking
+    # for solution in solution_map:
+    #     print str(solution[0])
+    #     if str(solution[0]) in checking:
+    #         for t in checking:
+    #             if t in checking:
+    #                 checking.remove(t)
+    # print checking
+    # if checking:
+    #     print "unable to assign tasks to users:", checking
