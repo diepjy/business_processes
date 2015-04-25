@@ -111,11 +111,35 @@ def get_task_options(d):
                                        "(and" \
                                        "(and (seniority u2 u3) (not(= u2 u3)))" \
                                        "(not(= u3 u2)))" \
-                                       "(and (=(alloc_user t3) u3) (=(alloc_user t4) u2))" \
+                                       "(and (=(alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + t + \
+                                       ") u2))" \
                                        ")" \
                                        "))\n"
             elif "!=" in value:
+                # Just OR together the > and < axioms
                 print "!!!!!!! seniority"
+                for t in task_list:
+                    if t in value:
+                        print "t is in ", t
+                        smt_options += "(assert (forall ((u1 User) (u2 User) (u3 User))" \
+                                       "(or" \
+                                       "(=> " \
+                                       "(and" \
+                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
+                                       "(not(= u3 u2)))" \
+                                       "(and (=(alloc_user t3) u3) (=(alloc_user t4) u2))" \
+                                       ")" \
+                                       "(=> " \
+                                       "(and" \
+                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
+                                       "(not(= u3 u2)))" \
+                                       "(and (=(alloc_user t3) u2) (=(alloc_user t4) u3))" \
+                                       ")" \
+                                       ")" \
+                                       "))\n"
 
     print smt_options
     return smt_options
