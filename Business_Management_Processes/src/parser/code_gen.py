@@ -66,28 +66,23 @@ def get_task_options(d):
                     if t in value:
                         print "t is in ", t
                         smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User)) " \
-                                       "(=> " \
-                                       "(and " \
-                                       "(and " \
-                                       "(and " \
-                                       "(and (not(seniority u5 u3)) " \
-                                       "(not(seniority u3 u5))" \
-                                       ")" \
-                                       "(seniority u5 u4))" \
+                                       "(=> (and" \
+                                       "(seniority u5 u4)" \
                                        "(seniority u3 u4))" \
+                                       "(and" \
                                        "(or(=(alloc_user " \
-                                       + t + \
+                                       + key + \
                                        ") u3) (=(alloc_user " \
-                                       + t + \
+                                       + key + \
                                        ") u5)))" \
                                        "(or(=(alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
-                                       + key + \
+                                       + t + \
+                                       ") u3)" \
+                                       "(=(alloc_user " \
+                                       + t + \
                                        ") u5))" \
                                        ")" \
-                                       "))" \
-                                       "\n"
+                                       "))"
             elif ">" in value:
                 # More senior allocation
                 print ">>>>>>> seniority"
