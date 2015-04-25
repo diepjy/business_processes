@@ -106,14 +106,14 @@ def get_task_options(d):
                 for t in task_list:
                     if t in value:
                         print "t is in ", t
-                        smt_options += "(assert (forall ((u1 User) (u2 User)) " \
-                                       "(=> (and (=(alloc_user " \
-                                       + key+ \
-                                       ") u1) (seniority u1 u2)) " \
-                                       "(and(=(alloc_user " \
-                                       + t + \
-                                       ") u2) (not(=(alloc_user t6) u1))))\n" \
-                                       "))"
+                        smt_options += "(assert (forall ((u1 User) (u2 User) (u3 User))" \
+                                       "(=> " \
+                                       "(and" \
+                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
+                                       "(not(= u3 u2)))" \
+                                       "(and (=(alloc_user t3) u3) (=(alloc_user t4) u2))" \
+                                       ")" \
+                                       "))\n"
             elif "!=" in value:
                 print "!!!!!!! seniority"
 
