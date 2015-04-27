@@ -140,7 +140,8 @@ def get_task_options(d):
                                        ")" \
                                        ")" \
                                        "))\n"
-
+        else:
+            print "wtf?!?!?!?!?!?!?!?"
     print smt_options
     return smt_options
 
@@ -160,8 +161,8 @@ s = raw_input('busines_process > ')
 # if not s:
 #     continue
 lexer.input(s)
-# for token in lexer:
-#         print(token)
+for token in lexer:
+        print(token)
 t = parser.parse(s, lexer=lexer)
 print t
 

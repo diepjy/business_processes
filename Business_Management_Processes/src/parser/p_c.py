@@ -31,6 +31,13 @@ class p_c(object):
                    "(=> (not(= u1 u2)) (not(= u2 u1)))" \
                    "))\n"
 
+    smt_before_transitivity = "(assert (forall ((t1 Task) (t2 Task) (t3 Task))" \
+                              "(=>" \
+                              "(and(before t1 t2) (before t2 t3))" \
+                              "(before t1 t3)" \
+                              ")" \
+                              "))\n"
+
     rules_used = []
     tasks = []
     users = []
@@ -65,6 +72,7 @@ class p_c(object):
             # p[0] = p[3]
             # print p_c.rules_used
         # elif p[1] not in p_c.rules_used and p[1] == 'Users':
+        p_c.smt = p_c.smt_before_transitivity + p_c.smt
         p_c.smt = p_c.smt_unique_users_axiom + p_c.smt
         p_c.smt = p_c.smt_unique_user_task_alloc + p_c.smt
         p_c.smt = p_c.smt_indirect_hierarchy + p_c.smt
@@ -74,6 +82,7 @@ class p_c(object):
         #p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
         #p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
         #p_c.users.append('bottom')
+        p_c.smt = p_c.smt_fun_before + p_c.smt
         p_c.smt = p_c.smt_fun_seniority + p_c.smt
         #p_c.smt = p_c.smt_const_bottom + p_c.smt
         p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
@@ -149,18 +158,23 @@ class p_c(object):
             p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
 
     def p_task_option(self,p):
-        '''task_option : OPTION COLON op task_option
-                  | OPTION COLON op COMMA task_node
-                  | OPTION COLON op end
+        '''task_option : OPTION option_flag COLON op task_option
+                  | OPTION option_flag COLON op COMMA task_node
+                  | OPTION option_flag COLON op end
                   '''
-        p[0] = p[1] + p[3]
+        p[0] = p[2] + p[4]
         #Minimum security level - anyone senior can be allocated a task
         # lv=0 -> anyone can be allocated
         # lv=1 -> only those senior to juniors at 0 can be allocated
         # etc
-        # if "min_sec_lv" in p[1]:
-        #     print "min sec lv", p[0]
-        #     print p_c.tasks
+        # if "min_sec_lv" not in p[1] or "":
+        #     self.p_error(p)
+
+    def p_option_flag(self, p):
+        ''' option_flag : MIN_SEC_LV
+                        | START
+        '''
+        p[0] = p[1]
 
     def p_op(self, p):
         '''op : EQ NODE
@@ -172,10 +186,10 @@ class p_c(object):
 
 
     def p_user_option(self, p):
-        '''user_option : OPTION user_option
-              | OPTION COMMA
-              | OPTION COLON users_global_option
-              | OPTION end
+        '''user_option : OPTION USERS_OPTION user_option
+              | OPTION USERS_OPTION COMMA
+              | OPTION USERS_OPTION COLON users_global_option
+              | OPTION USERS_OPTION end
               '''
         p[0] = p[1]
 

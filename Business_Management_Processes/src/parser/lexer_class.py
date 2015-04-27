@@ -11,6 +11,8 @@ class lexer_class(object):
         'BoD' : 'BOD',
         'users' : 'USERS_OPTION',
         'allocate' : 'ALLOCATE',
+        'min_sec_lv' : 'MIN_SEC_LV',
+        'start' : 'START'
     }
 
     # List of token names
@@ -32,7 +34,8 @@ class lexer_class(object):
     # Regular expression rules for simple tokens
     t_COLON = r':'
     t_NODE = r'(%s|%s)' % (r'"(\\"|[^"])*"', r"'(\\'|[^'])*'")
-    t_OPTION = r'-[a-zA-Z_][a-zA-Z0-9_]*'
+    # t_OPTION = r'-[a-zA-Z_][a-zA-Z0-9_]*'
+    t_OPTION = r'-'
     t_COMMA = r','
     t_LPAREN = r'\('
     t_RPAREN = r'\)'

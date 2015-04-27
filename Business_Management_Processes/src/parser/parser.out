@@ -1,9 +1,5 @@
 Created by PLY version 3.4 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    USERS_OPTION
-
 Grammar
 
 Rule 0     S' -> prog
@@ -29,62 +25,67 @@ Rule 19    user_node -> NODE end
 Rule 20    user_node -> NODE COMMA user_node
 Rule 21    user_node -> NODE user_option
 Rule 22    user_node -> NODE end_rule
-Rule 23    task_option -> OPTION COLON op task_option
-Rule 24    task_option -> OPTION COLON op COMMA task_node
-Rule 25    task_option -> OPTION COLON op end
-Rule 26    op -> EQ NODE
-Rule 27    op -> GEQ NODE
-Rule 28    op -> LEQ NODE
-Rule 29    op -> NEQ NODE
-Rule 30    user_option -> OPTION user_option
-Rule 31    user_option -> OPTION COMMA
-Rule 32    user_option -> OPTION COLON users_global_option
-Rule 33    user_option -> OPTION end
-Rule 34    users_global_option -> ALLOCATE end_rule
-Rule 35    end -> END
-Rule 36    end -> END begin
-Rule 37    end_rule -> END rules
+Rule 23    task_option -> OPTION option_flag COLON op task_option
+Rule 24    task_option -> OPTION option_flag COLON op COMMA task_node
+Rule 25    task_option -> OPTION option_flag COLON op end
+Rule 26    option_flag -> MIN_SEC_LV
+Rule 27    option_flag -> START
+Rule 28    op -> EQ NODE
+Rule 29    op -> GEQ NODE
+Rule 30    op -> LEQ NODE
+Rule 31    op -> NEQ NODE
+Rule 32    user_option -> OPTION USERS_OPTION user_option
+Rule 33    user_option -> OPTION USERS_OPTION COMMA
+Rule 34    user_option -> OPTION USERS_OPTION COLON users_global_option
+Rule 35    user_option -> OPTION USERS_OPTION end
+Rule 36    users_global_option -> ALLOCATE end_rule
+Rule 37    end -> END
+Rule 38    end -> END begin
+Rule 39    end_rule -> END rules
 
 Terminals, with rules where they appear
 
-ALLOCATE             : 34
+ALLOCATE             : 36
 BEFORE               : 4
 BOD                  : 5
-COLON                : 2 2 3 3 4 5 6 7 23 24 25 32
-COMMA                : 8 9 9 10 11 11 12 13 13 14 15 15 17 20 24 31
-END                  : 8 10 12 14 35 36 37
-EQ                   : 26
-GEQ                  : 27
-LEQ                  : 28
+COLON                : 2 2 3 3 4 5 6 7 23 24 25 34
+COMMA                : 8 9 9 10 11 11 12 13 13 14 15 15 17 20 24 33
+END                  : 8 10 12 14 37 38 39
+EQ                   : 28
+GEQ                  : 29
+LEQ                  : 30
 LPAREN               : 8 9 10 11 12 13 14 15
-NEQ                  : 29
-NODE                 : 8 8 9 9 10 10 11 11 12 12 13 13 14 14 15 15 16 17 18 19 20 21 22 26 27 28 29
-OPTION               : 23 24 25 30 31 32 33
+MIN_SEC_LV           : 26
+NEQ                  : 31
+NODE                 : 8 8 9 9 10 10 11 11 12 12 13 13 14 14 15 15 16 17 18 19 20 21 22 28 29 30 31
+OPTION               : 23 24 25 32 33 34 35
 RPAREN               : 8 9 10 11 12 13 14 15
 SENIORITY            : 7
 SOD                  : 6
+START                : 27
 TASKS                : 2 3
 USERS                : 2 3
-USERS_OPTION         : 
+USERS_OPTION         : 32 33 34 35
 error                : 
 
 Nonterminals, with rules where they appear
 
 before_task_node_pair : 4 9
-begin                : 1 36
+begin                : 1 38
 bod_task_node_pair   : 5 11
-end                  : 16 19 25 33
-end_rule             : 22 34
+end                  : 16 19 25 35
+end_rule             : 22 36
 op                   : 23 24 25
+option_flag          : 23 24 25
 prog                 : 0
-rules                : 3 37
+rules                : 3 39
 sod_task_node_pair   : 6 13
 task_node            : 2 3 17 24
 task_option          : 18 23
 user_node            : 2 3 20
 user_node_pair       : 7 15
-user_option          : 21 30
-users_global_option  : 32
+user_option          : 21 32
+users_global_option  : 34
 
 Parsing method: LALR
 
@@ -138,18 +139,18 @@ state 5
     (16) task_node -> NODE . end
     (17) task_node -> NODE . COMMA task_node
     (18) task_node -> NODE . task_option
-    (35) end -> . END
-    (36) end -> . END begin
-    (23) task_option -> . OPTION COLON op task_option
-    (24) task_option -> . OPTION COLON op COMMA task_node
-    (25) task_option -> . OPTION COLON op end
+    (37) end -> . END
+    (38) end -> . END begin
+    (23) task_option -> . OPTION option_flag COLON op task_option
+    (24) task_option -> . OPTION option_flag COLON op COMMA task_node
+    (25) task_option -> . OPTION option_flag COLON op end
 
     COMMA           shift and go to state 9
     END             shift and go to state 10
     OPTION          shift and go to state 8
 
-    task_option                    shift and go to state 11
     end                            shift and go to state 7
+    task_option                    shift and go to state 11
 
 state 6
 
@@ -168,12 +169,16 @@ state 7
 
 state 8
 
-    (23) task_option -> OPTION . COLON op task_option
-    (24) task_option -> OPTION . COLON op COMMA task_node
-    (25) task_option -> OPTION . COLON op end
+    (23) task_option -> OPTION . option_flag COLON op task_option
+    (24) task_option -> OPTION . option_flag COLON op COMMA task_node
+    (25) task_option -> OPTION . option_flag COLON op end
+    (26) option_flag -> . MIN_SEC_LV
+    (27) option_flag -> . START
 
-    COLON           shift and go to state 13
+    MIN_SEC_LV      shift and go to state 15
+    START           shift and go to state 14
 
+    option_flag                    shift and go to state 13
 
 state 9
 
@@ -184,24 +189,24 @@ state 9
 
     NODE            shift and go to state 5
 
-    task_node                      shift and go to state 14
+    task_node                      shift and go to state 16
 
 state 10
 
-    (35) end -> END .
-    (36) end -> END . begin
+    (37) end -> END .
+    (38) end -> END . begin
     (2) begin -> . TASKS COLON task_node USERS COLON user_node
     (3) begin -> . TASKS COLON task_node USERS COLON user_node rules
 
-    USERS           reduce using rule 35 (end -> END .)
-    BEFORE          reduce using rule 35 (end -> END .)
-    BOD             reduce using rule 35 (end -> END .)
-    SOD             reduce using rule 35 (end -> END .)
-    SENIORITY       reduce using rule 35 (end -> END .)
-    $end            reduce using rule 35 (end -> END .)
+    USERS           reduce using rule 37 (end -> END .)
+    BEFORE          reduce using rule 37 (end -> END .)
+    BOD             reduce using rule 37 (end -> END .)
+    SOD             reduce using rule 37 (end -> END .)
+    SENIORITY       reduce using rule 37 (end -> END .)
+    $end            reduce using rule 37 (end -> END .)
     TASKS           shift and go to state 2
 
-    begin                          shift and go to state 15
+    begin                          shift and go to state 17
 
 state 11
 
@@ -215,46 +220,52 @@ state 12
     (2) begin -> TASKS COLON task_node USERS . COLON user_node
     (3) begin -> TASKS COLON task_node USERS . COLON user_node rules
 
-    COLON           shift and go to state 16
+    COLON           shift and go to state 18
 
 
 state 13
 
-    (23) task_option -> OPTION COLON . op task_option
-    (24) task_option -> OPTION COLON . op COMMA task_node
-    (25) task_option -> OPTION COLON . op end
-    (26) op -> . EQ NODE
-    (27) op -> . GEQ NODE
-    (28) op -> . LEQ NODE
-    (29) op -> . NEQ NODE
+    (23) task_option -> OPTION option_flag . COLON op task_option
+    (24) task_option -> OPTION option_flag . COLON op COMMA task_node
+    (25) task_option -> OPTION option_flag . COLON op end
 
-    EQ              shift and go to state 20
-    GEQ             shift and go to state 17
-    LEQ             shift and go to state 18
-    NEQ             shift and go to state 19
+    COLON           shift and go to state 19
 
-    op                             shift and go to state 21
 
 state 14
+
+    (27) option_flag -> START .
+
+    COLON           reduce using rule 27 (option_flag -> START .)
+
+
+state 15
+
+    (26) option_flag -> MIN_SEC_LV .
+
+    COLON           reduce using rule 26 (option_flag -> MIN_SEC_LV .)
+
+
+state 16
 
     (17) task_node -> NODE COMMA task_node .
 
     USERS           reduce using rule 17 (task_node -> NODE COMMA task_node .)
 
 
-state 15
+state 17
 
-    (36) end -> END begin .
+    (38) end -> END begin .
 
-    USERS           reduce using rule 36 (end -> END begin .)
-    BEFORE          reduce using rule 36 (end -> END begin .)
-    BOD             reduce using rule 36 (end -> END begin .)
-    SOD             reduce using rule 36 (end -> END begin .)
-    SENIORITY       reduce using rule 36 (end -> END begin .)
-    $end            reduce using rule 36 (end -> END begin .)
+    USERS           reduce using rule 38 (end -> END begin .)
+    BEFORE          reduce using rule 38 (end -> END begin .)
+    BOD             reduce using rule 38 (end -> END begin .)
+    SOD             reduce using rule 38 (end -> END begin .)
+    SENIORITY       reduce using rule 38 (end -> END begin .)
+    $end            reduce using rule 38 (end -> END begin .)
 
 
-state 16
+state 18
 
     (2) begin -> TASKS COLON task_node USERS COLON . user_node
     (3) begin -> TASKS COLON task_node USERS COLON . user_node rules
@@ -263,79 +274,50 @@ state 16
     (21) user_node -> . NODE user_option
     (22) user_node -> . NODE end_rule
 
-    NODE            shift and go to state 22
+    NODE            shift and go to state 20
 
-    user_node                      shift and go to state 23
-
-state 17
-
-    (27) op -> GEQ . NODE
-
-    NODE            shift and go to state 24
-
-
-state 18
-
-    (28) op -> LEQ . NODE
-
-    NODE            shift and go to state 25
-
+    user_node                      shift and go to state 21
 
 state 19
 
-    (29) op -> NEQ . NODE
+    (23) task_option -> OPTION option_flag COLON . op task_option
+    (24) task_option -> OPTION option_flag COLON . op COMMA task_node
+    (25) task_option -> OPTION option_flag COLON . op end
+    (28) op -> . EQ NODE
+    (29) op -> . GEQ NODE
+    (30) op -> . LEQ NODE
+    (31) op -> . NEQ NODE
 
-    NODE            shift and go to state 26
+    EQ              shift and go to state 25
+    GEQ             shift and go to state 22
+    LEQ             shift and go to state 23
+    NEQ             shift and go to state 24
 
+    op                             shift and go to state 26
 
 state 20
-
-    (26) op -> EQ . NODE
-
-    NODE            shift and go to state 27
-
-
-state 21
-
-    (23) task_option -> OPTION COLON op . task_option
-    (24) task_option -> OPTION COLON op . COMMA task_node
-    (25) task_option -> OPTION COLON op . end
-    (23) task_option -> . OPTION COLON op task_option
-    (24) task_option -> . OPTION COLON op COMMA task_node
-    (25) task_option -> . OPTION COLON op end
-    (35) end -> . END
-    (36) end -> . END begin
-
-    COMMA           shift and go to state 29
-    OPTION          shift and go to state 8
-    END             shift and go to state 10
-
-    task_option                    shift and go to state 30
-    end                            shift and go to state 28
-
-state 22
 
     (19) user_node -> NODE . end
     (20) user_node -> NODE . COMMA user_node
     (21) user_node -> NODE . user_option
     (22) user_node -> NODE . end_rule
-    (35) end -> . END
-    (36) end -> . END begin
-    (30) user_option -> . OPTION user_option
-    (31) user_option -> . OPTION COMMA
-    (32) user_option -> . OPTION COLON users_global_option
-    (33) user_option -> . OPTION end
-    (37) end_rule -> . END rules
+    (37) end -> . END
+    (38) end -> . END begin
+    (32) user_option -> . OPTION USERS_OPTION user_option
+    (33) user_option -> . OPTION USERS_OPTION COMMA
+    (34) user_option -> . OPTION USERS_OPTION COLON users_global_option
+    (35) user_option -> . OPTION USERS_OPTION end
+    (39) end_rule -> . END rules
 
-    COMMA           shift and go to state 34
-    END             shift and go to state 36
-    OPTION          shift and go to state 32
+    COMMA           shift and go to state 30
+    END             shift and go to state 32
+    OPTION          shift and go to state 28
 
-    end                            shift and go to state 31
-    end_rule                       shift and go to state 33
-    user_option                    shift and go to state 35
+    end                            shift and go to state 27
+    end_rule                       shift and go to state 29
+    user_option                    shift and go to state 31
 
-state 23
+state 21
 
     (2) begin -> TASKS COLON task_node USERS COLON user_node .
     (3) begin -> TASKS COLON task_node USERS COLON user_node . rules
@@ -348,82 +330,67 @@ state 23
   ! shift/reduce conflict for BOD resolved as shift
   ! shift/reduce conflict for SOD resolved as shift
   ! shift/reduce conflict for SENIORITY resolved as shift
-    USERS           reduce using rule 2 (begin -> TASKS COLON task_node USERS COLON user_node .)
     $end            reduce using rule 2 (begin -> TASKS COLON task_node USERS COLON user_node .)
-    BEFORE          shift and go to state 41
-    BOD             shift and go to state 40
-    SOD             shift and go to state 38
-    SENIORITY       shift and go to state 39
+    USERS           reduce using rule 2 (begin -> TASKS COLON task_node USERS COLON user_node .)
+    BEFORE          shift and go to state 37
+    BOD             shift and go to state 36
+    SOD             shift and go to state 34
+    SENIORITY       shift and go to state 35
 
   ! BEFORE          [ reduce using rule 2 (begin -> TASKS COLON task_node USERS COLON user_node .) ]
   ! BOD             [ reduce using rule 2 (begin -> TASKS COLON task_node USERS COLON user_node .) ]
   ! SOD             [ reduce using rule 2 (begin -> TASKS COLON task_node USERS COLON user_node .) ]
   ! SENIORITY       [ reduce using rule 2 (begin -> TASKS COLON task_node USERS COLON user_node .) ]
 
-    rules                          shift and go to state 37
+    rules                          shift and go to state 33
+
+state 22
+
+    (29) op -> GEQ . NODE
+
+    NODE            shift and go to state 38
+
+
+state 23
+
+    (30) op -> LEQ . NODE
+
+    NODE            shift and go to state 39
+
 
 state 24
 
-    (27) op -> GEQ NODE .
+    (31) op -> NEQ . NODE
 
-    COMMA           reduce using rule 27 (op -> GEQ NODE .)
-    OPTION          reduce using rule 27 (op -> GEQ NODE .)
-    END             reduce using rule 27 (op -> GEQ NODE .)
+    NODE            shift and go to state 40
 
 
 state 25
 
-    (28) op -> LEQ NODE .
+    (28) op -> EQ . NODE
 
-    COMMA           reduce using rule 28 (op -> LEQ NODE .)
-    OPTION          reduce using rule 28 (op -> LEQ NODE .)
-    END             reduce using rule 28 (op -> LEQ NODE .)
+    NODE            shift and go to state 41
 
 
 state 26
 
-    (29) op -> NEQ NODE .
+    (23) task_option -> OPTION option_flag COLON op . task_option
+    (24) task_option -> OPTION option_flag COLON op . COMMA task_node
+    (25) task_option -> OPTION option_flag COLON op . end
+    (23) task_option -> . OPTION option_flag COLON op task_option
+    (24) task_option -> . OPTION option_flag COLON op COMMA task_node
+    (25) task_option -> . OPTION option_flag COLON op end
+    (37) end -> . END
+    (38) end -> . END begin
 
-    COMMA           reduce using rule 29 (op -> NEQ NODE .)
-    OPTION          reduce using rule 29 (op -> NEQ NODE .)
-    END             reduce using rule 29 (op -> NEQ NODE .)
+    COMMA           shift and go to state 43
+    OPTION          shift and go to state 8
+    END             shift and go to state 10
 
+    end                            shift and go to state 42
+    task_option                    shift and go to state 44
 
 state 27
-
-    (26) op -> EQ NODE .
-
-    COMMA           reduce using rule 26 (op -> EQ NODE .)
-    OPTION          reduce using rule 26 (op -> EQ NODE .)
-    END             reduce using rule 26 (op -> EQ NODE .)
-
-
-state 28
-
-    (25) task_option -> OPTION COLON op end .
-
-    USERS           reduce using rule 25 (task_option -> OPTION COLON op end .)
-
-
-state 29
-
-    (24) task_option -> OPTION COLON op COMMA . task_node
-    (16) task_node -> . NODE end
-    (17) task_node -> . NODE COMMA task_node
-    (18) task_node -> . NODE task_option
-
-    NODE            shift and go to state 5
-
-    task_node                      shift and go to state 42
-
-state 30
-
-    (23) task_option -> OPTION COLON op task_option .
-
-    USERS           reduce using rule 23 (task_option -> OPTION COLON op task_option .)
-
-
-state 31
 
     (19) user_node -> NODE end .
 
@@ -435,28 +402,17 @@ state 31
     $end            reduce using rule 19 (user_node -> NODE end .)
 
 
-state 32
+state 28
 
-    (30) user_option -> OPTION . user_option
-    (31) user_option -> OPTION . COMMA
-    (32) user_option -> OPTION . COLON users_global_option
-    (33) user_option -> OPTION . end
-    (30) user_option -> . OPTION user_option
-    (31) user_option -> . OPTION COMMA
-    (32) user_option -> . OPTION COLON users_global_option
-    (33) user_option -> . OPTION end
-    (35) end -> . END
-    (36) end -> . END begin
+    (32) user_option -> OPTION . USERS_OPTION user_option
+    (33) user_option -> OPTION . USERS_OPTION COMMA
+    (34) user_option -> OPTION . USERS_OPTION COLON users_global_option
+    (35) user_option -> OPTION . USERS_OPTION end
 
-    COMMA           shift and go to state 45
-    COLON           shift and go to state 46
-    OPTION          shift and go to state 32
-    END             shift and go to state 10
+    USERS_OPTION    shift and go to state 45
 
-    end                            shift and go to state 43
-    user_option                    shift and go to state 44
 
-state 33
+state 29
 
     (22) user_node -> NODE end_rule .
 
@@ -468,7 +424,7 @@ state 33
     $end            reduce using rule 22 (user_node -> NODE end_rule .)
 
 
-state 34
+state 30
 
     (20) user_node -> NODE COMMA . user_node
     (19) user_node -> . NODE end
@@ -476,11 +432,11 @@ state 34
     (21) user_node -> . NODE user_option
     (22) user_node -> . NODE end_rule
 
-    NODE            shift and go to state 22
+    NODE            shift and go to state 20
 
-    user_node                      shift and go to state 47
+    user_node                      shift and go to state 46
 
-state 35
+state 31
 
     (21) user_node -> NODE user_option .
 
@@ -492,11 +448,11 @@ state 35
     $end            reduce using rule 21 (user_node -> NODE user_option .)
 
 
-state 36
+state 32
 
-    (35) end -> END .
-    (36) end -> END . begin
-    (37) end_rule -> END . rules
+    (37) end -> END .
+    (38) end -> END . begin
+    (39) end_rule -> END . rules
     (2) begin -> . TASKS COLON task_node USERS COLON user_node
     (3) begin -> . TASKS COLON task_node USERS COLON user_node rules
     (4) rules -> . BEFORE COLON before_task_node_pair
@@ -508,115 +464,145 @@ state 36
   ! shift/reduce conflict for BOD resolved as shift
   ! shift/reduce conflict for SOD resolved as shift
   ! shift/reduce conflict for SENIORITY resolved as shift
-    USERS           reduce using rule 35 (end -> END .)
-    $end            reduce using rule 35 (end -> END .)
+    USERS           reduce using rule 37 (end -> END .)
+    $end            reduce using rule 37 (end -> END .)
     TASKS           shift and go to state 2
-    BEFORE          shift and go to state 41
-    BOD             shift and go to state 40
-    SOD             shift and go to state 38
-    SENIORITY       shift and go to state 39
+    BEFORE          shift and go to state 37
+    BOD             shift and go to state 36
+    SOD             shift and go to state 34
+    SENIORITY       shift and go to state 35
 
-  ! BEFORE          [ reduce using rule 35 (end -> END .) ]
-  ! BOD             [ reduce using rule 35 (end -> END .) ]
-  ! SOD             [ reduce using rule 35 (end -> END .) ]
-  ! SENIORITY       [ reduce using rule 35 (end -> END .) ]
+  ! BEFORE          [ reduce using rule 37 (end -> END .) ]
+  ! BOD             [ reduce using rule 37 (end -> END .) ]
+  ! SOD             [ reduce using rule 37 (end -> END .) ]
+  ! SENIORITY       [ reduce using rule 37 (end -> END .) ]
 
-    begin                          shift and go to state 15
-    rules                          shift and go to state 48
+    begin                          shift and go to state 17
+    rules                          shift and go to state 47
 
-state 37
+state 33
 
     (3) begin -> TASKS COLON task_node USERS COLON user_node rules .
 
+    $end            reduce using rule 3 (begin -> TASKS COLON task_node USERS COLON user_node rules .)
     USERS           reduce using rule 3 (begin -> TASKS COLON task_node USERS COLON user_node rules .)
     BEFORE          reduce using rule 3 (begin -> TASKS COLON task_node USERS COLON user_node rules .)
     BOD             reduce using rule 3 (begin -> TASKS COLON task_node USERS COLON user_node rules .)
     SOD             reduce using rule 3 (begin -> TASKS COLON task_node USERS COLON user_node rules .)
     SENIORITY       reduce using rule 3 (begin -> TASKS COLON task_node USERS COLON user_node rules .)
-    $end            reduce using rule 3 (begin -> TASKS COLON task_node USERS COLON user_node rules .)
 
 
-state 38
+state 34
 
     (6) rules -> SOD . COLON sod_task_node_pair
+
+    COLON           shift and go to state 48
+
+
+state 35
+
+    (7) rules -> SENIORITY . COLON user_node_pair
 
     COLON           shift and go to state 49
 
 
-state 39
+state 36
 
-    (7) rules -> SENIORITY . COLON user_node_pair
+    (5) rules -> BOD . COLON bod_task_node_pair
 
     COLON           shift and go to state 50
 
 
-state 40
+state 37
 
-    (5) rules -> BOD . COLON bod_task_node_pair
+    (4) rules -> BEFORE . COLON before_task_node_pair
 
     COLON           shift and go to state 51
 
 
+state 38
+
+    (29) op -> GEQ NODE .
+
+    COMMA           reduce using rule 29 (op -> GEQ NODE .)
+    OPTION          reduce using rule 29 (op -> GEQ NODE .)
+    END             reduce using rule 29 (op -> GEQ NODE .)
+
+
+state 39
+
+    (30) op -> LEQ NODE .
+
+    COMMA           reduce using rule 30 (op -> LEQ NODE .)
+    OPTION          reduce using rule 30 (op -> LEQ NODE .)
+    END             reduce using rule 30 (op -> LEQ NODE .)
+
+
+state 40
+
+    (31) op -> NEQ NODE .
+
+    COMMA           reduce using rule 31 (op -> NEQ NODE .)
+    OPTION          reduce using rule 31 (op -> NEQ NODE .)
+    END             reduce using rule 31 (op -> NEQ NODE .)
+
+
 state 41
 
-    (4) rules -> BEFORE . COLON before_task_node_pair
+    (28) op -> EQ NODE .
 
-    COLON           shift and go to state 52
+    COMMA           reduce using rule 28 (op -> EQ NODE .)
+    OPTION          reduce using rule 28 (op -> EQ NODE .)
+    END             reduce using rule 28 (op -> EQ NODE .)
 
 
 state 42
 
-    (24) task_option -> OPTION COLON op COMMA task_node .
+    (25) task_option -> OPTION option_flag COLON op end .
 
-    USERS           reduce using rule 24 (task_option -> OPTION COLON op COMMA task_node .)
+    USERS           reduce using rule 25 (task_option -> OPTION option_flag COLON op end .)
 
 
 state 43
 
-    (33) user_option -> OPTION end .
+    (24) task_option -> OPTION option_flag COLON op COMMA . task_node
+    (16) task_node -> . NODE end
+    (17) task_node -> . NODE COMMA task_node
+    (18) task_node -> . NODE task_option
 
-    USERS           reduce using rule 33 (user_option -> OPTION end .)
-    BEFORE          reduce using rule 33 (user_option -> OPTION end .)
-    BOD             reduce using rule 33 (user_option -> OPTION end .)
-    SOD             reduce using rule 33 (user_option -> OPTION end .)
-    SENIORITY       reduce using rule 33 (user_option -> OPTION end .)
-    $end            reduce using rule 33 (user_option -> OPTION end .)
+    NODE            shift and go to state 5
 
+    task_node                      shift and go to state 52
 
 state 44
 
-    (30) user_option -> OPTION user_option .
+    (23) task_option -> OPTION option_flag COLON op task_option .
 
-    USERS           reduce using rule 30 (user_option -> OPTION user_option .)
-    BEFORE          reduce using rule 30 (user_option -> OPTION user_option .)
-    BOD             reduce using rule 30 (user_option -> OPTION user_option .)
-    SOD             reduce using rule 30 (user_option -> OPTION user_option .)
-    SENIORITY       reduce using rule 30 (user_option -> OPTION user_option .)
-    $end            reduce using rule 30 (user_option -> OPTION user_option .)
+    USERS           reduce using rule 23 (task_option -> OPTION option_flag COLON op task_option .)
 
 
 state 45
 
-    (31) user_option -> OPTION COMMA .
+    (32) user_option -> OPTION USERS_OPTION . user_option
+    (33) user_option -> OPTION USERS_OPTION . COMMA
+    (34) user_option -> OPTION USERS_OPTION . COLON users_global_option
+    (35) user_option -> OPTION USERS_OPTION . end
+    (32) user_option -> . OPTION USERS_OPTION user_option
+    (33) user_option -> . OPTION USERS_OPTION COMMA
+    (34) user_option -> . OPTION USERS_OPTION COLON users_global_option
+    (35) user_option -> . OPTION USERS_OPTION end
+    (37) end -> . END
+    (38) end -> . END begin
 
-    USERS           reduce using rule 31 (user_option -> OPTION COMMA .)
-    BEFORE          reduce using rule 31 (user_option -> OPTION COMMA .)
-    BOD             reduce using rule 31 (user_option -> OPTION COMMA .)
-    SOD             reduce using rule 31 (user_option -> OPTION COMMA .)
-    SENIORITY       reduce using rule 31 (user_option -> OPTION COMMA .)
-    $end            reduce using rule 31 (user_option -> OPTION COMMA .)
+    COMMA           shift and go to state 55
+    COLON           shift and go to state 56
+    OPTION          shift and go to state 28
+    END             shift and go to state 10
 
+    end                            shift and go to state 53
+    user_option                    shift and go to state 54
 
 state 46
-
-    (32) user_option -> OPTION COLON . users_global_option
-    (34) users_global_option -> . ALLOCATE end_rule
-
-    ALLOCATE        shift and go to state 54
-
-    users_global_option            shift and go to state 53
-
-state 47
 
     (20) user_node -> NODE COMMA user_node .
 
@@ -628,80 +614,111 @@ state 47
     $end            reduce using rule 20 (user_node -> NODE COMMA user_node .)
 
 
+state 47
+
+    (39) end_rule -> END rules .
+
+    USERS           reduce using rule 39 (end_rule -> END rules .)
+    BEFORE          reduce using rule 39 (end_rule -> END rules .)
+    BOD             reduce using rule 39 (end_rule -> END rules .)
+    SOD             reduce using rule 39 (end_rule -> END rules .)
+    SENIORITY       reduce using rule 39 (end_rule -> END rules .)
+    $end            reduce using rule 39 (end_rule -> END rules .)
+
+
 state 48
-
-    (37) end_rule -> END rules .
-
-    USERS           reduce using rule 37 (end_rule -> END rules .)
-    BEFORE          reduce using rule 37 (end_rule -> END rules .)
-    BOD             reduce using rule 37 (end_rule -> END rules .)
-    SOD             reduce using rule 37 (end_rule -> END rules .)
-    SENIORITY       reduce using rule 37 (end_rule -> END rules .)
-    $end            reduce using rule 37 (end_rule -> END rules .)
-
-
-state 49
 
     (6) rules -> SOD COLON . sod_task_node_pair
     (12) sod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (13) sod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair
 
-    LPAREN          shift and go to state 56
+    LPAREN          shift and go to state 58
 
-    sod_task_node_pair             shift and go to state 55
+    sod_task_node_pair             shift and go to state 57
 
-state 50
+state 49
 
     (7) rules -> SENIORITY COLON . user_node_pair
     (14) user_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (15) user_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
 
-    LPAREN          shift and go to state 58
+    LPAREN          shift and go to state 60
 
-    user_node_pair                 shift and go to state 57
+    user_node_pair                 shift and go to state 59
 
-state 51
+state 50
 
     (5) rules -> BOD COLON . bod_task_node_pair
     (10) bod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (11) bod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair
 
-    LPAREN          shift and go to state 59
+    LPAREN          shift and go to state 61
 
-    bod_task_node_pair             shift and go to state 60
+    bod_task_node_pair             shift and go to state 62
 
-state 52
+state 51
 
     (4) rules -> BEFORE COLON . before_task_node_pair
     (8) before_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (9) before_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair
 
-    LPAREN          shift and go to state 62
+    LPAREN          shift and go to state 64
 
-    before_task_node_pair          shift and go to state 61
+    before_task_node_pair          shift and go to state 63
+
+state 52
+
+    (24) task_option -> OPTION option_flag COLON op COMMA task_node .
+
+    USERS           reduce using rule 24 (task_option -> OPTION option_flag COLON op COMMA task_node .)
+
 
 state 53
 
-    (32) user_option -> OPTION COLON users_global_option .
+    (35) user_option -> OPTION USERS_OPTION end .
 
-    USERS           reduce using rule 32 (user_option -> OPTION COLON users_global_option .)
-    BEFORE          reduce using rule 32 (user_option -> OPTION COLON users_global_option .)
-    BOD             reduce using rule 32 (user_option -> OPTION COLON users_global_option .)
-    SOD             reduce using rule 32 (user_option -> OPTION COLON users_global_option .)
-    SENIORITY       reduce using rule 32 (user_option -> OPTION COLON users_global_option .)
-    $end            reduce using rule 32 (user_option -> OPTION COLON users_global_option .)
+    USERS           reduce using rule 35 (user_option -> OPTION USERS_OPTION end .)
+    BEFORE          reduce using rule 35 (user_option -> OPTION USERS_OPTION end .)
+    BOD             reduce using rule 35 (user_option -> OPTION USERS_OPTION end .)
+    SOD             reduce using rule 35 (user_option -> OPTION USERS_OPTION end .)
+    SENIORITY       reduce using rule 35 (user_option -> OPTION USERS_OPTION end .)
+    $end            reduce using rule 35 (user_option -> OPTION USERS_OPTION end .)
 
 
 state 54
 
-    (34) users_global_option -> ALLOCATE . end_rule
-    (37) end_rule -> . END rules
+    (32) user_option -> OPTION USERS_OPTION user_option .
 
-    END             shift and go to state 64
+    USERS           reduce using rule 32 (user_option -> OPTION USERS_OPTION user_option .)
+    BEFORE          reduce using rule 32 (user_option -> OPTION USERS_OPTION user_option .)
+    BOD             reduce using rule 32 (user_option -> OPTION USERS_OPTION user_option .)
+    SOD             reduce using rule 32 (user_option -> OPTION USERS_OPTION user_option .)
+    SENIORITY       reduce using rule 32 (user_option -> OPTION USERS_OPTION user_option .)
+    $end            reduce using rule 32 (user_option -> OPTION USERS_OPTION user_option .)
 
-    end_rule                       shift and go to state 63
 
 state 55
+
+    (33) user_option -> OPTION USERS_OPTION COMMA .
+
+    USERS           reduce using rule 33 (user_option -> OPTION USERS_OPTION COMMA .)
+    BEFORE          reduce using rule 33 (user_option -> OPTION USERS_OPTION COMMA .)
+    BOD             reduce using rule 33 (user_option -> OPTION USERS_OPTION COMMA .)
+    SOD             reduce using rule 33 (user_option -> OPTION USERS_OPTION COMMA .)
+    SENIORITY       reduce using rule 33 (user_option -> OPTION USERS_OPTION COMMA .)
+    $end            reduce using rule 33 (user_option -> OPTION USERS_OPTION COMMA .)
+
+
+state 56
+
+    (34) user_option -> OPTION USERS_OPTION COLON . users_global_option
+    (36) users_global_option -> . ALLOCATE end_rule
+
+    ALLOCATE        shift and go to state 66
+
+    users_global_option            shift and go to state 65
+
+state 57
 
     (6) rules -> SOD COLON sod_task_node_pair .
 
@@ -713,15 +730,15 @@ state 55
     $end            reduce using rule 6 (rules -> SOD COLON sod_task_node_pair .)
 
 
-state 56
+state 58
 
     (12) sod_task_node_pair -> LPAREN . NODE COMMA NODE RPAREN END
     (13) sod_task_node_pair -> LPAREN . NODE COMMA NODE RPAREN COMMA sod_task_node_pair
 
-    NODE            shift and go to state 65
+    NODE            shift and go to state 67
 
 
-state 57
+state 59
 
     (7) rules -> SENIORITY COLON user_node_pair .
 
@@ -733,23 +750,23 @@ state 57
     $end            reduce using rule 7 (rules -> SENIORITY COLON user_node_pair .)
 
 
-state 58
+state 60
 
     (14) user_node_pair -> LPAREN . NODE COMMA NODE RPAREN END
     (15) user_node_pair -> LPAREN . NODE COMMA NODE RPAREN COMMA user_node_pair
 
-    NODE            shift and go to state 66
+    NODE            shift and go to state 68
 
 
-state 59
+state 61
 
     (10) bod_task_node_pair -> LPAREN . NODE COMMA NODE RPAREN END
     (11) bod_task_node_pair -> LPAREN . NODE COMMA NODE RPAREN COMMA bod_task_node_pair
 
-    NODE            shift and go to state 67
+    NODE            shift and go to state 69
 
 
-state 60
+state 62
 
     (5) rules -> BOD COLON bod_task_node_pair .
 
@@ -761,7 +778,7 @@ state 60
     $end            reduce using rule 5 (rules -> BOD COLON bod_task_node_pair .)
 
 
-state 61
+state 63
 
     (4) rules -> BEFORE COLON before_task_node_pair .
 
@@ -773,184 +790,205 @@ state 61
     $end            reduce using rule 4 (rules -> BEFORE COLON before_task_node_pair .)
 
 
-state 62
+state 64
 
     (8) before_task_node_pair -> LPAREN . NODE COMMA NODE RPAREN END
     (9) before_task_node_pair -> LPAREN . NODE COMMA NODE RPAREN COMMA before_task_node_pair
 
-    NODE            shift and go to state 68
+    NODE            shift and go to state 70
 
 
-state 63
+state 65
 
-    (34) users_global_option -> ALLOCATE end_rule .
+    (34) user_option -> OPTION USERS_OPTION COLON users_global_option .
 
-    USERS           reduce using rule 34 (users_global_option -> ALLOCATE end_rule .)
-    BEFORE          reduce using rule 34 (users_global_option -> ALLOCATE end_rule .)
-    BOD             reduce using rule 34 (users_global_option -> ALLOCATE end_rule .)
-    SOD             reduce using rule 34 (users_global_option -> ALLOCATE end_rule .)
-    SENIORITY       reduce using rule 34 (users_global_option -> ALLOCATE end_rule .)
-    $end            reduce using rule 34 (users_global_option -> ALLOCATE end_rule .)
+    USERS           reduce using rule 34 (user_option -> OPTION USERS_OPTION COLON users_global_option .)
+    BEFORE          reduce using rule 34 (user_option -> OPTION USERS_OPTION COLON users_global_option .)
+    BOD             reduce using rule 34 (user_option -> OPTION USERS_OPTION COLON users_global_option .)
+    SOD             reduce using rule 34 (user_option -> OPTION USERS_OPTION COLON users_global_option .)
+    SENIORITY       reduce using rule 34 (user_option -> OPTION USERS_OPTION COLON users_global_option .)
+    $end            reduce using rule 34 (user_option -> OPTION USERS_OPTION COLON users_global_option .)
 
 
-state 64
+state 66
 
-    (37) end_rule -> END . rules
+    (36) users_global_option -> ALLOCATE . end_rule
+    (39) end_rule -> . END rules
+
+    END             shift and go to state 72
+
+    end_rule                       shift and go to state 71
+
+state 67
+
+    (12) sod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
+    (13) sod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA sod_task_node_pair
+
+    COMMA           shift and go to state 73
+
+
+state 68
+
+    (14) user_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
+    (15) user_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA user_node_pair
+
+    COMMA           shift and go to state 74
+
+
+state 69
+
+    (10) bod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
+    (11) bod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA bod_task_node_pair
+
+    COMMA           shift and go to state 75
+
+
+state 70
+
+    (8) before_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
+    (9) before_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA before_task_node_pair
+
+    COMMA           shift and go to state 76
+
+
+state 71
+
+    (36) users_global_option -> ALLOCATE end_rule .
+
+    USERS           reduce using rule 36 (users_global_option -> ALLOCATE end_rule .)
+    BEFORE          reduce using rule 36 (users_global_option -> ALLOCATE end_rule .)
+    BOD             reduce using rule 36 (users_global_option -> ALLOCATE end_rule .)
+    SOD             reduce using rule 36 (users_global_option -> ALLOCATE end_rule .)
+    SENIORITY       reduce using rule 36 (users_global_option -> ALLOCATE end_rule .)
+    $end            reduce using rule 36 (users_global_option -> ALLOCATE end_rule .)
+
+
+state 72
+
+    (39) end_rule -> END . rules
     (4) rules -> . BEFORE COLON before_task_node_pair
     (5) rules -> . BOD COLON bod_task_node_pair
     (6) rules -> . SOD COLON sod_task_node_pair
     (7) rules -> . SENIORITY COLON user_node_pair
 
-    BEFORE          shift and go to state 41
-    BOD             shift and go to state 40
-    SOD             shift and go to state 38
-    SENIORITY       shift and go to state 39
+    BEFORE          shift and go to state 37
+    BOD             shift and go to state 36
+    SOD             shift and go to state 34
+    SENIORITY       shift and go to state 35
 
-    rules                          shift and go to state 48
+    rules                          shift and go to state 47
 
-state 65
-
-    (12) sod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
-    (13) sod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA sod_task_node_pair
-
-    COMMA           shift and go to state 69
-
-
-state 66
-
-    (14) user_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
-    (15) user_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA user_node_pair
-
-    COMMA           shift and go to state 70
-
-
-state 67
-
-    (10) bod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
-    (11) bod_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA bod_task_node_pair
-
-    COMMA           shift and go to state 71
-
-
-state 68
-
-    (8) before_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN END
-    (9) before_task_node_pair -> LPAREN NODE . COMMA NODE RPAREN COMMA before_task_node_pair
-
-    COMMA           shift and go to state 72
-
-
-state 69
+state 73
 
     (12) sod_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN END
     (13) sod_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN COMMA sod_task_node_pair
 
-    NODE            shift and go to state 73
-
-
-state 70
-
-    (14) user_node_pair -> LPAREN NODE COMMA . NODE RPAREN END
-    (15) user_node_pair -> LPAREN NODE COMMA . NODE RPAREN COMMA user_node_pair
-
-    NODE            shift and go to state 74
-
-
-state 71
-
-    (10) bod_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN END
-    (11) bod_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN COMMA bod_task_node_pair
-
-    NODE            shift and go to state 75
-
-
-state 72
-
-    (8) before_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN END
-    (9) before_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN COMMA before_task_node_pair
-
-    NODE            shift and go to state 76
-
-
-state 73
-
-    (12) sod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
-    (13) sod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA sod_task_node_pair
-
-    RPAREN          shift and go to state 77
+    NODE            shift and go to state 77
 
 
 state 74
 
-    (14) user_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
-    (15) user_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA user_node_pair
+    (14) user_node_pair -> LPAREN NODE COMMA . NODE RPAREN END
+    (15) user_node_pair -> LPAREN NODE COMMA . NODE RPAREN COMMA user_node_pair
 
-    RPAREN          shift and go to state 78
+    NODE            shift and go to state 78
 
 
 state 75
 
-    (10) bod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
-    (11) bod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA bod_task_node_pair
+    (10) bod_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN END
+    (11) bod_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN COMMA bod_task_node_pair
 
-    RPAREN          shift and go to state 79
+    NODE            shift and go to state 79
 
 
 state 76
 
-    (8) before_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
-    (9) before_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA before_task_node_pair
+    (8) before_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN END
+    (9) before_task_node_pair -> LPAREN NODE COMMA . NODE RPAREN COMMA before_task_node_pair
 
-    RPAREN          shift and go to state 80
+    NODE            shift and go to state 80
 
 
 state 77
 
-    (12) sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
-    (13) sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA sod_task_node_pair
+    (12) sod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
+    (13) sod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA sod_task_node_pair
 
-    END             shift and go to state 82
-    COMMA           shift and go to state 81
+    RPAREN          shift and go to state 81
 
 
 state 78
 
-    (14) user_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
-    (15) user_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA user_node_pair
+    (14) user_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
+    (15) user_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA user_node_pair
 
-    END             shift and go to state 84
-    COMMA           shift and go to state 83
+    RPAREN          shift and go to state 82
 
 
 state 79
 
-    (10) bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
-    (11) bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA bod_task_node_pair
+    (10) bod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
+    (11) bod_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA bod_task_node_pair
+
+    RPAREN          shift and go to state 83
+
+
+state 80
+
+    (8) before_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN END
+    (9) before_task_node_pair -> LPAREN NODE COMMA NODE . RPAREN COMMA before_task_node_pair
+
+    RPAREN          shift and go to state 84
+
+
+state 81
+
+    (12) sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
+    (13) sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA sod_task_node_pair
 
     END             shift and go to state 86
     COMMA           shift and go to state 85
 
 
-state 80
+state 82
 
-    (8) before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
-    (9) before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA before_task_node_pair
+    (14) user_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
+    (15) user_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA user_node_pair
 
     END             shift and go to state 88
     COMMA           shift and go to state 87
 
 
-state 81
+state 83
+
+    (10) bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
+    (11) bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA bod_task_node_pair
+
+    END             shift and go to state 90
+    COMMA           shift and go to state 89
+
+
+state 84
+
+    (8) before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . END
+    (9) before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN . COMMA before_task_node_pair
+
+    END             shift and go to state 92
+    COMMA           shift and go to state 91
+
+
+state 85
 
     (13) sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA . sod_task_node_pair
     (12) sod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (13) sod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair
 
-    LPAREN          shift and go to state 56
+    LPAREN          shift and go to state 58
 
-    sod_task_node_pair             shift and go to state 89
+    sod_task_node_pair             shift and go to state 93
 
-state 82
+state 86
 
     (12) sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN END .
 
@@ -962,17 +1000,17 @@ state 82
     SENIORITY       reduce using rule 12 (sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN END .)
 
 
-state 83
+state 87
 
     (15) user_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA . user_node_pair
     (14) user_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (15) user_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
 
-    LPAREN          shift and go to state 58
+    LPAREN          shift and go to state 60
 
-    user_node_pair                 shift and go to state 90
+    user_node_pair                 shift and go to state 94
 
-state 84
+state 88
 
     (14) user_node_pair -> LPAREN NODE COMMA NODE RPAREN END .
 
@@ -984,17 +1022,17 @@ state 84
     SENIORITY       reduce using rule 14 (user_node_pair -> LPAREN NODE COMMA NODE RPAREN END .)
 
 
-state 85
+state 89
 
     (11) bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA . bod_task_node_pair
     (10) bod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (11) bod_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair
 
-    LPAREN          shift and go to state 59
+    LPAREN          shift and go to state 61
 
-    bod_task_node_pair             shift and go to state 91
+    bod_task_node_pair             shift and go to state 95
 
-state 86
+state 90
 
     (10) bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN END .
 
@@ -1006,17 +1044,17 @@ state 86
     SENIORITY       reduce using rule 10 (bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN END .)
 
 
-state 87
+state 91
 
     (9) before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA . before_task_node_pair
     (8) before_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN END
     (9) before_task_node_pair -> . LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair
 
-    LPAREN          shift and go to state 62
+    LPAREN          shift and go to state 64
 
-    before_task_node_pair          shift and go to state 92
+    before_task_node_pair          shift and go to state 96
 
-state 88
+state 92
 
     (8) before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN END .
 
@@ -1028,7 +1066,7 @@ state 88
     SENIORITY       reduce using rule 8 (before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN END .)
 
 
-state 89
+state 93
 
     (13) sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair .
 
@@ -1040,7 +1078,7 @@ state 89
     SENIORITY       reduce using rule 13 (sod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair .)
 
 
-state 90
+state 94
 
     (15) user_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair .
 
@@ -1052,7 +1090,7 @@ state 90
     SENIORITY       reduce using rule 15 (user_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair .)
 
 
-state 91
+state 95
 
     (11) bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair .
 
@@ -1064,7 +1102,7 @@ state 91
     SENIORITY       reduce using rule 11 (bod_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair .)
 
 
-state 92
+state 96
 
     (9) before_task_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair .
 
@@ -1078,11 +1116,11 @@ state 92
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for BEFORE in state 23 resolved as shift
-WARNING: shift/reduce conflict for BOD in state 23 resolved as shift
-WARNING: shift/reduce conflict for SOD in state 23 resolved as shift
-WARNING: shift/reduce conflict for SENIORITY in state 23 resolved as shift
-WARNING: shift/reduce conflict for BEFORE in state 36 resolved as shift
-WARNING: shift/reduce conflict for BOD in state 36 resolved as shift
-WARNING: shift/reduce conflict for SOD in state 36 resolved as shift
-WARNING: shift/reduce conflict for SENIORITY in state 36 resolved as shift
+WARNING: shift/reduce conflict for BEFORE in state 21 resolved as shift
+WARNING: shift/reduce conflict for BOD in state 21 resolved as shift
+WARNING: shift/reduce conflict for SOD in state 21 resolved as shift
+WARNING: shift/reduce conflict for SENIORITY in state 21 resolved as shift
+WARNING: shift/reduce conflict for BEFORE in state 32 resolved as shift
+WARNING: shift/reduce conflict for BOD in state 32 resolved as shift
+WARNING: shift/reduce conflict for SOD in state 32 resolved as shift
+WARNING: shift/reduce conflict for SENIORITY in state 32 resolved as shift
