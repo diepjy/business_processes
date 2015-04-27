@@ -136,6 +136,7 @@ class p_c(object):
     def p_task_node(self, p):
         '''task_node : NODE end
                 | NODE COMMA task_node
+                | NODE variable_task_option
                 | NODE task_option'''
         p[0] = p[1]
         p_c.task = p[0]
@@ -157,10 +158,10 @@ class p_c(object):
             p_c.users.append(p[0].replace("'", ""))
             p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
 
-    def p_task_option(self,p):
-        '''task_option : OPTION option_flag COLON op task_option
-                  | OPTION option_flag COLON op COMMA task_node
-                  | OPTION option_flag COLON op end
+    def p_variable_task_option(self,p):
+        '''variable_task_option : OPTION variable_option_flag COLON op task_option
+                  | OPTION variable_option_flag COLON op COMMA task_node
+                  | OPTION variable_option_flag COLON op end
                   '''
         p[0] = p[2] + p[4]
         #Minimum security level - anyone senior can be allocated a task
@@ -170,9 +171,23 @@ class p_c(object):
         # if "min_sec_lv" not in p[1] or "":
         #     self.p_error(p)
 
+    def p_task_option(self, p):
+        '''task_option : OPTION option_flag task_option
+                  | OPTION option_flag COMMA task_node
+                  | OPTION option_flag end
+                  '''
+        p[0] = p[2]
+        print p[0]
+
+    # ie -min_sec_lv:'t4'
+    def p_variable_option_flag(self, p):
+        '''variable_option_flag : MIN_SEC_LV
+        '''
+        p[0] = p[1]
+
+    # ie -start
     def p_option_flag(self, p):
-        ''' option_flag : MIN_SEC_LV
-                        | START
+        '''option_flag : START
         '''
         p[0] = p[1]
 

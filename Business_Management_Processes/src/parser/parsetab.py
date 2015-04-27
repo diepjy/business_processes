@@ -5,9 +5,9 @@ _tabversion = '3.2'
 
 _lr_method = 'LALR'
 
-_lr_signature = '<\x88|\xc0\xc0\xe8Z\xe1y`R\x05\x92F\xc3\xb1'
+_lr_signature = '\xc7\xd0\xd7\xe4\x98:\x9b\x9f\x83\xcaQ\xc39\xaa\xd3\xcb'
     
-_lr_action_items = {'OPTION':([5,20,26,38,39,40,41,45,],[8,28,8,-29,-30,-31,-28,28,]),'USERS_OPTION':([28,],[45,]),'BOD':([10,17,21,27,29,31,32,33,46,47,53,54,55,57,59,62,63,65,71,72,86,88,90,92,93,94,95,96,],[-37,-38,36,-19,-22,-21,36,-3,-20,-39,-35,-32,-33,-6,-7,-5,-4,-34,-36,36,-12,-14,-10,-8,-13,-15,-11,-9,]),'NEQ':([19,],[24,]),'GEQ':([19,],[22,]),'RPAREN':([77,78,79,80,],[81,82,83,84,]),'SOD':([10,17,21,27,29,31,32,33,46,47,53,54,55,57,59,62,63,65,71,72,86,88,90,92,93,94,95,96,],[-37,-38,34,-19,-22,-21,34,-3,-20,-39,-35,-32,-33,-6,-7,-5,-4,-34,-36,34,-12,-14,-10,-8,-13,-15,-11,-9,]),'COLON':([2,12,13,14,15,34,35,36,37,45,],[4,18,19,-27,-26,48,49,50,51,56,]),'ALLOCATE':([56,],[66,]),'COMMA':([5,20,26,38,39,40,41,45,67,68,69,70,81,82,83,84,],[9,30,43,-29,-30,-31,-28,55,73,74,75,76,85,87,89,91,]),'BEFORE':([10,17,21,27,29,31,32,33,46,47,53,54,55,57,59,62,63,65,71,72,86,88,90,92,93,94,95,96,],[-37,-38,37,-19,-22,-21,37,-3,-20,-39,-35,-32,-33,-6,-7,-5,-4,-34,-36,37,-12,-14,-10,-8,-13,-15,-11,-9,]),'$end':([1,3,10,17,21,27,29,31,32,33,46,47,53,54,55,57,59,62,63,65,71,86,88,90,92,93,94,95,96,],[-1,0,-37,-38,-2,-19,-22,-21,-37,-3,-20,-39,-35,-32,-33,-6,-7,-5,-4,-34,-36,-12,-14,-10,-8,-13,-15,-11,-9,]),'NODE':([4,9,18,22,23,24,25,30,43,58,60,61,64,73,74,75,76,],[5,5,20,38,39,40,41,20,5,67,68,69,70,77,78,79,80,]),'END':([5,20,26,38,39,40,41,45,66,81,82,83,84,],[10,32,10,-29,-30,-31,-28,10,72,86,88,90,92,]),'START':([8,],[14,]),'LPAREN':([48,49,50,51,85,87,89,91,],[58,60,61,64,58,60,61,64,]),'MIN_SEC_LV':([8,],[15,]),'EQ':([19,],[25,]),'USERS':([6,7,10,11,16,17,21,27,29,31,32,33,42,44,46,47,52,53,54,55,57,59,62,63,65,71,86,88,90,92,93,94,95,96,],[12,-16,-37,-18,-17,-38,-2,-19,-22,-21,-37,-3,-25,-23,-20,-39,-24,-35,-32,-33,-6,-7,-5,-4,-34,-36,-12,-14,-10,-8,-13,-15,-11,-9,]),'TASKS':([0,10,32,],[2,2,2,]),'LEQ':([19,],[23,]),'SENIORITY':([10,17,21,27,29,31,32,33,46,47,53,54,55,57,59,62,63,65,71,72,86,88,90,92,93,94,95,96,],[-37,-38,35,-19,-22,-21,35,-3,-20,-39,-35,-32,-33,-6,-7,-5,-4,-34,-36,35,-12,-14,-10,-8,-13,-15,-11,-9,]),}
+_lr_action_items = {'OPTION':([5,14,15,26,33,45,46,47,48,52,],[8,22,-31,35,22,-33,-34,-35,-32,35,]),'USERS_OPTION':([35,],[52,]),'BOD':([12,19,27,34,36,38,39,40,53,54,60,61,62,64,66,69,70,72,78,79,93,95,97,99,100,101,102,103,],[-41,-42,43,-20,-23,-22,43,-3,-21,-43,-39,-36,-37,-6,-7,-5,-4,-38,-40,43,-12,-14,-10,-8,-13,-15,-11,-9,]),'NEQ':([25,],[31,]),'GEQ':([25,],[29,]),'RPAREN':([84,85,86,87,],[88,89,90,91,]),'SOD':([12,19,27,34,36,38,39,40,53,54,60,61,62,64,66,69,70,72,78,79,93,95,97,99,100,101,102,103,],[-41,-42,41,-20,-23,-22,41,-3,-21,-43,-39,-36,-37,-6,-7,-5,-4,-38,-40,41,-12,-14,-10,-8,-13,-15,-11,-9,]),'COLON':([2,13,16,17,41,42,43,44,52,],[4,20,25,-30,55,56,57,58,63,]),'ALLOCATE':([63,],[73,]),'COMMA':([5,14,15,26,33,45,46,47,48,52,74,75,76,77,88,89,90,91,],[9,23,-31,37,50,-33,-34,-35,-32,62,80,81,82,83,92,94,96,98,]),'BEFORE':([12,19,27,34,36,38,39,40,53,54,60,61,62,64,66,69,70,72,78,79,93,95,97,99,100,101,102,103,],[-41,-42,44,-20,-23,-22,44,-3,-21,-43,-39,-36,-37,-6,-7,-5,-4,-38,-40,44,-12,-14,-10,-8,-13,-15,-11,-9,]),'$end':([1,3,12,19,27,34,36,38,39,40,53,54,60,61,62,64,66,69,70,72,78,93,95,97,99,100,101,102,103,],[-1,0,-41,-42,-2,-20,-23,-22,-41,-3,-21,-43,-39,-36,-37,-6,-7,-5,-4,-38,-40,-12,-14,-10,-8,-13,-15,-11,-9,]),'NODE':([4,9,20,23,29,30,31,32,37,50,65,67,68,71,80,81,82,83,],[5,5,26,5,45,46,47,48,26,5,74,75,76,77,84,85,86,87,]),'END':([5,14,15,26,33,45,46,47,48,52,73,88,89,90,91,],[12,12,-31,39,12,-33,-34,-35,-32,12,79,93,95,97,99,]),'START':([8,22,],[15,15,]),'LPAREN':([55,56,57,58,92,94,96,98,],[65,67,68,71,65,67,68,71,]),'MIN_SEC_LV':([8,],[17,]),'EQ':([25,],[32,]),'USERS':([6,7,10,11,12,18,19,21,24,27,28,34,36,38,39,40,49,51,53,54,59,60,61,62,64,66,69,70,72,78,93,95,97,99,100,101,102,103,],[13,-16,-18,-19,-41,-17,-42,-29,-27,-2,-28,-20,-23,-22,-41,-3,-26,-24,-21,-43,-25,-39,-36,-37,-6,-7,-5,-4,-38,-40,-12,-14,-10,-8,-13,-15,-11,-9,]),'TASKS':([0,12,39,],[2,2,2,]),'LEQ':([25,],[30,]),'SENIORITY':([12,19,27,34,36,38,39,40,53,54,60,61,62,64,66,69,70,72,78,79,93,95,97,99,100,101,102,103,],[-41,-42,42,-20,-23,-22,42,-3,-21,-43,-39,-36,-37,-6,-7,-5,-4,-38,-40,42,-12,-14,-10,-8,-13,-15,-11,-9,]),}
 
 _lr_action = { }
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'begin':([0,10,32,],[1,17,17,]),'end':([5,20,26,45,],[7,27,42,53,]),'task_node':([4,9,43,],[6,16,52,]),'rules':([21,32,72,],[33,47,47,]),'user_node':([18,30,],[21,46,]),'sod_task_node_pair':([48,85,],[57,93,]),'user_node_pair':([49,87,],[59,94,]),'option_flag':([8,],[13,]),'end_rule':([20,66,],[29,71,]),'users_global_option':([56,],[65,]),'before_task_node_pair':([51,91,],[63,96,]),'user_option':([20,45,],[31,54,]),'prog':([0,],[3,]),'bod_task_node_pair':([50,89,],[62,95,]),'task_option':([5,26,],[11,44,]),'op':([19,],[26,]),}
+_lr_goto_items = {'begin':([0,12,39,],[1,19,19,]),'variable_task_option':([5,],[10,]),'variable_option_flag':([8,],[16,]),'task_node':([4,9,23,50,],[6,18,28,59,]),'rules':([27,39,79,],[40,54,54,]),'user_node':([20,37,],[27,53,]),'sod_task_node_pair':([55,92,],[64,100,]),'user_node_pair':([56,94,],[66,101,]),'option_flag':([8,22,],[14,14,]),'end_rule':([26,73,],[36,78,]),'users_global_option':([63,],[72,]),'before_task_node_pair':([58,98,],[70,103,]),'user_option':([26,52,],[38,61,]),'bod_task_node_pair':([57,96,],[69,102,]),'prog':([0,],[3,]),'end':([5,14,26,33,52,],[7,21,34,49,60,]),'task_option':([5,14,33,],[11,24,51,]),'op':([25,],[33,]),}
 
 _lr_goto = { }
 for _k, _v in _lr_goto_items.items():
@@ -43,26 +43,30 @@ _lr_productions = [
   ('user_node_pair -> LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair','user_node_pair',7,'p_user_pair','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',129),
   ('task_node -> NODE end','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',137),
   ('task_node -> NODE COMMA task_node','task_node',3,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',138),
-  ('task_node -> NODE task_option','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',139),
-  ('user_node -> NODE end','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',151),
-  ('user_node -> NODE COMMA user_node','user_node',3,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',152),
-  ('user_node -> NODE user_option','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',153),
-  ('user_node -> NODE end_rule','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',154),
-  ('task_option -> OPTION option_flag COLON op task_option','task_option',5,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',161),
-  ('task_option -> OPTION option_flag COLON op COMMA task_node','task_option',6,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',162),
-  ('task_option -> OPTION option_flag COLON op end','task_option',5,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',163),
-  ('option_flag -> MIN_SEC_LV','option_flag',1,'p_option_flag','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',174),
-  ('option_flag -> START','option_flag',1,'p_option_flag','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',175),
-  ('op -> EQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',180),
-  ('op -> GEQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',181),
-  ('op -> LEQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',182),
-  ('op -> NEQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',183),
-  ('user_option -> OPTION USERS_OPTION user_option','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',189),
-  ('user_option -> OPTION USERS_OPTION COMMA','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',190),
-  ('user_option -> OPTION USERS_OPTION COLON users_global_option','user_option',4,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',191),
-  ('user_option -> OPTION USERS_OPTION end','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',192),
-  ('users_global_option -> ALLOCATE end_rule','users_global_option',2,'p_users_global_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',197),
-  ('end -> END','end',1,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',205),
-  ('end -> END begin','end',2,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',206),
-  ('end_rule -> END rules','end_rule',2,'p_end_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',211),
+  ('task_node -> NODE variable_task_option','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',139),
+  ('task_node -> NODE task_option','task_node',2,'p_task_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',140),
+  ('user_node -> NODE end','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',152),
+  ('user_node -> NODE COMMA user_node','user_node',3,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',153),
+  ('user_node -> NODE user_option','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',154),
+  ('user_node -> NODE end_rule','user_node',2,'p_user_node','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',155),
+  ('variable_task_option -> OPTION variable_option_flag COLON op task_option','variable_task_option',5,'p_variable_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',162),
+  ('variable_task_option -> OPTION variable_option_flag COLON op COMMA task_node','variable_task_option',6,'p_variable_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',163),
+  ('variable_task_option -> OPTION variable_option_flag COLON op end','variable_task_option',5,'p_variable_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',164),
+  ('task_option -> OPTION option_flag task_option','task_option',3,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',175),
+  ('task_option -> OPTION option_flag COMMA task_node','task_option',4,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',176),
+  ('task_option -> OPTION option_flag end','task_option',3,'p_task_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',177),
+  ('variable_option_flag -> MIN_SEC_LV','variable_option_flag',1,'p_variable_option_flag','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',183),
+  ('option_flag -> START','option_flag',1,'p_option_flag','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',189),
+  ('op -> EQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',193),
+  ('op -> GEQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',194),
+  ('op -> LEQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',195),
+  ('op -> NEQ NODE','op',2,'p_op','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',196),
+  ('user_option -> OPTION USERS_OPTION user_option','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',202),
+  ('user_option -> OPTION USERS_OPTION COMMA','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',203),
+  ('user_option -> OPTION USERS_OPTION COLON users_global_option','user_option',4,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',204),
+  ('user_option -> OPTION USERS_OPTION end','user_option',3,'p_user_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',205),
+  ('users_global_option -> ALLOCATE end_rule','users_global_option',2,'p_users_global_option','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',210),
+  ('end -> END','end',1,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',218),
+  ('end -> END begin','end',2,'p_end','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',219),
+  ('end_rule -> END rules','end_rule',2,'p_end_rule','/home/joanna/Third_Year/Individual_Project/Business_Management_Processes/src/parser/p_c.py',224),
 ]

@@ -53,12 +53,13 @@ task_list = my_parse.tasks
 
 def get_task_options(d):
     smt_options = ""
+    print d
     for key, value in d.iteritems():
         print "key", key
         print "value", value
         if value == ";":
             print "no options set"
-        elif "-min_sec_lv" in value:
+        elif "min_sec_lv" in value:
             if "=" in value and "!=" not in value:
                 print "= seniority"
                 print "value is ", value
@@ -140,8 +141,8 @@ def get_task_options(d):
                                        ")" \
                                        ")" \
                                        "))\n"
-        else:
-            print "wtf?!?!?!?!?!?!?!?"
+        elif value == "start":
+            print "START!!!!!!"
     print smt_options
     return smt_options
 
