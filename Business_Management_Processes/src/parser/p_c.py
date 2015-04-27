@@ -138,6 +138,7 @@ class p_c(object):
                 | NODE COMMA task_node
                 | NODE variable_task_option
                 | NODE task_option'''
+        print p[2]
         p[0] = p[1]
         p_c.task = p[0]
         # if p[0] not in p_c.tasks:
@@ -159,17 +160,14 @@ class p_c(object):
             p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
 
     def p_variable_task_option(self,p):
-        '''variable_task_option : OPTION variable_option_flag COLON op task_option
+        '''variable_task_option : OPTION variable_option_flag COLON op variable_task_option
                   | OPTION variable_option_flag COLON op COMMA task_node
                   | OPTION variable_option_flag COLON op end
                   '''
-        p[0] = p[2] + p[4]
-        #Minimum security level - anyone senior can be allocated a task
-        # lv=0 -> anyone can be allocated
-        # lv=1 -> only those senior to juniors at 0 can be allocated
-        # etc
-        # if "min_sec_lv" not in p[1] or "":
-        #     self.p_error(p)
+        p[0] = p[2] + p[3] + p[4]
+        if len(p) == 6:
+            print "length is 6"
+            p[0] = p[2] + p[3] + p[4] + p[5]
 
     def p_task_option(self, p):
         '''task_option : OPTION option_flag task_option
@@ -177,11 +175,11 @@ class p_c(object):
                   | OPTION option_flag end
                   '''
         p[0] = p[2]
-        print p[0]
 
     # ie -min_sec_lv:'t4'
     def p_variable_option_flag(self, p):
         '''variable_option_flag : MIN_SEC_LV
+                                | EXECUTION
         '''
         p[0] = p[1]
 
@@ -195,10 +193,11 @@ class p_c(object):
         '''op : EQ NODE
               | GEQ NODE
               | LEQ NODE
-              | NEQ NODE'''
+              | NEQ NODE
+              | OR NODE
+              | AND NODE
+              | XOR NODE'''
         p[0] = p[1] + p[2]
-        print p[0]
-
 
     def p_user_option(self, p):
         '''user_option : OPTION USERS_OPTION user_option

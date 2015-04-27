@@ -143,6 +143,11 @@ def get_task_options(d):
                                        "))\n"
         elif value == "start":
             print "START!!!!!!"
+            smt_options += "(assert (forall ((t Task)) " \
+                           "(before " \
+                           + key + \
+                           " t)" \
+                           "))\n"
     print smt_options
     return smt_options
 
@@ -150,7 +155,7 @@ def unique_users_axiom():
     c = []
     unique_users = "(assert (forall ((u1 User) (u2 User))" \
                    "(=> (not(= u1 u2)) (not(= u2 u1)))" \
-                   "))"
+                   "))\n"
     print unique_users
     return unique_users
 

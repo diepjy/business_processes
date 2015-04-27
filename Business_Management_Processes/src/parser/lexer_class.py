@@ -12,7 +12,11 @@ class lexer_class(object):
         'users' : 'USERS_OPTION',
         'allocate' : 'ALLOCATE',
         'min_sec_lv' : 'MIN_SEC_LV',
-        'start' : 'START'
+        'start' : 'START',
+        'or' : 'OR',
+        'and' : 'AND',
+        'xor' : 'XOR',
+        'execution' : 'EXECUTION'
     }
 
     # List of token names
