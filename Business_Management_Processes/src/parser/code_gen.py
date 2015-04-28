@@ -148,6 +148,20 @@ def get_task_options(d):
                            + key + \
                            " t)" \
                            "))\n"
+        elif value == "execution":
+            print "EXECUTION!!!!!!!!!!"
+            if "or" in value:
+                print "OR EXE!!!!!!!!!"
+                for t in task_list:
+                    if t in value:
+                        print t
+                        # smt_options += "(assert (=>(before " \
+                        #                + key + " " + t  \
+                        #                ")" \
+                        #                "(alloc_user)" \
+                        #                "))"
+            elif "and" in value:
+                print "AND EXE!!!!!!!!!!!"
     print smt_options
     return smt_options
 
@@ -187,6 +201,8 @@ s.add(f)
 print 'Result of first check', s.check ()
 m = s.model()
 print m
+
+print "!!!!!!! user_alloc_dict", my_parse.dict_user_alloc
 
 print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
 

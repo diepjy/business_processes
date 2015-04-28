@@ -16,7 +16,8 @@ class lexer_class(object):
         'or' : 'OR',
         'and' : 'AND',
         'xor' : 'XOR',
-        'execution' : 'EXECUTION'
+        'execution' : 'EXECUTION',
+        'Alloc' : 'ALLOC'
     }
 
     # List of token names

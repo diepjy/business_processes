@@ -44,6 +44,7 @@ class p_c(object):
     dict_tasks = { }
     dict_users = { }
     dict_seniority = { }
+    dict_user_alloc = { }
 
     allocate_users = False
 
@@ -99,6 +100,7 @@ class p_c(object):
                  | BOD COLON bod_task_node_pair
                  | SOD COLON sod_task_node_pair
                  | SENIORITY COLON user_node_pair
+                 | ALLOC COLON allocation_pair
         '''
         p[0] = p[3]
 
@@ -140,6 +142,14 @@ class p_c(object):
         p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
         # p_c.smt += "(assert (not(seniority " + p[4] + " " + p[2] + "))) \n"
 
+    def p_allocation_pair(self, p):
+        '''allocation_pair : LPAREN NODE COMMA NODE RPAREN END rules
+                          | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
+                          | LPAREN NODE COMMA NODE RPAREN END
+        '''
+        p[0] = [p[2]] + [p[4]]
+        p_c.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
+        p_c.smt += "(assert (=(alloc_user " + p[4] + ")" + p[2] + "))\n"
 
     def p_task_node(self, p):
         '''task_node : NODE end
