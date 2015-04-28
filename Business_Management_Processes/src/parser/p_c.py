@@ -103,11 +103,13 @@ class p_c(object):
         p[0] = p[3]
 
     def p_before_task_pair(self, p):
-        '''before_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
-                     | LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair'''
-        if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
-            p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
-            p[0] = [p[2]] + [p[4]]
+        '''before_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
+                     | LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair
+                     | LPAREN NODE COMMA NODE RPAREN END
+                     '''
+        # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
+        p_c.smt += "(assert (before " + p[2] + " " + p[4] + "))\n"
+        p[0] = [p[2]] + [p[4]]
             # self.before.append(p[0])
 
     def p_bod_task_pair(self, p):
