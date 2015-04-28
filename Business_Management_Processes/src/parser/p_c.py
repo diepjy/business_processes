@@ -113,22 +113,28 @@ class p_c(object):
             # self.before.append(p[0])
 
     def p_bod_task_pair(self, p):
-        '''bod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
-                     | LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair'''
+        '''bod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
+                     | LPAREN NODE COMMA NODE RPAREN COMMA bod_task_node_pair
+                     | LPAREN NODE COMMA NODE RPAREN END
+                     '''
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
 
     def p_sod_task_pair(self, p):
-        '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END
-                     | LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair'''
+        '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
+                     | LPAREN NODE COMMA NODE RPAREN COMMA sod_task_node_pair
+                     | LPAREN NODE COMMA NODE RPAREN END
+                     '''
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
 
     def p_user_pair(self, p):
-        '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END
-                          | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair'''
+        '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
+                          | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
+                          | LPAREN NODE COMMA NODE RPAREN END
+                          '''
         # if p[2] in p_c.users and p[4] in p_c.users:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
