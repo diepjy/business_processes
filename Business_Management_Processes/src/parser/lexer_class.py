@@ -17,7 +17,8 @@ class lexer_class(object):
         'and' : 'AND',
         'xor' : 'XOR',
         'execution' : 'EXECUTION',
-        'Alloc' : 'ALLOC'
+        'Alloc' : 'ALLOC',
+        'Authorised' : 'AUTHORISED'
     }
 
     # List of token names
@@ -32,8 +33,9 @@ class lexer_class(object):
         'EQ',
         'GEQ',
         'LEQ',
-        'NEQ'
-        ''
+        'NEQ',
+        'LSQPAREN',
+        'RSQPAREN'
     ] + list(reserved.values())
 
     # Regular expression rules for simple tokens
@@ -49,6 +51,8 @@ class lexer_class(object):
     t_GEQ = r'>'
     t_LEQ = r'<'
     t_NEQ = r'!='
+    t_LSQPAREN = r'\['
+    t_RSQPAREN = r'\]'
 
     # Check for reserved words
     def t_ID(self, t):

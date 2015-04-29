@@ -45,6 +45,7 @@ class p_c(object):
     dict_users = { }
     dict_seniority = { }
     dict_user_alloc = { }
+    dict_task_user_auth = { }
 
     allocate_users = False
 
@@ -101,6 +102,7 @@ class p_c(object):
                  | SOD COLON sod_task_node_pair
                  | SENIORITY COLON user_node_pair
                  | ALLOC COLON allocation_pair
+                 | AUTHORISED COLON authorised_pair
         '''
         p[0] = p[3]
 
@@ -142,6 +144,7 @@ class p_c(object):
         p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
         # p_c.smt += "(assert (not(seniority " + p[4] + " " + p[2] + "))) \n"
 
+    # ie Alloc: ('u3', 't3')
     def p_allocation_pair(self, p):
         '''allocation_pair : LPAREN NODE COMMA NODE RPAREN END rules
                           | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
@@ -151,12 +154,34 @@ class p_c(object):
         p_c.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
         p_c.smt += "(assert (=(alloc_user " + p[4] + ")" + p[2] + "))\n"
 
+    def p_authorised_pair(self, p):
+        '''authorised_pair : LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END rules
+                           | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN COMMA authorised_pair
+                           | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END
+        '''
+        p[0] = [p[2]] + [p[5]]
+        print p[5]
+        p_c.dict_task_user_auth[p[2].replace("'", "")] = p[5].replace("'", "")
+        # p_c.smt += ""
+        print "dict_task_user_auth: ", p_c.dict_task_user_auth
+
+
+    def p_user_list(self, p):
+        '''user_list : NODE COMMA user_list
+                     | NODE
+        '''
+        if len(p) == 2:
+            p[0] = p[1]
+        print len(p)
+        if len(p) > 2:
+            print p[3]
+            p[0] = p[1] + p[2] + p[3]
+
     def p_task_node(self, p):
         '''task_node : NODE end
                 | NODE COMMA task_node
                 | NODE variable_task_option
                 | NODE task_option'''
-        print p[2]
         p[0] = p[1]
         p_c.task = p[0]
         # if p[0] not in p_c.tasks:

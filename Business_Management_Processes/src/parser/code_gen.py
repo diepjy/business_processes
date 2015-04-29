@@ -189,6 +189,8 @@ print t
 # Collect results to SMT solver
 original = my_parse.smt
 
+print "code gen dict task user auth", my_parse.dict_task_user_auth
+
 print original
 
 f = z3.parse_smt2_string(original)
