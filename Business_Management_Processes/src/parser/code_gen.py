@@ -166,12 +166,25 @@ def get_task_options(d):
     return smt_options
 
 def unique_users_axiom():
-    c = []
     unique_users = "(assert (forall ((u1 User) (u2 User))" \
                    "(=> (not(= u1 u2)) (not(= u2 u1)))" \
                    "))\n"
     print unique_users
     return unique_users
+
+def authorised_task_to_users_axiom(auth_list):
+    print auth_list
+    auth = ""
+    for key, value in auth_list.iteritems():
+        print "key", key
+        print "value", value
+        auth += "(assert (or "
+        for u in value:
+            print u
+            auth += "(=(alloc_user " + key + ")" + u +")"
+        auth += "))\n"
+    print auth
+    return auth
 
 # while True:
 # try:
@@ -205,6 +218,16 @@ m = s.model()
 print m
 
 print "!!!!!!! user_alloc_dict", my_parse.dict_user_alloc
+
+auth = authorised_task_to_users_axiom(my_parse.dict_task_user_auth)
+
+original += auth
+
+print original
+a = z3.parse_smt2_string(original)
+s.add(a)
+s.check()
+s.model()
 
 print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"
 

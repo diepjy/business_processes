@@ -16,13 +16,16 @@ class p_c(object):
 
     #smt_const_bottom = "(declare-const bottom User) \n"
 
-    smt_fun_seniority_transitivity = "(assert (forall ((u1 User) (u2 User) (u3 User)) (=> (and (seniority u1 u2) (seniority u2 u3)) (seniority u1 u3))))\n"
+    smt_fun_seniority_transitivity = "(assert (forall ((u1 User) (u2 User) (u3 User)) " \
+                                     "(=> (and (seniority u1 u2) (seniority u2 u3)) " \
+                                     "(seniority u1 u3))" \
+                                     "))\n"
     # smt_fun_less_senior_not_allowed = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (=(alloc_user t) u1) (seniority u1 u2)) (not(=(alloc_user t) u2)))))\n"
-    smt_indirect_hierarchy = "(assert (forall ((u5 User) (u4 User) (u3 User) (u2 User) (u User)) " \
-                            "(=> " \
-                            "(and (and (and (and (and (and (seniority u3 u4) (seniority u3 u2)) (seniority u5 u4)) (seniority u u5)) (seniority u u3)) (not(= u u3))) (not(= u u3)))" \
-                            "(and (and (seniority u5 u2) (not(seniority u5 u3))) (not(seniority u3 u5)))" \
-                            ")))\n"
+    #smt_indirect_hierarchy = "(assert (forall ((u5 User) (u4 User) (u3 User) (u2 User) (u User)) " \
+    #                        "(=> " \
+    #                        "(and (and (and (and (and (and (seniority u3 u4) (seniority u3 u2)) (seniority u5 u4)) (seniority u u5)) (seniority u u3)) (not(= u u3))) (not(= u u3)))" \
+    #                        "(and (and (seniority u5 u2) (not(seniority u5 u3))) (not(seniority u3 u5)))" \
+    #                        ")))\n"
     smt_unique_user_task_alloc = "(assert (forall ((u1 User) (u2 User) (t Task)) " \
                                  "(=> (and (=(alloc_user t) u1) (not(= u1 u2))) (not(=(alloc_user t) u2)))" \
                                  "))\n"
@@ -77,7 +80,7 @@ class p_c(object):
         p_c.smt = p_c.smt_before_transitivity + p_c.smt
         p_c.smt = p_c.smt_unique_users_axiom + p_c.smt
         p_c.smt = p_c.smt_unique_user_task_alloc + p_c.smt
-        p_c.smt = p_c.smt_indirect_hierarchy + p_c.smt
+        #p_c.smt = p_c.smt_indirect_hierarchy + p_c.smt
         p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
         # p_c.smt = p_c.smt_fun_less_senior_not_allowed + p_c.smt
         #p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
@@ -161,7 +164,7 @@ class p_c(object):
         '''
         p[0] = [p[2]] + [p[5]]
         print p[5]
-        p_c.dict_task_user_auth[p[2].replace("'", "")] = p[5].replace("'", "")
+        p_c.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
         # p_c.smt += ""
         print "dict_task_user_auth: ", p_c.dict_task_user_auth
 
