@@ -67,35 +67,74 @@ def get_task_options(d):
                     if t in value:
                         print "t is in ", t
                         smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                                       "(or" \
                                        "(=> " \
-                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) (not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
+                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) " \
+                                       "(not(= u3 u5))) (not(= u3 u4))) " \
+                                       "(not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
                                        "(and (or (=(alloc_user " \
-                                       + key + \
+                                       + t + \
                                        ") u3) (=(alloc_user " \
-                                       + key + \
+                                       + t + \
                                        ") u5)) (or (=(alloc_user " \
-                                       + t + \
+                                       + key + \
                                        ") u3) (=(alloc_user " \
-                                       + t + \
+                                       + key + \
                                        ") u5)))" \
                                        ")" \
-                                       "))"
+                                       "(=>" \
+                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
+                                       "(and (=(alloc_user " \
+                                       + t + \
+                                       ") u4) (or (=(alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + key + \
+                                       ") u5)))" \
+                                       ")" \
+                                       ")" \
+                                       "))\n"
             elif ">" in value:
                 # More senior allocation
                 print ">>>>>>> seniority"
                 for t in task_list:
                     if t in value:
                         print "t is in ", t
-                        smt_options += "(assert (forall ((u1 User) (u2 User) (u3 User))" \
+                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                                       "(or" \
                                        "(=> " \
-                                       "(and" \
-                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
-                                       "(not(= u3 u2)))" \
-                                       "(and (=(alloc_user " \
+                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) (not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
+                                       "(or " \
+                                       "(and (or (or(=(alloc_user " \
                                        + key + \
-                                       ") u2) (=(alloc_user " \
+                                       ") u3) (=(alloc_user " \
+                                       + key + \
+                                       ") u5)) (=(alloc_user " \
+                                       + key + \
+                                       ") u6)) (=(alloc_user " \
                                        + t + \
-                                       ") u3))" \
+                                       ") u4))" \
+                                       "(and (or (or(=(alloc_user " \
+                                       + t + \
+                                       ") u3) (=(alloc_user " \
+                                       + t + \
+                                       ") u5)) (=(alloc_user " \
+                                       + t + \
+                                       ") u4)) (=(alloc_user " \
+                                       + key + \
+                                       ") u6))" \
+                                       ")" \
+                                       ")" \
+                                       "(=> " \
+                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
+                                       "(and (=(alloc_user " \
+                                       + t + \
+                                       ") u4) (or (=(alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + key + \
+                                       ") u5)))" \
+                                       ")" \
                                        ")" \
                                        "))\n"
             elif "<" in value:
@@ -103,16 +142,42 @@ def get_task_options(d):
                 for t in task_list:
                     if t in value:
                         print "t is in ", t
-                        smt_options += "(assert (forall ((u1 User) (u2 User) (u3 User))" \
+                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                                       "(or" \
                                        "(=> " \
-                                       "(and" \
-                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
-                                       "(not(= u3 u2)))" \
-                                       "(and (=(alloc_user " \
-                                       + key + \
+                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) " \
+                                       "(not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
+                                       "(or " \
+                                       "(and (or (or(=(alloc_user " \
+                                       + t + \
                                        ") u3) (=(alloc_user " \
                                        + t + \
-                                       ") u2))" \
+                                       ") u5)) (=(alloc_user " \
+                                       + t + \
+                                       ") u6)) (=(alloc_user " \
+                                       + key + \
+                                       ") u4))" \
+                                       "(and (or (or(=(alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + key + \
+                                       ") u5)) (=(alloc_user " \
+                                       + key + \
+                                       ") u4)) (=(alloc_user " \
+                                       + key + \
+                                       ") u6))" \
+                                       ")" \
+                                       ")" \
+                                       "(=> " \
+                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
+                                       "(and (=(alloc_user " \
+                                       + t + \
+                                       ") u4) (or (=(alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + key + \
+                                       ") u5)))" \
+                                       ")" \
                                        ")" \
                                        "))\n"
             elif "!=" in value:
@@ -210,8 +275,8 @@ s = raw_input('busines_process > ')
 # if not s:
 #     continue
 lexer.input(s)
-for token in lexer:
-        print(token)
+# for token in lexer:
+#         print(token)
 t = parser.parse(s, lexer=lexer)
 print t
 
