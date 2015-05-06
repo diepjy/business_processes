@@ -66,22 +66,18 @@ def get_task_options(d):
                 for t in task_list:
                     if t in value:
                         print "t is in ", t
-                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User)) " \
-                                       "(=> (and" \
-                                       "(seniority u5 u4)" \
-                                       "(seniority u3 u4))" \
-                                       "(and" \
-                                       "(or(=(alloc_user " \
+                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                                       "(=> " \
+                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) (not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
+                                       "(and (or (=(alloc_user " \
                                        + key + \
                                        ") u3) (=(alloc_user " \
                                        + key + \
+                                       ") u5)) (or (=(alloc_user " \
+                                       + t + \
+                                       ") u3) (=(alloc_user " \
+                                       + t + \
                                        ") u5)))" \
-                                       "(or(=(alloc_user " \
-                                       + t + \
-                                       ") u3)" \
-                                       "(=(alloc_user " \
-                                       + t + \
-                                       ") u5))" \
                                        ")" \
                                        "))"
             elif ">" in value:
@@ -165,11 +161,31 @@ def get_task_options(d):
     print smt_options
     return smt_options
 
+# def unique_users_axiom():
+#     unique_users = "(assert (forall ((u1 User) (u2 User))" \
+#                    "(=> (not(= u1 u2)) (not(= u2 u1)))" \
+#                    "))\n"
+#     print unique_users
+#     return unique_users
+
 def unique_users_axiom():
-    unique_users = "(assert (forall ((u1 User) (u2 User))" \
-                   "(=> (not(= u1 u2)) (not(= u2 u1)))" \
-                   "))\n"
-    print unique_users
+    print my_parse.users
+    c = []
+    unique_users = ""
+    for i in code_gen.product(code_gen(), user_list, user_list):
+        c.append(i)
+    print c
+    for cs in c:
+        if cs[0] != cs[1]:
+            s.push()
+            # original += "(push)\n"
+            unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))\n"
+            # sn = z3.parse_smt2_string(original)
+            # s.add(sn)
+            # if s.check() == unsat:
+            #     original += "(pop)\n"
+            #     s.pop()
+    print c
     return unique_users
 
 def authorised_task_to_users_axiom(auth_list):
@@ -245,21 +261,21 @@ print s.model()
 # Go through all combinations of seniority available
 print my_parse.users
 smt_seniors = original
-c = []
-for i in code_gen.product(code_gen(), user_list, user_list):
-    c.append(i)
-print c
-for cs in c:
-    if cs[0] != cs[1]:
-        s.push()
-        original += "(push)\n"
-        original += "(assert (not(seniority " + cs[0] + " " + cs[1] + ")))\n"
-        sn = z3.parse_smt2_string(original)
-        s.add(sn)
-        if s.check() == unsat:
-            original += "(pop)\n"
-            s.pop()
-print c
+# c = []
+# for i in code_gen.product(code_gen(), user_list, user_list):
+#     c.append(i)
+# print c
+# for cs in c:
+#     if cs[0] != cs[1]:
+#         s.push()
+#         original += "(push)\n"
+#         original += "(assert (not(seniority " + cs[0] + " " + cs[1] + ")))\n"
+#         sn = z3.parse_smt2_string(original)
+#         s.add(sn)
+#         if s.check() == unsat:
+#             original += "(pop)\n"
+#             s.pop()
+# print c
 
 print "original with options:", original
 o = z3.parse_smt2_string(original)
@@ -269,11 +285,11 @@ print s.model()
 
 print "*********************************************"
 
-# original += unique_users_axiom()
-# unique = z3.parse_smt2_string(original)
-# s.add(unique)
-# print "after options added check", s.check()
-# print s.model()
+original += unique_users_axiom()
+unique = z3.parse_smt2_string(original)
+s.add(unique)
+print "after options added check", s.check()
+print s.model()
 
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 
