@@ -50,6 +50,21 @@ parser = yacc(module=MyParse(), start='prog', optimize=1)
 my_parse = MyParse()
 user_list = my_parse.users
 task_list = my_parse.tasks
+or_task_list = my_parse.dict_or_task
+xor_task_list = my_parse.dict_xor_task
+sod_list = my_parse.dict_sod
+bottom_user_execution_axiom = "(assert (forall ((t Task))" \
+                              "(=> " \
+                              "(executed t)" \
+                              "(not(=(alloc_user t) bottom))" \
+                              ")" \
+                              "))\n"
+not_bottom_user_execution_axiom = "(assert (forall ((t Task))" \
+                                  "(=> " \
+                                  "(not(executed t))" \
+                                  "(=(alloc_user t) bottom)" \
+                                  ")" \
+                                  "))\n"
 
 def get_task_options(d):
     smt_options = ""
@@ -83,7 +98,7 @@ def get_task_options(d):
                                        ") u5)))" \
                                        ")" \
                                        "(=>" \
-                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
+                                       "(and (and (and (or (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
                                        "(and (=(alloc_user " \
                                        + t + \
                                        ") u4) (or (=(alloc_user " \
@@ -226,6 +241,16 @@ def get_task_options(d):
     print smt_options
     return smt_options
 
+def executed_and_tasks():
+    executed_tasks = ""
+    for p in task_list:
+        if p not in or_task_list and p not in xor_task_list:
+            print p
+            executed_tasks += "(assert (executed " + p + "))\n"
+    print "The executed AND tasks", executed_tasks
+    return executed_tasks
+
+
 # def unique_users_axiom():
 #     unique_users = "(assert (forall ((u1 User) (u2 User))" \
 #                    "(=> (not(= u1 u2)) (not(= u2 u1)))" \
@@ -266,6 +291,17 @@ def authorised_task_to_users_axiom(auth_list):
         auth += "))\n"
     print auth
     return auth
+
+def executable_sod():
+    print sod_list
+    sod = ""
+    for p in sod_list:
+        sod += "(assert (=> "
+        sod += "(and (executed " + p[0] + ") (executed " + p[1] + "))"
+        sod += "(not (=(alloc_user " + p[0] + ") (alloc_user " + p[1] + ")))))\n"
+    print sod
+    return sod
+
 
 # while True:
 # try:
@@ -342,6 +378,14 @@ smt_seniors = original
 #             s.pop()
 # print c
 
+print "EXE SOD"
+original += executable_sod()
+sod = z3.parse_smt2_string(original)
+s.add(sod)
+print "after execution sod added check", s.check()
+print s.model()
+
+
 print "original with options:", original
 o = z3.parse_smt2_string(original)
 s.add(o)
@@ -357,6 +401,24 @@ print "after options added check", s.check()
 print s.model()
 
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+
+print ".............................................."
+print "adding execution bottom axiom"
+
+original += bottom_user_execution_axiom
+original += not_bottom_user_execution_axiom
+print original
+bottom_user_axiom = z3.parse_smt2_string(original)
+s.add(bottom_user_axiom)
+print "after adding execution bottom axiom", s.check()
+print s.model()
+
+original += executed_and_tasks()
+print original
+exe_and_tasks = z3.parse_smt2_string(original)
+s.add(exe_and_tasks)
+print "after adding executed tasks in and", s.check()
+print s.model()
 
 # Do the allocation of users and tasks if not specified
 alloc_user_task = ""

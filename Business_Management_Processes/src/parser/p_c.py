@@ -10,11 +10,12 @@ class p_c(object):
     smt_sort_user = "(declare-sort User) \n"
     smt_fun_before = "(declare-fun before (Task Task) Bool) \n"
     smt_fun_seniority = "(declare-fun seniority (User User) Bool) \n"
+    smt_fun_executed = "(declare-fun executed (Task) Bool)\n"
 
     #smt_fun_allowed = "(declare-fun allowed (User Task) Bool)\n"
     smt_fun_alloc_user = "(declare-fun alloc_user (Task) User) \n"
 
-    #smt_const_bottom = "(declare-const bottom User) \n"
+    smt_const_bottom = "(declare-const bottom User) \n"
 
     smt_fun_seniority_transitivity = "(assert (forall ((u1 User) (u2 User) (u3 User)) " \
                                      "(=> (and (seniority u1 u2) (seniority u2 u3)) " \
@@ -49,6 +50,9 @@ class p_c(object):
     dict_seniority = { }
     dict_user_alloc = { }
     dict_task_user_auth = { }
+    dict_or_task = { }
+    dict_xor_task = { }
+    dict_sod = []
 
     allocate_users = False
 
@@ -86,10 +90,11 @@ class p_c(object):
         #p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
         #p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
         #p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
-        #p_c.users.append('bottom')
+        p_c.users.append('bottom')
+        p_c.smt = p_c.smt_fun_executed + p_c.smt
         p_c.smt = p_c.smt_fun_before + p_c.smt
         p_c.smt = p_c.smt_fun_seniority + p_c.smt
-        #p_c.smt = p_c.smt_const_bottom + p_c.smt
+        p_c.smt = p_c.smt_const_bottom + p_c.smt
         p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
         #p_c.smt = p_c.smt_fun_allowed + p_c.smt
         p_c.smt = p_c.smt_sort_user + p_c.smt
@@ -136,6 +141,7 @@ class p_c(object):
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
+        p_c.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -145,7 +151,7 @@ class p_c(object):
         # if p[2] in p_c.users and p[4] in p_c.users:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
-        # p_c.smt += "(assert (not(seniority " + p[4] + " " + p[2] + "))) \n"
+        p_c.dict_sod[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
 
     # ie Alloc: ('u3', 't3')
     def p_allocation_pair(self, p):
@@ -165,7 +171,6 @@ class p_c(object):
         p[0] = [p[2]] + [p[5]]
         print p[5]
         p_c.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
-        # p_c.smt += ""
         print "dict_task_user_auth: ", p_c.dict_task_user_auth
 
 
