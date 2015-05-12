@@ -5,6 +5,7 @@ from p_c import p_c
 from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
+import itertools
 
 class MyParse(p_c):
 
@@ -246,6 +247,38 @@ def executed_and_tasks():
     print "The executed AND tasks", executed_tasks
     return executed_tasks
 
+def executed_or_tasks():
+    print or_task_list
+    or_execution = ""
+    for key, value in or_task_list.iteritems():
+        key_list = []
+        key_list.append(key)
+        # if(len(value) % 2 == 1):
+        #     #
+        bracket_count = 0
+        elem_count = 0
+        or_execution += "(or "
+        for elem in itertools.product(key_list, value):
+            print elem
+            if elem_count < 2:
+                or_execution += "(and (executed " + elem[0] + ") "
+                or_execution += "(executed " + elem[1] + "))"
+                bracket_count += 1
+                if bracket_count % 2 == 0:
+                    or_execution += ")"
+            else:
+                or_execution = "(executed " + elem[1] + "))" + or_execution
+                or_execution = "(and (executed " + elem[0] + ") " +or_execution
+                or_execution = "(or " + or_execution
+                bracket_count += 1
+            if bracket_count % 2 == 0:
+                or_execution += ")"
+            elem_count += 1
+        or_execution += ")"
+    or_execution = "(assert" + or_execution
+    print "OR EXECUTION RESULT", or_execution
+
+
 def unique_users_axiom():
     print my_parse.users
     c = []
@@ -289,9 +322,6 @@ def executable_sod():
         sod += "(not (=(alloc_user " + p[0] + ") (alloc_user " + p[1] + ")))))\n"
     print sod
     return sod
-
-def executable_or():
-    print or_task_list
 
 
 # while True:
@@ -410,6 +440,9 @@ exe_and_tasks = z3.parse_smt2_string(original)
 s.add(exe_and_tasks)
 print "after adding executed tasks in and", s.check()
 print s.model()
+
+print "EXECUTED OR TASKS"
+executed_or_tasks()
 
 # Do the allocation of users and tasks if not specified
 alloc_user_task = ""
