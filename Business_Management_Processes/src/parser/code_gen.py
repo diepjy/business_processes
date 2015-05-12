@@ -264,17 +264,17 @@ def executed_or_tasks():
                 or_execution += "(and (executed " + elem[0] + ") "
                 or_execution += "(executed " + elem[1] + "))"
                 bracket_count += 1
-                if bracket_count % 2 == 0:
-                    or_execution += ")"
+                # if bracket_count % 2 == 0:
+                #     or_execution += ")"
             else:
                 or_execution = "(executed " + elem[1] + "))" + or_execution
                 or_execution = "(and (executed " + elem[0] + ") " +or_execution
                 or_execution = "(or " + or_execution
-                bracket_count += 1
-            if bracket_count % 2 == 0:
+                # bracket_count += 1
+                # if bracket_count % 2 == 0:
                 or_execution += ")"
             elem_count += 1
-        or_execution += ")"
+        or_execution += "))"
     or_execution = "(assert" + or_execution
     print "OR EXECUTION RESULT", or_execution
 
