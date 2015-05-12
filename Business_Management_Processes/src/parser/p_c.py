@@ -53,6 +53,7 @@ class p_c(object):
     dict_or_task = { }
     dict_xor_task = { }
     dict_sod = []
+    dict_bod = []
 
     allocate_users = False
 
@@ -133,6 +134,7 @@ class p_c(object):
         # if p[2].replace("'", "") in p_c.tasks and p[4].replace("'", "") in p_c.tasks:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
+        p_c.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
