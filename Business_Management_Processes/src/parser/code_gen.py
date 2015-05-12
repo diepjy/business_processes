@@ -5,7 +5,6 @@ from p_c import p_c
 from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
-import itertools
 
 class MyParse(p_c):
 
@@ -226,37 +225,26 @@ def get_task_options(d):
                            "))\n"
         elif value == "execution":
             print "EXECUTION!!!!!!!!!!"
-            if "or" in value:
-                print "OR EXE!!!!!!!!!"
-                for t in task_list:
-                    if t in value:
-                        print t
-                        # smt_options += "(assert (=>(before " \
-                        #                + key + " " + t  \
-                        #                ")" \
-                        #                "(alloc_user)" \
-                        #                "))"
-            elif "and" in value:
-                print "AND EXE!!!!!!!!!!!"
     print smt_options
     return smt_options
 
 def executed_and_tasks():
     executed_tasks = ""
+    print "EXE AND TASKS"
+    print xor_task_list, or_task_list, task_list
+    or_xor_tasks = []
+    for key, value in xor_task_list.iteritems():
+        or_xor_tasks += value
+        print value
+    for key, value in or_task_list.iteritems():
+        or_xor_tasks += value
+        print value
+    print or_xor_tasks
     for p in task_list:
-        if p not in or_task_list and p not in xor_task_list:
-            print p
+        if p not in or_xor_tasks:
             executed_tasks += "(assert (executed " + p + "))\n"
     print "The executed AND tasks", executed_tasks
     return executed_tasks
-
-
-# def unique_users_axiom():
-#     unique_users = "(assert (forall ((u1 User) (u2 User))" \
-#                    "(=> (not(= u1 u2)) (not(= u2 u1)))" \
-#                    "))\n"
-#     print unique_users
-#     return unique_users
 
 def unique_users_axiom():
     print my_parse.users
@@ -302,6 +290,9 @@ def executable_sod():
     print sod
     return sod
 
+def executable_or():
+    print or_task_list
+
 
 # while True:
 # try:
@@ -319,7 +310,7 @@ print t
 # Collect results to SMT solver
 original = my_parse.smt
 
-print "code gen dict task user auth", my_parse.dict_task_user_auth
+# print "code gen dict task user auth", my_parse.dict_task_user_auth
 
 print original
 

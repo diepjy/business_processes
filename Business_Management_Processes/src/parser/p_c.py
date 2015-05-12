@@ -111,6 +111,7 @@ class p_c(object):
                  | SENIORITY COLON user_node_pair
                  | ALLOC COLON allocation_pair
                  | AUTHORISED COLON authorised_pair
+                 | EXECUTION COLON fork
         '''
         p[0] = p[3]
 
@@ -151,7 +152,7 @@ class p_c(object):
         # if p[2] in p_c.users and p[4] in p_c.users:
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
-        p_c.dict_sod[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
+        # p_c.dict_sod[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
 
     # ie Alloc: ('u3', 't3')
     def p_allocation_pair(self, p):
@@ -210,7 +211,7 @@ class p_c(object):
             p_c.users.append(p[0].replace("'", ""))
             p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
 
-    def p_variable_task_option(self,p):
+    def p_variable_task_option(self, p):
         '''variable_task_option : OPTION variable_option_flag COLON op variable_task_option
                   | OPTION variable_option_flag COLON op COMMA task_node
                   | OPTION variable_option_flag COLON op end
@@ -230,7 +231,6 @@ class p_c(object):
     # ie -min_sec_lv:'t4'
     def p_variable_option_flag(self, p):
         '''variable_option_flag : MIN_SEC_LV
-                                | EXECUTION
         '''
         p[0] = p[1]
 
@@ -245,10 +245,35 @@ class p_c(object):
               | GEQ NODE
               | LEQ NODE
               | NEQ NODE
-              | OR NODE
-              | AND NODE
-              | XOR NODE'''
+              '''
         p[0] = p[1] + p[2]
+
+    def p_execution(self, p):
+        '''fork : OR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END rules
+                | OR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN COMMA fork
+                | OR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END
+                | XOR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END rules
+                | XOR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN COMMA fork
+                | XOR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END
+        '''
+        p[0] = [p[3]] + [p[6]]
+        if "Or" in p[1]:
+            p_c.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
+            print "dict_task_or_task: ", p_c.dict_or_task
+        if "Xor" in p[1]:
+            p_c.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
+            print "dict_task_xor_task: ", p_c.dict_xor_task
+
+    def p_task_list(self, p):
+        '''task_list : NODE COMMA task_list
+                     | NODE
+        '''
+        if len(p) == 2:
+            p[0] = p[1]
+        print len(p)
+        if len(p) > 2:
+            print p[3]
+            p[0] = p[1] + p[2] + p[3]
 
     def p_user_option(self, p):
         '''user_option : OPTION USERS_OPTION user_option

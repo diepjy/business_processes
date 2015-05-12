@@ -13,10 +13,9 @@ class lexer_class(object):
         'allocate' : 'ALLOCATE',
         'min_sec_lv' : 'MIN_SEC_LV',
         'start' : 'START',
-        'or' : 'OR',
-        'and' : 'AND',
-        'xor' : 'XOR',
-        'execution' : 'EXECUTION',
+        'Or' : 'OR',
+        'Xor' : 'XOR',
+        'Execution' : 'EXECUTION',
         'Alloc' : 'ALLOC',
         'Authorised' : 'AUTHORISED'
     }
