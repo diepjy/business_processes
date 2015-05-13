@@ -77,12 +77,31 @@ def get_task_options(d):
                 print "= seniority"
                 for t in task_list:
                     if t in value:
-                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User))" \
+                                       "(=>" \
+                                       "(executed " \
+                                       + key + \
+                                       ")" \
+                                       "(or" \
+                                       "(=>" \
+                                       "(and (seniority u3 u4) (not (= u3 u4))) " \
+                                       "(or " \
+                                       "(and (= (alloc_user " \
+                                       + key + \
+                                       ") u3) (=(alloc_user " \
+                                       + t + \
+                                       ") u3))" \
+                                       "(and (= (alloc_user " \
+                                       + key + \
+                                       ") u4) (=(alloc_user " \
+                                       + t + \
+                                       ") u4))" \
+                                       ")" \
+                                       ")" \
                                        "(or" \
                                        "(=> " \
                                        "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) " \
-                                       "(not(= u3 u5))) (not(= u3 u4))) " \
-                                       "(not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
+                                       "(not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
                                        "(and (or (=(alloc_user " \
                                        + t + \
                                        ") u3) (=(alloc_user " \
@@ -94,14 +113,21 @@ def get_task_options(d):
                                        ") u5)))" \
                                        ")" \
                                        "(=>" \
-                                       "(and (and (and (or (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
-                                       "(and (=(alloc_user " \
-                                       + t + \
-                                       ") u4) (or (=(alloc_user " \
+                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) " \
+                                       "(not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
+                                       "(or (and (=(alloc_user " \
                                        + key + \
                                        ") u3) (=(alloc_user " \
+                                       + t + \
+                                       ") u5))" \
+                                       "(and (=(alloc_user " \
+                                       + t + \
+                                       ") u3) (=(alloc_user " \
                                        + key + \
-                                       ") u5)))" \
+                                       ") u5))" \
+                                       ")" \
+                                       ")" \
+                                       ")" \
                                        ")" \
                                        ")" \
                                        "))\n"
@@ -384,13 +410,14 @@ s.add(exe_and_tasks)
 print "after adding executed tasks in and", s.check()
 print s.model()
 
-print "EXECUTED OR TASKS"
-original += executed_or_tasks()
-print original
-exe_or_tasks = z3.parse_smt2_string(original)
-s.add(exe_or_tasks)
-print "after adding executed tasks in or", s.check()
-print s.model()
+if or_task_list:
+    print "EXECUTED OR TASKS"
+    original += executed_or_tasks()
+    print original
+    exe_or_tasks = z3.parse_smt2_string(original)
+    s.add(exe_or_tasks)
+    print "after adding executed tasks in or", s.check()
+    print s.model()
 
 # Do the allocation of users and tasks if not specified
 alloc_user_task = ""
