@@ -136,101 +136,38 @@ def get_task_options(d):
                 print ">>>>>>> seniority"
                 for t in task_list:
                     if t in value:
-                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                        smt_options += "(assert " \
                                        "(=>" \
-                                       "(executed " \
+                                       "(and (executed " \
                                        + key + \
-                                       ")" \
-                                       "(or" \
-                                       "(=> " \
-                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) (not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
-                                       "(or " \
-                                       "(and (or (or(=(alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
-                                       + key + \
-                                       ") u5)) (=(alloc_user " \
-                                       + key + \
-                                       ") u6)) (=(alloc_user " \
+                                       ") (executed " \
                                        + t + \
-                                       ") u4))" \
-                                       "(and (or (or(=(alloc_user " \
-                                       + t + \
-                                       ") u3) (=(alloc_user " \
-                                       + t + \
-                                       ") u5)) (=(alloc_user " \
-                                       + t + \
-                                       ") u4)) (=(alloc_user " \
+                                       "))" \
+                                       "(seniority (alloc_user " \
                                        + key + \
-                                       ") u6))" \
-                                       ")" \
-                                       ")" \
-                                       "(=> " \
-                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
-                                       "(and (=(alloc_user " \
+                                       ") (alloc_user " \
                                        + t + \
-                                       ") u4) (or (=(alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
-                                       + key + \
-                                       ") u5)))" \
+                                       "))" \
                                        ")" \
-                                       ")" \
-                                       ")" \
-                                       "))\n"
+                                       ")"
             elif "<" in value:
                 print "<<<<<<< seniority"
                 for t in task_list:
                     if t in value:
-                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                        smt_options += "(assert " \
                                        "(=>" \
-                                       "(executed " \
-                                       + key + \
-                                       ")" \
-                                       "(or" \
-                                       "(=>" \
-                                       "(and (seniority u3 u4) (not (= u3 u4))) " \
-                                       "(and (=(alloc_user t4) u3) (=(alloc_user t3) u4))" \
-                                       ")" \
-                                       "(or" \
-                                       "(=> " \
-                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) " \
-                                       "(not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
-                                       "(or " \
-                                       "(and (or (or(=(alloc_user " \
+                                       "(and (executed " \
                                        + t + \
-                                       ") u3) (=(alloc_user " \
+                                       ") (executed " \
+                                       + key + \
+                                       "))" \
+                                       "(seniority (alloc_user " \
                                        + t + \
-                                       ") u5)) (=(alloc_user " \
-                                       + t + \
-                                       ") u6)) (=(alloc_user " \
+                                       ") (alloc_user " \
                                        + key + \
-                                       ") u4))" \
-                                       "(and (or (or(=(alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
-                                       + key + \
-                                       ") u5)) (=(alloc_user " \
-                                       + key + \
-                                       ") u4)) (=(alloc_user " \
-                                       + key + \
-                                       ") u6))" \
+                                       "))" \
                                        ")" \
-                                       ")" \
-                                       "(=> " \
-                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
-                                       "(and (=(alloc_user " \
-                                       + key + \
-                                       ") u4) (or (=(alloc_user " \
-                                       + t + \
-                                       ") u3) (=(alloc_user " \
-                                       + t + \
-                                       ") u5)))" \
-                                       ")" \
-                                       ")" \
-                                       ")" \
-                                       ")" \
-                                       "))\n"
+                                       ")"
             elif "!=" in value:
                 # Just OR together the > and < axioms
                 print "!!!!!!! seniority"
@@ -338,6 +275,13 @@ def executable_bod():
         bod += "(=(alloc_user " + p[0] + ") (alloc_user " + p[1] + "))))\n"
     return bod
 
+def only_users():
+    only_users = "(assert (forall ((u User)) (or"
+    for u in user_list:
+        only_users += "(= u " + u + ")"
+    only_users += ")))\n"
+    return only_users
+
 # while True:
 # try:
 s = raw_input('busines_process > ')
@@ -389,6 +333,13 @@ print s.model()
 # Go through all combinations of seniority available
 print my_parse.users
 smt_seniors = original
+
+original += only_users()
+print original
+o = z3.parse_smt2_string(original)
+s.add(o)
+print "after adding only_users axiom", s.check()
+print s.model()
 
 print "EXE SOD"
 original += executable_sod()

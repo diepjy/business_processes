@@ -103,6 +103,9 @@ class p_c(object):
         # p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
         # p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
         # p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
+        p_c.smt = p_c.smt_users_neq_bottom + p_c.smt
+        p_c.smt = p_c.smt_non_cyclic_before + p_c.smt
+        p_c.smt = p_c.smt_non_cyclic_seniority + p_c.smt
         p_c.users.append('bottom')
         p_c.smt = p_c.smt_fun_executed + p_c.smt
         p_c.smt = p_c.smt_fun_before + p_c.smt
