@@ -137,6 +137,10 @@ def get_task_options(d):
                 for t in task_list:
                     if t in value:
                         smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                                       "(=>" \
+                                       "(executed " \
+                                       + key + \
+                                       ")" \
                                        "(or" \
                                        "(=> " \
                                        "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) (not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
@@ -172,12 +176,22 @@ def get_task_options(d):
                                        ") u5)))" \
                                        ")" \
                                        ")" \
+                                       ")" \
                                        "))\n"
             elif "<" in value:
                 print "<<<<<<< seniority"
                 for t in task_list:
                     if t in value:
                         smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User)) " \
+                                       "(=>" \
+                                       "(executed " \
+                                       + key + \
+                                       ")" \
+                                       "(or" \
+                                       "(=>" \
+                                       "(and (seniority u3 u4) (not (= u3 u4))) " \
+                                       "(and (=(alloc_user t4) u3) (=(alloc_user t3) u4))" \
+                                       ")" \
                                        "(or" \
                                        "(=> " \
                                        "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) " \
@@ -206,12 +220,14 @@ def get_task_options(d):
                                        "(=> " \
                                        "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) (not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
                                        "(and (=(alloc_user " \
-                                       + t + \
+                                       + key + \
                                        ") u4) (or (=(alloc_user " \
-                                       + key + \
+                                       + t + \
                                        ") u3) (=(alloc_user " \
-                                       + key + \
+                                       + t + \
                                        ") u5)))" \
+                                       ")" \
+                                       ")" \
                                        ")" \
                                        ")" \
                                        "))\n"

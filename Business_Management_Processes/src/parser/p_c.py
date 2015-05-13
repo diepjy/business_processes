@@ -27,13 +27,13 @@ class p_c(object):
     #                        "(and (and (and (and (and (and (seniority u3 u4) (seniority u3 u2)) (seniority u5 u4)) (seniority u u5)) (seniority u u3)) (not(= u u3))) (not(= u u3)))" \
     #                        "(and (and (seniority u5 u2) (not(seniority u5 u3))) (not(seniority u3 u5)))" \
     #                        ")))\n"
-    smt_unique_user_task_alloc = "(assert (forall ((u1 User) (u2 User) (t Task)) " \
-                                 "(=> (and (=(alloc_user t) u1) (not(= u1 u2))) (not(=(alloc_user t) u2)))" \
-                                 "))\n"
+    # smt_unique_user_task_alloc = "(assert (forall ((u1 User) (u2 User) (t Task)) " \
+    #                             "(=> (and (=(alloc_user t) u1) (not(= u1 u2))) (not(=(alloc_user t) u2)))" \
+    #                             "))\n"
 
-    smt_unique_users_axiom = "(assert (forall ((u1 User) (u2 User))" \
-                   "(=> (not(= u1 u2)) (not(= u2 u1)))" \
-                   "))\n"
+    #smt_unique_users_axiom = "(assert (forall ((u1 User) (u2 User))" \
+    #               "(=> (not(= u1 u2)) (not(= u2 u1)))" \
+    #               "))\n"
 
     smt_before_transitivity = "(assert (forall ((t1 Task) (t2 Task) (t3 Task))" \
                               "(=>" \
@@ -41,6 +41,21 @@ class p_c(object):
                               "(before t1 t3)" \
                               ")" \
                               "))\n"
+
+    smt_users_neq_bottom = "(assert (forall ((u User))" \
+                           "(=>" \
+                           "(not(= u bottom))" \
+                           "(and (not(seniority bottom u)) (not(seniority u bottom)))" \
+                           ")" \
+                           "))\n"
+
+    smt_non_cyclic_seniority = "(assert (forall ((u User))" \
+                               "(not (seniority u u))" \
+                               "))\n"
+
+    smt_non_cyclic_before = "(assert (forall ((t Task))" \
+                            "(not (before t t))" \
+                            "))\n"
 
     rules_used = []
     tasks = []
@@ -57,13 +72,10 @@ class p_c(object):
 
     allocate_users = False
 
-    # task = Sort('task')
-    # user = Sort('user')
-
-    def __init__(self):
-        self.before = []
-        self.seniority = []
-        self.sod = []
+    # def __init__(self):
+    #     self.before = []
+    #     self.seniority = []
+    #     self.sod = []
         # user pairs and task pairs should be indexes???
 
     # TODO: option flags
@@ -83,21 +95,21 @@ class p_c(object):
             # print p_c.rules_used
         # elif p[1] not in p_c.rules_used and p[1] == 'Users':
         p_c.smt = p_c.smt_before_transitivity + p_c.smt
-        p_c.smt = p_c.smt_unique_users_axiom + p_c.smt
-        p_c.smt = p_c.smt_unique_user_task_alloc + p_c.smt
-        #p_c.smt = p_c.smt_indirect_hierarchy + p_c.smt
+        # p_c.smt = p_c.smt_unique_users_axiom + p_c.smt
+        # p_c.smt = p_c.smt_unique_user_task_alloc + p_c.smt
+        # p_c.smt = p_c.smt_indirect_hierarchy + p_c.smt
         p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
         # p_c.smt = p_c.smt_fun_less_senior_not_allowed + p_c.smt
-        #p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
-        #p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
-        #p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
+        # p_c.smt = "(assert (forall ((t Task) (u User)) (=> (allowed u t) (=(alloc_user t) u)))) \n" + p_c.smt
+        # p_c.smt = "(push) \n" + "(assert (forall ((t Task)) (not (=(alloc_user t) bottom)))) \n"  + p_c.smt
+        # p_c.smt = "(assert (forall ((t Task) (u1 User) (u2 User)) (=> (and (allowed u1 t) (seniority u2 u1)) (allowed u2 t))))\n" + p_c.smt
         p_c.users.append('bottom')
         p_c.smt = p_c.smt_fun_executed + p_c.smt
         p_c.smt = p_c.smt_fun_before + p_c.smt
         p_c.smt = p_c.smt_fun_seniority + p_c.smt
         p_c.smt = p_c.smt_const_bottom + p_c.smt
         p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
-        #p_c.smt = p_c.smt_fun_allowed + p_c.smt
+        # p_c.smt = p_c.smt_fun_allowed + p_c.smt
         p_c.smt = p_c.smt_sort_user + p_c.smt
         p_c.smt = p_c.smt_sort_task + p_c.smt
         # p_c.rules_used.append(p[1])
