@@ -1,6 +1,11 @@
 __author__ = 'joanna'
 
+from lexer_class import *
+
 class p_c(object):
+
+    tokens = lexer_class.tokens
+
     smt = ""
 
     smt_sort_task = "(declare-sort Task) \n"
@@ -40,21 +45,21 @@ class p_c(object):
     smt_non_cyclic_before = "(assert (forall ((t Task))" \
                             "(not (before t t))" \
                             "))\n"
+    def __init__(self):
+        self.rules_used = []
+        self.tasks = []
+        self.users = []
+        self.dict_tasks = { }
+        self.dict_users = { }
+        self.dict_seniority = { }
+        self.dict_user_alloc = { }
+        self.dict_task_user_auth = { }
+        self.dict_or_task = { }
+        self.dict_xor_task = { }
+        self.dict_sod = []
+        self.dict_bod = []
 
-    rules_used = []
-    tasks = []
-    users = []
-    dict_tasks = { }
-    dict_users = { }
-    dict_seniority = { }
-    dict_user_alloc = { }
-    dict_task_user_auth = { }
-    dict_or_task = { }
-    dict_xor_task = { }
-    dict_sod = []
-    dict_bod = []
-
-    allocate_users = False
+        self.allocate_users = False
 
     def p_prog(self, p):
         '''prog : begin
@@ -64,19 +69,19 @@ class p_c(object):
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
                  | TASKS COLON task_node USERS COLON user_node rules'''
-        p_c.smt = p_c.smt_before_transitivity + p_c.smt
-        p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
-        p_c.smt = p_c.smt_users_neq_bottom + p_c.smt
-        p_c.smt = p_c.smt_non_cyclic_before + p_c.smt
-        p_c.smt = p_c.smt_non_cyclic_seniority + p_c.smt
-        p_c.users.append('bottom')
-        p_c.smt = p_c.smt_fun_executed + p_c.smt
-        p_c.smt = p_c.smt_fun_before + p_c.smt
-        p_c.smt = p_c.smt_fun_seniority + p_c.smt
-        p_c.smt = p_c.smt_const_bottom + p_c.smt
-        p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
-        p_c.smt = p_c.smt_sort_user + p_c.smt
-        p_c.smt = p_c.smt_sort_task + p_c.smt
+        # p_c.smt = p_c.smt_before_transitivity + p_c.smt
+        # p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
+        # p_c.smt = p_c.smt_users_neq_bottom + p_c.smt
+        # p_c.smt = p_c.smt_non_cyclic_before + p_c.smt
+        # p_c.smt = p_c.smt_non_cyclic_seniority + p_c.smt
+        self.users.append('bottom')
+        # p_c.smt = p_c.smt_fun_executed + p_c.smt
+        # p_c.smt = p_c.smt_fun_before + p_c.smt
+        # p_c.smt = p_c.smt_fun_seniority + p_c.smt
+        # p_c.smt = p_c.smt_const_bottom + p_c.smt
+        # p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
+        # p_c.smt = p_c.smt_sort_user + p_c.smt
+        # p_c.smt = p_c.smt_sort_task + p_c.smt
         p[0] = p[3] + p[6]
 
     def p_rules(self, p):
@@ -105,7 +110,7 @@ class p_c(object):
                      '''
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
-        p_c.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
+        self.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -114,7 +119,7 @@ class p_c(object):
                      '''
         p[0] = [p[2]] + [p[4]]
         p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
-        p_c.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
+        self.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -131,7 +136,7 @@ class p_c(object):
                           | LPAREN NODE COMMA NODE RPAREN END
         '''
         p[0] = [p[2]] + [p[4]]
-        p_c.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
+        self.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
         p_c.smt += "(assert (=(alloc_user " + p[4] + ")" + p[2] + "))\n"
 
     def p_authorised_pair(self, p):
@@ -141,8 +146,8 @@ class p_c(object):
         '''
         p[0] = [p[2]] + [p[5]]
         print p[5]
-        p_c.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
-        print "dict_task_user_auth: ", p_c.dict_task_user_auth
+        self.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
+        print "dict_task_user_auth: ", self.dict_task_user_auth
 
 
     def p_user_list(self, p):
@@ -162,12 +167,11 @@ class p_c(object):
                 | NODE variable_task_option
                 | NODE task_option'''
         p[0] = p[1]
-        p_c.task = p[0]
+        self.task = p[0]
         # if p[0] not in p_c.tasks:
-        p_c.tasks.append(p[0].replace("'", ""))
+        self.tasks.append(p[0].replace("'", ""))
         if len(p) == 3:
-            p_c.dict_tasks[p[1].replace("'", "")] = p[2]
-        p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
+            self.dict_tasks[p[1].replace("'", "")] = p[2]
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -175,9 +179,9 @@ class p_c(object):
                 | NODE user_option
                 | NODE end_rule'''
         p[0] = p[1]
-        if p[0] not in p_c.users:
-            p_c.users.append(p[0].replace("'", ""))
-            p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
+        if p[0] not in self.users:
+            self.users.append(p[0].replace("'", ""))
+        print "user nodes", self.users
 
     def p_variable_task_option(self, p):
         '''variable_task_option : OPTION variable_option_flag COLON op variable_task_option
@@ -226,11 +230,11 @@ class p_c(object):
         '''
         p[0] = [p[3]] + [p[6]]
         if "Or" in p[1]:
-            p_c.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
-            print "dict_task_or_task: ", p_c.dict_or_task
+            self.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
+            print "dict_task_or_task: ", self.dict_or_task
         if "Xor" in p[1]:
-            p_c.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
-            print "dict_task_xor_task: ", p_c.dict_xor_task
+            self.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
+            print "dict_task_xor_task: ", self.dict_xor_task
 
     def p_task_list(self, p):
         '''task_list : NODE COMMA task_list
@@ -255,7 +259,7 @@ class p_c(object):
         '''users_global_option : ALLOCATE end_rule'''
         p[0] = p[1]
         if p[0] == 'allocate':
-            p_c.allocate_users = True
+            self.allocate_users = True
         else:
             self.p_error(p)
 

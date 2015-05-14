@@ -8,27 +8,46 @@ from ply.yacc import yacc
 import itertools
 import copy
 
-class MyParse(p_c):
-
-    tokens = lexer_class.tokens
-
-    def tokenise_input(self, input):
-        self.lexer.input(input)
-        for t in self.lexer:
-            print t
-
 # TODO: Tokenise file
 
 class code_gen(object):
 
-    my_parse = MyParse()
-    user_list = my_parse.users
-    task_list = my_parse.tasks
-    or_task_list = my_parse.dict_or_task
-    xor_task_list = my_parse.dict_xor_task
-    sod_list = my_parse.dict_sod
-    bod_list = my_parse.dict_bod
-    user_auth = my_parse.dict_task_user_auth
+    smt_sort_task = "(declare-sort Task) \n"
+    smt_sort_user = "(declare-sort User) \n"
+    smt_fun_before = "(declare-fun before (Task Task) Bool) \n"
+    smt_fun_seniority = "(declare-fun seniority (User User) Bool) \n"
+    smt_fun_executed = "(declare-fun executed (Task) Bool)\n"
+
+    smt_fun_alloc_user = "(declare-fun alloc_user (Task) User) \n"
+
+    smt_const_bottom = "(declare-const bottom User) \n"
+
+    smt_fun_seniority_transitivity = "(assert (forall ((u1 User) (u2 User) (u3 User)) " \
+                                     "(=> (and (seniority u1 u2) (seniority u2 u3)) " \
+                                     "(seniority u1 u3))" \
+                                     "))\n"
+
+    smt_before_transitivity = "(assert (forall ((t1 Task) (t2 Task) (t3 Task))" \
+                              "(=>" \
+                              "(and(before t1 t2) (before t2 t3))" \
+                              "(before t1 t3)" \
+                              ")" \
+                              "))\n"
+
+    smt_users_neq_bottom = "(assert (forall ((u User))" \
+                           "(=>" \
+                           "(not(= u bottom))" \
+                           "(and (not(seniority bottom u)) (not(seniority u bottom)))" \
+                           ")" \
+                           "))\n"
+
+    smt_non_cyclic_seniority = "(assert (forall ((u User))" \
+                               "(not (seniority u u))" \
+                               "))\n"
+
+    smt_non_cyclic_before = "(assert (forall ((t Task))" \
+                            "(not (before t t))" \
+                            "))\n"
     bottom_user_execution_axiom = "(assert (forall ((t Task))" \
                                   "(=> " \
                                   "(executed t)" \
@@ -42,9 +61,27 @@ class code_gen(object):
                                       ")" \
                                       "))\n"
 
+
     def __init__(self):
         self.lexer = lex(module=lexer_class(), optimize=1)
-        self.parser = yacc(module=MyParse(), start='prog', optimize=1)
+        self.parser = yacc(module=p_c(), start='prog', optimize=1)
+
+        self.original = ""
+        self.original += code_gen.smt_sort_user
+        self.original += code_gen.smt_sort_task
+
+        self.original += code_gen.smt_const_bottom
+
+        self.original += code_gen.smt_fun_executed
+        self.original += code_gen.smt_fun_before
+        self.original += code_gen.smt_fun_seniority
+        self.original += code_gen.smt_fun_alloc_user
+
+        self.original += code_gen.smt_before_transitivity
+        self.original += code_gen.smt_fun_seniority_transitivity
+        self.original += code_gen.smt_users_neq_bottom
+        self.original += code_gen.smt_non_cyclic_before
+        self.original += code_gen.smt_non_cyclic_seniority
 
     def tokenize_string(self, code):
         self.lexer.input(code)
@@ -56,17 +93,37 @@ class code_gen(object):
         return self.parser.parse(code, lexer=self.lexer)
 
     def get_smt(self, code, lineno=1):
+        my_parse = p_c()
+        user_list = my_parse.users
+        print user_list
+        task_list = my_parse.tasks
+        option_tasks = my_parse.dict_tasks
+        or_task_list = my_parse.dict_or_task
+        xor_task_list = my_parse.dict_xor_task
+        sod_list = my_parse.dict_sod
+        bod_list = my_parse.dict_bod
+        user_auth = my_parse.dict_task_user_auth
+        alloc_users = my_parse.allocate_users
+        # my_parse = p_c()
+
         print code
         self.lexer.input(code)
         t = self.parser.parse(code, lexer=self.lexer)
         print "t is ", t
 
+        # mp = p_c()
+        print "my parse", user_list
+        # mp.users = []
+
         # Collect results to SMT solver
-        original = copy.deepcopy(code_gen.my_parse.smt)
+        # self.original = code_gen.my_parse.smt
 
-        print "original is ", original
+        self.original += self.add_users()
+        self.original += self.add_tasks()
 
-        f = z3.parse_smt2_string(original)
+        print "original is ", self.original
+
+        f = z3.parse_smt2_string(self.original)
 
         s = z3.Solver()
         import sys
@@ -79,89 +136,85 @@ class code_gen(object):
 
         auth = self.authorised_task_to_users_axiom()
 
-        original += auth
-        print original
-        a = z3.parse_smt2_string(original)
+        self.original += auth
+        print self.original
+        a = z3.parse_smt2_string(self.original)
         s.add(a)
         s.check()
         s.model()
 
         # go through the options and check if they are possible given the basic model
         smt_options = self.get_task_options()
-        original += smt_options
+        self.original += smt_options
 
-        print "original with options:", original
-        o = z3.parse_smt2_string(original)
+        print "original with options:", self.original
+        o = z3.parse_smt2_string(self.original)
         s.add(o)
         print "after options added check", s.check()
         print s.model()
 
-        # Go through all combinations of seniority available
-        print code_gen.my_parse.users
-        smt_seniors = original
-
-        original += self.only_users()
-        print original
-        o = z3.parse_smt2_string(original)
+        self.original += self.only_users()
+        print self.original
+        o = z3.parse_smt2_string(self.original)
         s.add(o)
         print "after adding only_users axiom", s.check()
         print s.model()
 
         print "EXE SOD"
-        original += self.executable_sod()
-        print original
-        sod = z3.parse_smt2_string(original)
+        self.original += self.executable_sod()
+        print self.original
+        sod = z3.parse_smt2_string(self.original)
         s.add(sod)
         print "after execution sod added check", s.check()
         print s.model()
 
-        print "original with options:", original
-        o = z3.parse_smt2_string(original)
+        print "original with options:", self.original
+        o = z3.parse_smt2_string(self.original)
         s.add(o)
         print "after options added check", s.check()
         print s.model()
 
-        original += self.unique_users_axiom()
-        unique = z3.parse_smt2_string(original)
+        self.original += self.unique_users_axiom()
+        unique = z3.parse_smt2_string(self.original)
         s.add(unique)
         print "after options added check", s.check()
         print s.model()
 
         print "adding execution bottom axiom"
-        original += code_gen.bottom_user_execution_axiom
-        original += code_gen.not_bottom_user_execution_axiom
-        print original
-        bottom_user_axiom = z3.parse_smt2_string(original)
+        self.original += code_gen.bottom_user_execution_axiom
+        self.original += code_gen.not_bottom_user_execution_axiom
+        print self.original
+        bottom_user_axiom = z3.parse_smt2_string(self.original)
         s.add(bottom_user_axiom)
         print "after adding execution bottom axiom", s.check()
         print s.model()
 
-        original += self.executed_and_tasks()
-        print original
-        exe_and_tasks = z3.parse_smt2_string(original)
+        self.original += self.executed_and_tasks()
+        print self.original
+        exe_and_tasks = z3.parse_smt2_string(self.original)
         s.add(exe_and_tasks)
         print "after adding executed tasks in and", s.check()
         print s.model()
 
-        if code_gen.or_task_list:
+        if self.or_task_list:
             print "EXECUTED OR TASKS"
-            original += self.executed_or_tasks()
-            print original
-            exe_or_tasks = z3.parse_smt2_string(original)
+            self.original += self.executed_or_tasks()
+            print self.original
+            exe_or_tasks = z3.parse_smt2_string(self.original)
             s.add(exe_or_tasks)
             print "after adding executed tasks in or", s.check()
             print s.model()
 
         # Do the allocation of users and tasks if not specified
         alloc_user_task = ""
-        if code_gen.my_parse.allocate_users:
+        if self.alloc_users:
             # Loop through all users and allocate them to a task
             # Use BOTTOM user to verify
 
             c = []
-            for i in code_gen.product(code_gen(), code_gen.user_list, code_gen.task_list):
+            for i in code_gen.product(code_gen(), self.user_list, self.task_list):
                 c.append(i)
-            original_extra = original
+            original_extra = self.original
             for cs in c:
                 s.push()
                 original_extra += "(push)\n"
@@ -205,9 +258,9 @@ class code_gen(object):
         Task = DeclareSort('Task')
         case_bottom_user = False
         for ms in m:
-            if str(ms) in code_gen.task_list:
+            if str(ms) in self.task_list:
                 model_map_task.append((ms, m[ms]))
-            if str(ms) in code_gen.user_list:
+            if str(ms) in self.user_list:
                 model_map_user.append((ms, m[ms]))
             str_ms = str(ms)
             if str_ms == "alloc_user":
@@ -241,7 +294,7 @@ class code_gen(object):
         else:
             print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
             print solution_map
-            print code_gen.my_parse.tasks
+            print self.task_list
             # # make a copy of the task list by slicing
             # checking = my_parse.tasks[:]
             # print checking
@@ -255,6 +308,7 @@ class code_gen(object):
             # if checking:
             #     print "unable to assign tasks to users:", checking
         # code_gen.my_parse.smt = ""
+        print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
         return solution_map
 
     def product(self, *args):
@@ -263,9 +317,25 @@ class code_gen(object):
         return (items + (item,)
                 for items in self.product(*args[:-1]) for item in args[-1])
 
+    def add_users(self):
+        users = ""
+        for u in code_gen.user_list:
+            if "bottom" != u:
+                users += "(declare-const " + u + " User) \n"
+        print users
+        return users
+
+    def add_tasks(self):
+        tasks = ""
+        for t in self.task_list:
+            tasks += "(declare-const " + t + " Task)\n"
+        print tasks
+        return tasks
+
+
     def get_task_options(self):
         smt_options = ""
-        d = code_gen.my_parse.dict_tasks
+        d = self.option_tasks
         for key, value in d.iteritems():
             if value == ";":
                 print "no options set"
@@ -359,11 +429,11 @@ class code_gen(object):
         executed_tasks = ""
         print "EXE AND TASKS"
         or_xor_tasks = []
-        for key, value in code_gen.xor_task_list.iteritems():
+        for key, value in self.xor_task_list.iteritems():
             or_xor_tasks += value
-        for key, value in code_gen.or_task_list.iteritems():
+        for key, value in self.or_task_list.iteritems():
             or_xor_tasks += value
-        for p in code_gen.task_list:
+        for p in self.task_list:
             if p not in or_xor_tasks:
                 executed_tasks += "(assert (executed " + p + "))\n"
         print "The executed AND tasks", executed_tasks
@@ -397,7 +467,7 @@ class code_gen(object):
     def unique_users_axiom(self):
         c = []
         unique_users = ""
-        for i in code_gen.product(code_gen(), code_gen.user_list, code_gen.user_list):
+        for i in code_gen.product(code_gen(), self.user_list, self.user_list):
             c.append(i)
         for cs in c:
             if cs[0] != cs[1]:
@@ -408,7 +478,7 @@ class code_gen(object):
 
     def authorised_task_to_users_axiom(self):
         auth = ""
-        auth_list = code_gen.user_auth
+        auth_list = self.user_auth
         for key, value in auth_list.iteritems():
             auth += "(assert (or "
             for u in value:
@@ -418,7 +488,7 @@ class code_gen(object):
 
     def executable_sod(self):
         sod = ""
-        for p in code_gen.sod_list:
+        for p in self.sod_list:
             sod += "(assert (=> "
             sod += "(and (executed " + p[0] + ") (executed " + p[1] + "))"
             sod += "(not (=(alloc_user " + p[0] + ") (alloc_user " + p[1] + ")))))\n"
@@ -434,15 +504,15 @@ class code_gen(object):
 
     def only_users(self):
         only = "(assert (forall ((u User)) (or"
-        for u in code_gen.user_list:
+        for u in self.user_list:
             only += "(= u " + u + ")"
         only += ")))\n"
         return only
 
 if __name__ == '__main__':
     lexer = lex(module=lexer_class(), optimize=1)
-    parser = yacc(module=MyParse(), start='prog', optimize=1)
-    my_parse = MyParse()
+    parser = yacc(module=p_c(), start='prog', optimize=1)
+    my_parse = p_c()
     user_list = my_parse.users
     task_list = my_parse.tasks
     or_task_list = my_parse.dict_or_task
@@ -599,7 +669,7 @@ if __name__ == '__main__':
             c.append(i)
         for cs in c:
             if cs[0] != cs[1]:
-                s.push()
+                # s.push()
                 unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))\n"
         print c
         return unique_users
@@ -636,6 +706,7 @@ if __name__ == '__main__':
         only_users += ")))\n"
         return only_users
 
+if __name__ == '__main__':
     # while True:
     # try:
     s = raw_input('busines_process > ')
@@ -650,6 +721,7 @@ if __name__ == '__main__':
     print t
 
     # Collect results to SMT solver
+    my_parse = p_c()
     original = my_parse.smt
 
     print original
