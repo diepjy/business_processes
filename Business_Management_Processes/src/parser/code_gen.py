@@ -6,6 +6,7 @@ from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
 import itertools
+import copy
 
 class MyParse(p_c):
 
@@ -58,12 +59,12 @@ class code_gen(object):
         print code
         self.lexer.input(code)
         t = self.parser.parse(code, lexer=self.lexer)
-        print t
+        print "t is ", t
 
         # Collect results to SMT solver
-        original = code_gen.my_parse.smt
+        original = copy.deepcopy(code_gen.my_parse.smt)
 
-        print original
+        print "original is ", original
 
         f = z3.parse_smt2_string(original)
 
@@ -253,6 +254,7 @@ class code_gen(object):
             # print checking
             # if checking:
             #     print "unable to assign tasks to users:", checking
+        # code_gen.my_parse.smt = ""
         return solution_map
 
     def product(self, *args):
