@@ -74,63 +74,24 @@ def get_task_options(d):
             print "no options set"
         elif "min_sec_lv" in value:
             if "=" in value and "!=" not in value:
+                # BOD
                 print "= seniority"
                 for t in task_list:
                     if t in value:
-                        smt_options += "(assert (forall ((u5 User) (u4 User) (u3 User) (u6 User))" \
+                        smt_options += "(assert " \
                                        "(=>" \
-                                       "(executed " \
+                                       "(and (executed " \
                                        + key + \
-                                       ")" \
-                                       "(or" \
-                                       "(=>" \
-                                       "(and (seniority u3 u4) (not (= u3 u4))) " \
-                                       "(or " \
-                                       "(and (= (alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
+                                       ") (executed " \
                                        + t + \
-                                       ") u3))" \
-                                       "(and (= (alloc_user " \
+                                       "))" \
+                                       "(=(alloc_user " \
                                        + key + \
-                                       ") u4) (=(alloc_user " \
+                                       ") (alloc_user " \
                                        + t + \
-                                       ") u4))" \
+                                       "))" \
                                        ")" \
-                                       ")" \
-                                       "(or" \
-                                       "(=> " \
-                                       "(and (and (and (and (and (and (and (and (and (seniority u3 u4) (seniority u5 u4)) (seniority u6 u3)) (seniority u6 u5)) " \
-                                       "(not(= u3 u5))) (not(= u3 u4))) (not(= u3 u6))) (not(= u4 u5))) (not(= u4 u6)))(not(= u5 u6))) " \
-                                       "(and (or (=(alloc_user " \
-                                       + t + \
-                                       ") u3) (=(alloc_user " \
-                                       + t + \
-                                       ") u5)) (or (=(alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
-                                       + key + \
-                                       ") u5)))" \
-                                       ")" \
-                                       "(=>" \
-                                       "(and (and (and (and (seniority u3 u4) (seniority u5 u4)) " \
-                                       "(not(= u3 u4))) (not(= u3 u5))) (not(= u4 u5)))" \
-                                       "(or (and (=(alloc_user " \
-                                       + key + \
-                                       ") u3) (=(alloc_user " \
-                                       + t + \
-                                       ") u5))" \
-                                       "(and (=(alloc_user " \
-                                       + t + \
-                                       ") u3) (=(alloc_user " \
-                                       + key + \
-                                       ") u5))" \
-                                       ")" \
-                                       ")" \
-                                       ")" \
-                                       ")" \
-                                       ")" \
-                                       "))\n"
+                                       ")\n"
             elif ">" in value:
                 # More senior allocation
                 print ">>>>>>> seniority"
@@ -169,26 +130,24 @@ def get_task_options(d):
                                        ")" \
                                        ")"
             elif "!=" in value:
-                # Just OR together the > and < axioms
+                # SOD
                 print "!!!!!!! seniority"
                 for t in task_list:
                     if t in value:
-                        smt_options += "(assert (forall ((u1 User) (u2 User) (u3 User))" \
-                                       "(or" \
-                                       "(=> " \
-                                       "(and" \
-                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
-                                       "(not(= u3 u2)))" \
-                                       "(and (=(alloc_user t3) u3) (=(alloc_user t4) u2))" \
+                        smt_options += "(assert " \
+                                       "(=>" \
+                                       "(and (executed " \
+                                       + key + \
+                                       ") (executed " \
+                                       + t + \
+                                       "))" \
+                                       "(not(=(alloc_user " \
+                                       + key + \
+                                       ") (alloc_user " \
+                                       + t + \
+                                       ")))" \
                                        ")" \
-                                       "(=> " \
-                                       "(and" \
-                                       "(and (seniority u2 u3) (not(= u2 u3)))" \
-                                       "(not(= u3 u2)))" \
-                                       "(and (=(alloc_user t3) u2) (=(alloc_user t4) u3))" \
-                                       ")" \
-                                       ")" \
-                                       "))\n"
+                                       ")\n"
         elif value == "start":
             print "START!!!!!!"
             smt_options += "(assert (forall ((t Task)) " \
