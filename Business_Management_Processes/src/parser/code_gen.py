@@ -6,6 +6,7 @@ from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
 import itertools
+from .model import *
 
 class MyParse(p_c):
 
@@ -45,15 +46,7 @@ class code_gen(object):
         return (items + (item,)
                 for items in self.product(*args[:-1]) for item in args[-1])
 
-lexer = lex(module=lexer_class(), optimize=1)
-parser = yacc(module=MyParse(), start='prog', optimize=1)
-my_parse = MyParse()
-user_list = my_parse.users
-task_list = my_parse.tasks
-or_task_list = my_parse.dict_or_task
-xor_task_list = my_parse.dict_xor_task
-sod_list = my_parse.dict_sod
-bod_list = my_parse.dict_bod
+
 bottom_user_execution_axiom = "(assert (forall ((t Task))" \
                               "(=> " \
                               "(executed t)" \
@@ -67,7 +60,7 @@ not_bottom_user_execution_axiom = "(assert (forall ((t Task))" \
                                   ")" \
                                   "))\n"
 
-def get_task_options(d):
+def get_task_options(d, task_list):
     smt_options = ""
     for key, value in d.iteritems():
         if value == ";":
@@ -158,7 +151,7 @@ def get_task_options(d):
     print smt_options
     return smt_options
 
-def executed_and_tasks():
+def executed_and_tasks(xor_task_list, or_task_list, task_list):
     executed_tasks = ""
     print "EXE AND TASKS"
     or_xor_tasks = []
@@ -172,7 +165,7 @@ def executed_and_tasks():
     print "The executed AND tasks", executed_tasks
     return executed_tasks
 
-def executed_or_tasks():
+def executed_or_tasks(or_task_list):
     or_execution = ""
     for key, value in or_task_list.iteritems():
         key_list = [key]
@@ -197,7 +190,7 @@ def executed_or_tasks():
     print "OR EXECUTION RESULT", or_execution
     return or_execution
 
-def unique_users_axiom():
+def unique_users_axiom(user_list):
     c = []
     unique_users = ""
     for i in code_gen.product(code_gen(), user_list, user_list):
@@ -218,7 +211,7 @@ def authorised_task_to_users_axiom(auth_list):
         auth += "))\n"
     return auth
 
-def executable_sod():
+def executable_sod(sod_list):
     sod = ""
     for p in sod_list:
         sod += "(assert (=> "
@@ -226,7 +219,7 @@ def executable_sod():
         sod += "(not (=(alloc_user " + p[0] + ") (alloc_user " + p[1] + ")))))\n"
     return sod
 
-def executable_bod():
+def executable_bod(bod_list):
     bod = ""
     for p in bod_list:
         bod += "(assert (=> "
@@ -234,7 +227,7 @@ def executable_bod():
         bod += "(=(alloc_user " + p[0] + ") (alloc_user " + p[1] + "))))\n"
     return bod
 
-def only_users():
+def only_users(user_list):
     only_users = "(assert (forall ((u User)) (or"
     for u in user_list:
         only_users += "(= u " + u + ")"
@@ -242,6 +235,9 @@ def only_users():
     return only_users
 
 def main(prompt_input):
+    lexer = lex(module=lexer_class(), optimize=1)
+    parser = yacc(module=p_c(), start='prog', optimize=1)
+
     # while True:
     # try:
     # s = raw_input('busines_process > ')
@@ -256,8 +252,20 @@ def main(prompt_input):
     t = parser.parse(s, lexer=lexer)
     print t
 
+    my_parse = p_c()
+
+    smt_output = my_parse.smt
+    user_list = my_parse.users
+    task_list = my_parse.tasks
+    or_task_list = my_parse.dict_or_task
+    xor_task_list = my_parse.dict_xor_task
+    sod_list = my_parse.dict_sod
+    bod_list = my_parse.dict_bod
+
+    print "user_list is ", user_list
+
     # Collect results to SMT solver
-    original = my_parse.smt
+    original = smt_output
 
     print original
 
@@ -449,6 +457,7 @@ def main(prompt_input):
         # print checking
         # if checking:
         #     print "unable to assign tasks to users:", checking
+    del my_parse
     return solution_map
 
 def prompt():

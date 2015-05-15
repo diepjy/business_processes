@@ -1,7 +1,15 @@
 __author__ = 'joanna'
 
+# from .model import *
+from bin.z3 import *
+# from p_c import p_c
+from lexer_class import *
+from ply.lex import lex
+from ply.yacc import yacc
+import itertools
+
 class p_c(object):
-    smt = ""
+    tokens = lexer_class.tokens
 
     smt_sort_task = "(declare-sort Task) \n"
     smt_sort_task = "(declare-sort Task) \n"
@@ -40,43 +48,84 @@ class p_c(object):
     smt_non_cyclic_before = "(assert (forall ((t Task))" \
                             "(not (before t t))" \
                             "))\n"
+    bottom_user_execution_axiom = "(assert (forall ((t Task))" \
+                                  "(=> " \
+                                  "(executed t)" \
+                                  "(not(=(alloc_user t) bottom))" \
+                                  ")" \
+                                  "))\n"
+    not_bottom_user_execution_axiom = "(assert (forall ((t Task))" \
+                                      "(=> " \
+                                      "(not(executed t))" \
+                                      "(=(alloc_user t) bottom)" \
+                                      ")" \
+                                      "))\n"
 
-    rules_used = []
-    tasks = []
-    users = []
-    dict_tasks = { }
-    dict_users = { }
-    dict_seniority = { }
-    dict_user_alloc = { }
-    dict_task_user_auth = { }
-    dict_or_task = { }
-    dict_xor_task = { }
-    dict_sod = []
-    dict_bod = []
+    def __init__(self):
+        self.users = []
+        self.tasks = []
+        self.dict_tasks = { }
+        self.dict_users = { }
+        self.dict_seniority = { }
+        self.dict_user_alloc = { }
+        self.dict_task_user_auth = { }
+        self.dict_or_task = { }
+        self.dict_xor_task = { }
+        self.dict_sod = []
+        self.dict_bod = []
+        self.allocate_users = False
 
-    allocate_users = False
+    # global users
+    smt = ""
 
     def p_prog(self, p):
         '''prog : begin
         '''
         p_c.smt = p_c.smt.translate(None, '!@#$\'')
+        # return model(tasks=p_c.tasks, users=p_c.users, smt=p_c.smt)
+        print "prog ", self.tasks, self.users
+        global users
+        global tasks
+        global dict_tasks
+        global dict_users
+        global dict_seniority
+        global dict_user_alloc
+        global dict_task_user_auth
+        global dict_or_task
+        global dict_xor_task
+        global dict_sod
+        global dict_bod
+        global allocate_users
+        users = self.users
+        tasks = self.tasks
+        dict_tasks = self.dict_tasks
+        dict_users = self.dict_users
+        dict_seniority = self.dict_seniority
+        dict_user_alloc = self.dict_user_alloc
+        dict_task_user_auth = self.dict_task_user_auth
+        dict_or_task = self.dict_or_task
+        dict_xor_task = self.dict_xor_task
+        dict_sod = self.dict_sod
+        dict_bod = self.dict_bod
+        allocate_users = self.allocate_users
+        print users
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
                  | TASKS COLON task_node USERS COLON user_node rules'''
-        p_c.smt = p_c.smt_before_transitivity + p_c.smt
-        p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
-        p_c.smt = p_c.smt_users_neq_bottom + p_c.smt
-        p_c.smt = p_c.smt_non_cyclic_before + p_c.smt
-        p_c.smt = p_c.smt_non_cyclic_seniority + p_c.smt
-        p_c.users.append('bottom')
-        p_c.smt = p_c.smt_fun_executed + p_c.smt
-        p_c.smt = p_c.smt_fun_before + p_c.smt
-        p_c.smt = p_c.smt_fun_seniority + p_c.smt
-        p_c.smt = p_c.smt_const_bottom + p_c.smt
-        p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
-        p_c.smt = p_c.smt_sort_user + p_c.smt
-        p_c.smt = p_c.smt_sort_task + p_c.smt
+        # p_c.smt = p_c.smt_before_transitivity + p_c.smt
+        # p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
+        # p_c.smt = p_c.smt_users_neq_bottom + p_c.smt
+        # p_c.smt = p_c.smt_non_cyclic_before + p_c.smt
+        # p_c.smt = p_c.smt_non_cyclic_seniority + p_c.smt
+        self.users.append('bottom')
+        # p_c.smt = p_c.smt_fun_executed + p_c.smt
+        # p_c.smt = p_c.smt_fun_before + p_c.smt
+        # p_c.smt = p_c.smt_fun_seniority + p_c.smt
+        # p_c.smt = p_c.smt_const_bottom + p_c.smt
+        # p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
+        # p_c.smt = p_c.smt_sort_user + p_c.smt
+        # p_c.smt = p_c.smt_sort_task + p_c.smt
         p[0] = p[3] + p[6]
 
     def p_rules(self, p):
@@ -164,10 +213,10 @@ class p_c(object):
         p[0] = p[1]
         p_c.task = p[0]
         # if p[0] not in p_c.tasks:
-        p_c.tasks.append(p[0].replace("'", ""))
+        self.tasks.append(p[0].replace("'", ""))
         if len(p) == 3:
-            p_c.dict_tasks[p[1].replace("'", "")] = p[2]
-        p_c.smt = "(declare-const " + p[0] + " Task)\n" + p_c.smt
+            self.dict_tasks[p[1].replace("'", "")] = p[2]
+        self.smt = "(declare-const " + p[0] + " Task)\n" + self.smt
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -175,9 +224,9 @@ class p_c(object):
                 | NODE user_option
                 | NODE end_rule'''
         p[0] = p[1]
-        if p[0] not in p_c.users:
-            p_c.users.append(p[0].replace("'", ""))
-            p_c.smt = "(declare-const " + p[0] + " User) \n" + p_c.smt
+        if p[0] not in self.users:
+            self.users.append(p[0].replace("'", ""))
+            self.smt = "(declare-const " + p[0] + " User) \n" + self.smt
 
     def p_variable_task_option(self, p):
         '''variable_task_option : OPTION variable_option_flag COLON op variable_task_option
@@ -275,3 +324,451 @@ class p_c(object):
     def p_error(self, p):
         print "Syntax error in input!"
         print p
+
+    def get_task_options(self, d, task_list):
+        smt_options = ""
+        for key, value in d.iteritems():
+            if value == ";":
+                print "no options set"
+            elif "min_sec_lv" in value:
+                if "=" in value and "!=" not in value:
+                    # BOD
+                    print "= seniority"
+                    for t in task_list:
+                        if t in value:
+                            smt_options += "(assert " \
+                                           "(=>" \
+                                           "(and (executed " \
+                                           + key + \
+                                           ") (executed " \
+                                           + t + \
+                                           "))" \
+                                           "(=(alloc_user " \
+                                           + key + \
+                                           ") (alloc_user " \
+                                           + t + \
+                                           "))" \
+                                           ")" \
+                                           ")\n"
+                elif ">" in value:
+                    # More senior allocation
+                    print ">>>>>>> seniority"
+                    for t in task_list:
+                        if t in value:
+                            smt_options += "(assert " \
+                                           "(=>" \
+                                           "(and (executed " \
+                                           + key + \
+                                           ") (executed " \
+                                           + t + \
+                                           "))" \
+                                           "(seniority (alloc_user " \
+                                           + key + \
+                                           ") (alloc_user " \
+                                           + t + \
+                                           "))" \
+                                           ")" \
+                                           ")"
+                elif "<" in value:
+                    print "<<<<<<< seniority"
+                    for t in task_list:
+                        if t in value:
+                            smt_options += "(assert " \
+                                           "(=>" \
+                                           "(and (executed " \
+                                           + t + \
+                                           ") (executed " \
+                                           + key + \
+                                           "))" \
+                                           "(seniority (alloc_user " \
+                                           + t + \
+                                           ") (alloc_user " \
+                                           + key + \
+                                           "))" \
+                                           ")" \
+                                           ")"
+                elif "!=" in value:
+                    # SOD
+                    print "!!!!!!! seniority"
+                    for t in task_list:
+                        if t in value:
+                            smt_options += "(assert " \
+                                           "(=>" \
+                                           "(and (executed " \
+                                           + key + \
+                                           ") (executed " \
+                                           + t + \
+                                           "))" \
+                                           "(not(=(alloc_user " \
+                                           + key + \
+                                           ") (alloc_user " \
+                                           + t + \
+                                           ")))" \
+                                           ")" \
+                                           ")\n"
+            elif value == "start":
+                print "START!!!!!!"
+                smt_options += "(assert (forall ((t Task)) " \
+                               "(before " \
+                               + key + \
+                               " t)" \
+                               "))\n"
+        print smt_options
+        return smt_options
+
+    def executed_and_tasks(self, xor_task_list, or_task_list, task_list):
+        executed_tasks = ""
+        print "EXE AND TASKS"
+        or_xor_tasks = []
+        for key, value in xor_task_list.iteritems():
+            or_xor_tasks += value
+        for key, value in or_task_list.iteritems():
+            or_xor_tasks += value
+        for p in task_list:
+            if p not in or_xor_tasks:
+                executed_tasks += "(assert (executed " + p + "))\n"
+        print "The executed AND tasks", executed_tasks
+        return executed_tasks
+
+    def executed_or_tasks(self, or_task_list):
+        or_execution = ""
+        for key, value in or_task_list.iteritems():
+            key_list = [key]
+            bracket_count = 0
+            elem_count = 0
+            or_execution += "(or "
+            for elem in itertools.product(key_list, value):
+                if elem_count < 2:
+                    or_execution += "(and (executed " + elem[0] + ") "
+                    or_execution += "(executed " + elem[1] + "))"
+                    bracket_count += 1
+                else:
+                    or_execution = "(executed " + elem[1] + "))" + or_execution
+                    or_execution = "(and (executed " + elem[0] + ") " +or_execution
+                    or_execution = "(or " + or_execution
+                    # bracket_count += 1
+                    # if bracket_count % 2 == 0:
+                    or_execution += ")"
+                elem_count += 1
+            or_execution += "))\n"
+        or_execution = "(assert" + or_execution
+        print "OR EXECUTION RESULT", or_execution
+        return or_execution
+
+    def unique_users_axiom(self, user_list):
+        c = []
+        unique_users = ""
+        for i in itertools.product(user_list, user_list):
+            c.append(i)
+        for cs in c:
+            if cs[0] != cs[1]:
+                # s.push()
+                unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))\n"
+        print c
+        return unique_users
+
+    def authorised_task_to_users_axiom(self, auth_list):
+        auth = ""
+        for key, value in auth_list.iteritems():
+            auth += "(assert (or "
+            for u in value:
+                auth += "(=(alloc_user " + key + ")" + u +")"
+            auth += "))\n"
+        return auth
+
+    def executable_sod(self, sod_list):
+        sod = ""
+        for p in sod_list:
+            sod += "(assert (=> "
+            sod += "(and (executed " + p[0] + ") (executed " + p[1] + "))"
+            sod += "(not (=(alloc_user " + p[0] + ") (alloc_user " + p[1] + ")))))\n"
+        return sod
+
+    def executable_bod(self, bod_list):
+        bod = ""
+        for p in bod_list:
+            bod += "(assert (=> "
+            bod += "(and (executed " + p[0] + ") (executed " + p[1] + "))"
+            bod += "(=(alloc_user " + p[0] + ") (alloc_user " + p[1] + "))))\n"
+        return bod
+
+    def only_users(self, user_list):
+        only_users = "(assert (forall ((u User)) (or"
+        for u in user_list:
+            only_users += "(= u " + u + ")"
+        only_users += ")))\n"
+        return only_users
+
+    def add_users(self, user_list):
+        users = ""
+        for u in user_list:
+            if "bottom" != u:
+                users += "(declare-const " + u + " User) \n"
+        print users
+        return users
+
+    def add_tasks(self, task_list):
+        tasks = ""
+        for t in task_list:
+            tasks += "(declare-const " + t + " Task)\n"
+        print tasks
+        return tasks
+
+    # def product(self, *args):
+    #     if not args:
+    #         return iter(((),)) # yield tuple()
+    #     return (items + (item,)
+    #             for items in self.product(*args[:-1]) for item in args[-1])
+
+    def main(self, prompt_input):
+        lexer = lex(module=lexer_class(), optimize=1)
+        parser = yacc(module=p_c(), start='prog', optimize=1)
+
+        # while True:
+        # try:
+        # s = raw_input('busines_process > ')
+        s = prompt_input
+        # except EOFError:
+        #     break
+        # if not s:
+        #     continue
+        lexer.input(s)
+        # for token in lexer:
+        #         print(token)
+        t = parser.parse(s, lexer=lexer)
+        print t
+
+        print "prog ", self.tasks, self.users
+
+        my_parse = p_c()
+
+        # my_parse.users.append('bottom')
+
+        smt_output = p_c.smt_sort_task + \
+            p_c.smt_sort_user  + \
+            p_c.smt_fun_executed + \
+                     p_c.smt_fun_before + \
+                     p_c.smt_fun_seniority + \
+                     p_c.smt_const_bottom + \
+            p_c.smt_fun_alloc_user + \
+        p_c.smt_before_transitivity +\
+        p_c.smt_fun_seniority_transitivity +\
+        p_c.smt_users_neq_bottom + \
+                     p_c.smt_non_cyclic_before + \
+                     p_c.smt_non_cyclic_seniority
+
+        # user_list = my_parse.users
+        # task_list = my_parse.tasks
+        # or_task_list = p_c.dict_or_task
+        # xor_task_list = p_c.dict_xor_task
+        # sod_list = p_c.dict_sod
+        # bod_list = p_c.dict_bod
+
+        print "user_list is ", users
+        print "user task is ", tasks
+
+        # Collect results to SMT solver
+        original = smt_output
+
+        original += self.add_users(users)
+        original += self.add_tasks(tasks)
+
+        print original
+
+        f = z3.parse_smt2_string(original)
+
+        s = z3.Solver()
+        import sys
+        if len(sys.argv) >= 2:
+            s.push()
+        s.add(f)
+        print 'Result of first check', s.check()
+        m = s.model()
+        print m
+
+        auth = self.authorised_task_to_users_axiom(dict_task_user_auth)
+
+        original += auth
+        print original
+        a = z3.parse_smt2_string(original)
+        s.add(a)
+        s.check()
+        s.model()
+
+        # go through the options and check if they are possible given the basic model
+        smt_options = self.get_task_options(dict_tasks, tasks)
+        original += smt_options
+
+        print "original with options:", original
+        o = z3.parse_smt2_string(original)
+        s.add(o)
+        print "after options added check", s.check()
+        print s.model()
+
+        # Go through all combinations of seniority available
+        print users
+        smt_seniors = original
+
+        original += self.only_users(users)
+        print original
+        o = z3.parse_smt2_string(original)
+        s.add(o)
+        print "after adding only_users axiom", s.check()
+        print s.model()
+
+        print "EXE SOD"
+        original += self.executable_sod(dict_sod)
+        print original
+        sod = z3.parse_smt2_string(original)
+        s.add(sod)
+        print "after execution sod added check", s.check()
+        print s.model()
+
+        print "original with options:", original
+        o = z3.parse_smt2_string(original)
+        s.add(o)
+        print "after options added check", s.check()
+        print s.model()
+
+        original += self.unique_users_axiom(users)
+        unique = z3.parse_smt2_string(original)
+        s.add(unique)
+        print "after options added check", s.check()
+        print s.model()
+
+        print "adding execution bottom axiom"
+        original += self.bottom_user_execution_axiom
+        original += self.not_bottom_user_execution_axiom
+        print original
+        bottom_user_axiom = z3.parse_smt2_string(original)
+        s.add(bottom_user_axiom)
+        print "after adding execution bottom axiom", s.check()
+        print s.model()
+
+        original += self.executed_and_tasks(dict_xor_task, dict_or_task, tasks)
+        print original
+        exe_and_tasks = z3.parse_smt2_string(original)
+        s.add(exe_and_tasks)
+        print "after adding executed tasks in and", s.check()
+        print s.model()
+
+        if dict_or_task:
+            print "EXECUTED OR TASKS"
+            original += self.executed_or_tasks()
+            print original
+            exe_or_tasks = z3.parse_smt2_string(original)
+            s.add(exe_or_tasks)
+            print "after adding executed tasks in or", s.check()
+            print s.model()
+
+        # Do the allocation of users and tasks if not specified
+        alloc_user_task = ""
+        # if allocate_users:
+        #     # Loop through all users and allocate them to a task
+        #     # Use BOTTOM user to verify
+        #
+        #     c = []
+        #     for i in self.product(users, tasks):
+        #         c.append(i)
+        #     original_extra = original
+        #     for cs in c:
+        #         s.push()
+        #         original_extra += "(push)\n"
+        #         alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
+        #         original_extra += alloc_user_task
+        #         # unique_assignment = "(assert (=> (= (alloc_user " + cs[1] + ") " + cs[0] + ")"
+        #         # bracket = ""
+        #         # print c
+        #         # for css in c:
+        #         #     if css[0] != cs[0]:
+        #         #         # print "css is ", css
+        #         #         # print "cs is ", cs
+        #         #         implication = "(and (not (= (alloc_user " + cs[1] + ") " + css[0] + "))"
+        #         #         unique_assignment += implication
+        #         #         bracket += ")"
+        #         # print unique_assignment + bracket
+        #         # unique_assignment += bracket + ")) \n"
+        #         # original_extra += unique_assignment
+        #         # unique task allocation
+        #         e = z3.parse_smt2_string(original_extra)
+        #         s.add(e)
+        #         check = s.check()
+        #         print 'result of push', check
+        #         if check == sat:
+        #             m = s.model()
+        #             print m
+        #         elif check == unsat:
+        #             original_extra += "(pop)\n"
+        #             e = z3.parse_smt2_string(original_extra)
+        #             s.pop()
+        #             s.add(e)
+        #             print s.check()
+
+        print s.check()
+        print s.model()
+
+        #Assignment and verification
+        model_map_task = []
+        model_map_user = []
+        solution_map = []
+        Task = DeclareSort('Task')
+        case_bottom_user = False
+        for ms in m:
+            if str(ms) in tasks:
+                model_map_task.append((ms, m[ms]))
+            if str(ms) in users:
+                model_map_user.append((ms, m[ms]))
+            str_ms = str(ms)
+            if str_ms == "alloc_user":
+                for model_task in model_map_task:
+                    # print "model task is ", str(model_task[0])
+                    t = Const(str(model_task[0]), Task)
+                    user_solution = m.eval(ms(t))
+                    # if str(user_solution) == "User!val!0":
+                    #     print "cannot assign"
+                    #     case_bottom_user = True;
+                    #     break;
+                    for model_user in model_map_user:
+                        # print "str(user_solution) is ", str(user_solution)
+                        if str(model_user[1]) == str(user_solution):
+                            # print "in model_user loop"
+                            # print model_user[1]
+                            # print user_solution
+                            solution_map.append((t, model_user[0]))
+            #             # elif "User!val!0" == str(user_solution):
+            #             else:
+            #                 # Hit bottom user, unable to create model given existing workflow
+            #                 case_bottom_user = True
+            #                 break;
+            #         if case_bottom_user:
+            #             break;
+            # if case_bottom_user:
+            #     break;
+        if case_bottom_user:
+            print "cannot assign"
+            print solution_map
+        else:
+            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+            print solution_map
+            print tasks
+            # # make a copy of the task list by slicing
+            # checking = my_parse.tasks[:]
+            # print checking
+            # for solution in solution_map:
+            #     print str(solution[0])
+            #     if str(solution[0]) in checking:
+            #         for t in checking:
+            #             if t in checking:
+            #                 checking.remove(t)
+            # print checking
+            # if checking:
+            #     print "unable to assign tasks to users:", checking
+        return solution_map
+
+    def prompt(self):
+        return raw_input('busines_process > ')
+
+if __name__ == '__main__':
+    print "main"
+    p_c.main(p_c.prompt())
+    p_c.users = []
