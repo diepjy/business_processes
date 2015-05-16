@@ -16,7 +16,6 @@ class lexer_class(object):
         'Or' : 'OR',
         'Xor' : 'XOR',
         'Execution' : 'EXECUTION',
-        'Alloc' : 'ALLOC',
         'Authorised' : 'AUTHORISED'
     }
 

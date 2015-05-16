@@ -1,5 +1,4 @@
 from unittest import TestCase
-from src.parser import code_gen
 from src.parser import p_c
 
 __author__ = 'joanna'

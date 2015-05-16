@@ -119,7 +119,6 @@ class p_c(object):
                  | BOD COLON bod_task_node_pair
                  | SOD COLON sod_task_node_pair
                  | SENIORITY COLON user_node_pair
-                 | ALLOC COLON allocation_pair
                  | AUTHORISED COLON authorised_pair
                  | EXECUTION COLON fork
         '''
@@ -159,13 +158,13 @@ class p_c(object):
         self.dict_seniority[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
 
     # ie Alloc: ('u3', 't3')
-    def p_allocation_pair(self, p):
-        '''allocation_pair : LPAREN NODE COMMA NODE RPAREN END rules
-                          | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
-                          | LPAREN NODE COMMA NODE RPAREN END
-        '''
-        p[0] = [p[2]] + [p[4]]
-        p_c.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
+    # def p_allocation_pair(self, p):
+    #     '''allocation_pair : LPAREN NODE COMMA NODE RPAREN END rules
+    #                       | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
+    #                       | LPAREN NODE COMMA NODE RPAREN END
+    #     '''
+    #     p[0] = [p[2]] + [p[4]]
+    #     self.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
 
     def p_authorised_pair(self, p):
         '''authorised_pair : LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END rules
@@ -173,7 +172,7 @@ class p_c(object):
                            | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END
         '''
         p[0] = [p[2]] + [p[5]]
-        p_c.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
+        self.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
 
     def p_user_list(self, p):
         '''user_list : NODE COMMA user_list
@@ -252,9 +251,9 @@ class p_c(object):
         '''
         p[0] = [p[3]] + [p[6]]
         if "Or" in p[1]:
-            p_c.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
+            self.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
         if "Xor" in p[1]:
-            p_c.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
+            self.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
 
     def p_task_list(self, p):
         '''task_list : NODE COMMA task_list
@@ -609,7 +608,7 @@ class p_c(object):
                                 try:
                                     if dict_or_task:
                                         print "EXECUTED OR TASKS"
-                                        original += self.executed_or_tasks()
+                                        original += self.executed_or_tasks(dict_or_task)
                                         print original
                                         exe_or_tasks = z3.parse_smt2_string(original)
                                         s.add(exe_or_tasks)
@@ -691,6 +690,7 @@ class p_c(object):
         else:
             print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
             print solution_map
+            print original
         return str(s.check()) + ', '.join(solution_map)
 
     def prompt(self):
