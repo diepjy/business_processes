@@ -140,7 +140,6 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
         p[0] = [p[2]] + [p[4]]
-        p_c.smt += "(assert (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + ")))\n"
         p_c.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_sod_task_pair(self, p):
@@ -149,7 +148,6 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
         p[0] = [p[2]] + [p[4]]
-        p_c.smt += "(assert (not (= (alloc_user " + p[2] + ") (alloc_user " + p[4] + "))))\n"
         p_c.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_user_pair(self, p):
@@ -158,7 +156,7 @@ class p_c(object):
                           | LPAREN NODE COMMA NODE RPAREN END
                           '''
         p[0] = [p[2]] + [p[4]]
-        p_c.smt += "(assert (seniority " + p[2] + " " + p[4] + ")) \n"
+        self.dict_seniority[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
 
     # ie Alloc: ('u3', 't3')
     def p_allocation_pair(self, p):
@@ -168,7 +166,6 @@ class p_c(object):
         '''
         p[0] = [p[2]] + [p[4]]
         p_c.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
-        p_c.smt += "(assert (=(alloc_user " + p[4] + ")" + p[2] + "))\n"
 
     def p_authorised_pair(self, p):
         '''authorised_pair : LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END rules
@@ -198,7 +195,6 @@ class p_c(object):
         self.tasks.append(p[0].replace("'", ""))
         if len(p) == 3:
             self.dict_tasks[p[1].replace("'", "")] = p[2]
-        self.smt = "(declare-const " + p[0] + " Task)\n" + self.smt
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -208,7 +204,6 @@ class p_c(object):
         p[0] = p[1]
         if p[0] not in self.users:
             self.users.append(p[0].replace("'", ""))
-            self.smt = "(declare-const " + p[0] + " User) \n" + self.smt
 
     def p_variable_task_option(self, p):
         '''variable_task_option : OPTION variable_option_flag COLON op variable_task_option
@@ -284,8 +279,6 @@ class p_c(object):
         p[0] = p[1]
         if p[0] == 'allocate':
             p_c.allocate_users = True
-        else:
-            self.p_error(p)
 
     def p_end(self, p):
         '''end : END
@@ -498,6 +491,15 @@ class p_c(object):
                 before += "(assert (before " + t_key + " " + t + "))\n"
         return before
 
+    def add_seniority(self, seniority_list):
+        print "add seniority", seniority_list
+        seniority = ""
+        for u_key, u_value in seniority_list.iteritems():
+            for u in u_value:
+                seniority += "(assert (seniority " + u_key + " " + u + ")) \n"
+        return seniority
+
+
     def main(self, prompt_input):
         lexer = lex(module=lexer_class(), optimize=1)
         parser = yacc(module=p_c(), start='prog', optimize=1)
@@ -559,6 +561,7 @@ class p_c(object):
 
         # Get all the before rules of the workflow
         original += self.add_before_tasks(dict_before)
+        original += self.add_seniority(dict_seniority)
 
         # go through the options and check if they are possible given the basic model
         smt_options = self.get_task_options(dict_tasks, tasks)
