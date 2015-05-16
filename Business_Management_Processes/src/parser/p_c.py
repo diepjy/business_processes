@@ -140,7 +140,7 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
         p[0] = [p[2]] + [p[4]]
-        p_c.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
+        self.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -148,7 +148,7 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
         p[0] = [p[2]] + [p[4]]
-        p_c.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
+        self.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -504,14 +504,8 @@ class p_c(object):
         lexer = lex(module=lexer_class(), optimize=1)
         parser = yacc(module=p_c(), start='prog', optimize=1)
 
-        # while True:
-        # try:
-        # s = raw_input('busines_process > ')
         s = prompt_input
-        # except EOFError:
-        #     break
-        # if not s:
-        #     continue
+
         lexer.input(s)
         # for token in lexer:
         #         print(token)
@@ -533,76 +527,23 @@ class p_c(object):
 
         # Collect results to SMT solver
         original = smt_output
-
         original += self.add_users(users)
         original += self.add_tasks(tasks)
-
         print original
-
         f = z3.parse_smt2_string(original)
-
         s = z3.Solver()
-        import sys
-        if len(sys.argv) >= 2:
-            s.push()
         s.add(f)
         print 'Result of first check', s.check()
         m = s.model()
         print m
 
         auth = self.authorised_task_to_users_axiom(dict_task_user_auth)
-
         original += auth
         print original
         a = z3.parse_smt2_string(original)
         s.add(a)
-        s.check()
+        print "Result of authorised_task_to_users_axiom", s.check()
         s.model()
-
-        # Get all the before rules of the workflow
-        original += self.add_before_tasks(dict_before)
-        original += self.add_seniority(dict_seniority)
-
-        # go through the options and check if they are possible given the basic model
-        smt_options = self.get_task_options(dict_tasks, tasks)
-        original += smt_options
-
-        print "original with options:", original
-        o = z3.parse_smt2_string(original)
-        s.add(o)
-        print "after options added check", s.check()
-        print s.model()
-
-        # Go through all combinations of seniority available
-        print users
-        smt_seniors = original
-
-        original += self.only_users(users)
-        print original
-        o = z3.parse_smt2_string(original)
-        s.add(o)
-        print "after adding only_users axiom", s.check()
-        print s.model()
-
-        print "EXE SOD"
-        original += self.executable_sod(dict_sod)
-        print original
-        sod = z3.parse_smt2_string(original)
-        s.add(sod)
-        print "after execution sod added check", s.check()
-        print s.model()
-
-        print "original with options:", original
-        o = z3.parse_smt2_string(original)
-        s.add(o)
-        print "after options added check", s.check()
-        print s.model()
-
-        original += self.unique_users_axiom(users)
-        unique = z3.parse_smt2_string(original)
-        s.add(unique)
-        print "after options added check", s.check()
-        print s.model()
 
         print "adding execution bottom axiom"
         original += self.bottom_user_execution_axiom
@@ -613,28 +554,93 @@ class p_c(object):
         print "after adding execution bottom axiom", s.check()
         print s.model()
 
-        original += self.executed_and_tasks(dict_xor_task, dict_or_task, tasks)
-        print original
-        exe_and_tasks = z3.parse_smt2_string(original)
-        s.add(exe_and_tasks)
-        print "after adding executed tasks in and", s.check()
-        print s.model()
+        try:
+            # Get all the before rules of the workflow
+            original += self.add_before_tasks(dict_before)
+            original += self.add_seniority(dict_seniority)
+            a = z3.parse_smt2_string(original)
+            s.add(a)
+            print "Result of before and seniority", s.check()
+            s.model()
 
-        if dict_or_task:
-            print "EXECUTED OR TASKS"
-            original += self.executed_or_tasks()
-            print original
-            exe_or_tasks = z3.parse_smt2_string(original)
-            s.add(exe_or_tasks)
-            print "after adding executed tasks in or", s.check()
-            print s.model()
+            try:
+                # go through the options and check if they are possible given the basic model
+                smt_options = self.get_task_options(dict_tasks, tasks)
+                original += smt_options
+
+                print "original with options:", original
+                o = z3.parse_smt2_string(original)
+                s.add(o)
+                print "after options added check", s.check()
+                print s.model()
+
+                try:
+                    original += self.only_users(users)
+                    print original
+                    o = z3.parse_smt2_string(original)
+                    s.add(o)
+                    print "after adding only_users axiom", s.check()
+                    print s.model()
+
+                    try:
+                        print "EXE SOD"
+                        original += self.executable_sod(dict_sod)
+                        print original
+                        sod = z3.parse_smt2_string(original)
+                        s.add(sod)
+                        print "after execution sod added check", s.check()
+                        print s.model()
+
+                        try:
+                            original += self.unique_users_axiom(users)
+                            unique = z3.parse_smt2_string(original)
+                            s.add(unique)
+                            print "after options added check", s.check()
+                            print s.model()
+
+                            try:
+                                original += self.executed_and_tasks(dict_xor_task, dict_or_task, tasks)
+                                print original
+                                exe_and_tasks = z3.parse_smt2_string(original)
+                                s.add(exe_and_tasks)
+                                print "after adding executed tasks in and", s.check()
+                                s.model()
+
+                                try:
+                                    if dict_or_task:
+                                        print "EXECUTED OR TASKS"
+                                        original += self.executed_or_tasks()
+                                        print original
+                                        exe_or_tasks = z3.parse_smt2_string(original)
+                                        s.add(exe_or_tasks)
+                                        print "after adding executed tasks in or", s.check()
+                                except Z3Exception as e:
+                                    print "fail at executed or tasks", e
+
+                            except Z3Exception as e:
+                                print "Z3 error: model not avalible after adding executed tasks in and", e
+
+                        except Z3Exception as e:
+                            print "not all input users are unique", e
+
+                    except Z3Exception as e:
+                        print "executable SOD fail", e
+
+                except Z3Exception as e:
+                    print "failed to add only_users axiom", e
+
+            except Z3Exception as e:
+                print "failed to sat with options"
+
+        except Z3Exception as e:
+            print "z3 error", e
 
         # Do the allocation of users and tasks if not specified
         alloc_user_task = ""
         if allocate_users:
+            print "alloc_users"
             # Loop through all users and allocate them to a task
             # Use BOTTOM user to verify
-
             c = []
             for i in itertools.product(users, tasks):
                 c.append(i)
@@ -644,20 +650,6 @@ class p_c(object):
                 original_extra += "(push)\n"
                 alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
                 original_extra += alloc_user_task
-                # unique_assignment = "(assert (=> (= (alloc_user " + cs[1] + ") " + cs[0] + ")"
-                # bracket = ""
-                # print c
-                # for css in c:
-                #     if css[0] != cs[0]:
-                #         # print "css is ", css
-                #         # print "cs is ", cs
-                #         implication = "(and (not (= (alloc_user " + cs[1] + ") " + css[0] + "))"
-                #         unique_assignment += implication
-                #         bracket += ")"
-                # print unique_assignment + bracket
-                # unique_assignment += bracket + ")) \n"
-                # original_extra += unique_assignment
-                # unique task allocation
                 e = z3.parse_smt2_string(original_extra)
                 s.add(e)
                 check = s.check()
@@ -673,7 +665,6 @@ class p_c(object):
                     print s.check()
 
         print s.check()
-        print s.model()
 
         #Assignment and verification
         model_map_task = []
@@ -689,49 +680,18 @@ class p_c(object):
             str_ms = str(ms)
             if str_ms == "alloc_user":
                 for model_task in model_map_task:
-                    # print "model task is ", str(model_task[0])
                     t = Const(str(model_task[0]), Task)
                     user_solution = m.eval(ms(t))
-                    # if str(user_solution) == "User!val!0":
-                    #     print "cannot assign"
-                    #     case_bottom_user = True;
-                    #     break;
                     for model_user in model_map_user:
-                        # print "str(user_solution) is ", str(user_solution)
                         if str(model_user[1]) == str(user_solution):
-                            # print "in model_user loop"
-                            # print model_user[1]
-                            # print user_solution
                             solution_map.append((t, model_user[0]))
-            #             # elif "User!val!0" == str(user_solution):
-            #             else:
-            #                 # Hit bottom user, unable to create model given existing workflow
-            #                 case_bottom_user = True
-            #                 break;
-            #         if case_bottom_user:
-            #             break;
-            # if case_bottom_user:
-            #     break;
         if case_bottom_user:
             print "cannot assign"
             print solution_map
         else:
             print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
             print solution_map
-            print tasks
-            # # make a copy of the task list by slicing
-            # checking = my_parse.tasks[:]
-            # print checking
-            # for solution in solution_map:
-            #     print str(solution[0])
-            #     if str(solution[0]) in checking:
-            #         for t in checking:
-            #             if t in checking:
-            #                 checking.remove(t)
-            # print checking
-            # if checking:
-            #     print "unable to assign tasks to users:", checking
-        return solution_map
+        return str(s.check()) + ', '.join(solution_map)
 
     def prompt(self):
         return raw_input('busines_process > ')
