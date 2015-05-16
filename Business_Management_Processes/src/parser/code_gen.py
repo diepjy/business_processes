@@ -6,7 +6,6 @@ from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
 import itertools
-from .model import *
 
 class MyParse(p_c):
 

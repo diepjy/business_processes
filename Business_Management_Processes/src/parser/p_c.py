@@ -1,8 +1,6 @@
 __author__ = 'joanna'
 
-# from .model import *
 from bin.z3 import *
-# from p_c import p_c
 from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
@@ -67,6 +65,7 @@ class p_c(object):
         self.dict_tasks = { }
         self.dict_users = { }
         self.dict_seniority = { }
+        self.dict_before = { }
         self.dict_user_alloc = { }
         self.dict_task_user_auth = { }
         self.dict_or_task = { }
@@ -82,8 +81,6 @@ class p_c(object):
         '''prog : begin
         '''
         p_c.smt = p_c.smt.translate(None, '!@#$\'')
-        # return model(tasks=p_c.tasks, users=p_c.users, smt=p_c.smt)
-        print "prog ", self.tasks, self.users
         global users
         global tasks
         global dict_tasks
@@ -96,6 +93,7 @@ class p_c(object):
         global dict_sod
         global dict_bod
         global allocate_users
+        global dict_before
         users = self.users
         tasks = self.tasks
         dict_tasks = self.dict_tasks
@@ -108,24 +106,12 @@ class p_c(object):
         dict_sod = self.dict_sod
         dict_bod = self.dict_bod
         allocate_users = self.allocate_users
-        print users
+        dict_before = self.dict_before
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
                  | TASKS COLON task_node USERS COLON user_node rules'''
-        # p_c.smt = p_c.smt_before_transitivity + p_c.smt
-        # p_c.smt = p_c.smt_fun_seniority_transitivity + p_c.smt
-        # p_c.smt = p_c.smt_users_neq_bottom + p_c.smt
-        # p_c.smt = p_c.smt_non_cyclic_before + p_c.smt
-        # p_c.smt = p_c.smt_non_cyclic_seniority + p_c.smt
         self.users.append('bottom')
-        # p_c.smt = p_c.smt_fun_executed + p_c.smt
-        # p_c.smt = p_c.smt_fun_before + p_c.smt
-        # p_c.smt = p_c.smt_fun_seniority + p_c.smt
-        # p_c.smt = p_c.smt_const_bottom + p_c.smt
-        # p_c.smt =  p_c.smt_fun_alloc_user + p_c.smt
-        # p_c.smt = p_c.smt_sort_user + p_c.smt
-        # p_c.smt = p_c.smt_sort_task + p_c.smt
         p[0] = p[3] + p[6]
 
     def p_rules(self, p):
@@ -144,7 +130,8 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
-        p_c.smt += "(assert (before " + p[2] + " " + p[4] + "))\n"
+        self.dict_before[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
+        print "before ",  self.dict_before
         p[0] = [p[2]] + [p[4]]
 
     def p_bod_task_pair(self, p):
@@ -189,10 +176,7 @@ class p_c(object):
                            | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END
         '''
         p[0] = [p[2]] + [p[5]]
-        print p[5]
         p_c.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
-        print "dict_task_user_auth: ", p_c.dict_task_user_auth
-
 
     def p_user_list(self, p):
         '''user_list : NODE COMMA user_list
@@ -200,9 +184,7 @@ class p_c(object):
         '''
         if len(p) == 2:
             p[0] = p[1]
-        print len(p)
         if len(p) > 2:
-            print p[3]
             p[0] = p[1] + p[2] + p[3]
 
     def p_task_node(self, p):
@@ -276,10 +258,8 @@ class p_c(object):
         p[0] = [p[3]] + [p[6]]
         if "Or" in p[1]:
             p_c.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
-            print "dict_task_or_task: ", p_c.dict_or_task
         if "Xor" in p[1]:
             p_c.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
-            print "dict_task_xor_task: ", p_c.dict_xor_task
 
     def p_task_list(self, p):
         '''task_list : NODE COMMA task_list
@@ -289,7 +269,6 @@ class p_c(object):
             p[0] = p[1]
         print len(p)
         if len(p) > 2:
-            print p[3]
             p[0] = p[1] + p[2] + p[3]
 
     def p_user_option(self, p):
@@ -413,12 +392,10 @@ class p_c(object):
                                + key + \
                                " t)" \
                                "))\n"
-        print smt_options
         return smt_options
 
     def executed_and_tasks(self, xor_task_list, or_task_list, task_list):
         executed_tasks = ""
-        print "EXE AND TASKS"
         or_xor_tasks = []
         for key, value in xor_task_list.iteritems():
             or_xor_tasks += value
@@ -464,7 +441,6 @@ class p_c(object):
             if cs[0] != cs[1]:
                 # s.push()
                 unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))\n"
-        print c
         return unique_users
 
     def authorised_task_to_users_axiom(self, auth_list):
@@ -504,21 +480,23 @@ class p_c(object):
         for u in user_list:
             if "bottom" != u:
                 users += "(declare-const " + u + " User) \n"
-        print users
         return users
 
     def add_tasks(self, task_list):
         tasks = ""
         for t in task_list:
             tasks += "(declare-const " + t + " Task)\n"
-        print tasks
         return tasks
 
-    # def product(self, *args):
-    #     if not args:
-    #         return iter(((),)) # yield tuple()
-    #     return (items + (item,)
-    #             for items in self.product(*args[:-1]) for item in args[-1])
+    def add_before_tasks(self, before_tasks):
+        print "add before tasks", before_tasks
+        before = ""
+        for t_key, t_value in before_tasks.iteritems():
+            print t_key
+            print t_value
+            for t in t_value:
+                before += "(assert (before " + t_key + " " + t + "))\n"
+        return before
 
     def main(self, prompt_input):
         lexer = lex(module=lexer_class(), optimize=1)
@@ -538,34 +516,18 @@ class p_c(object):
         t = parser.parse(s, lexer=lexer)
         print t
 
-        print "prog ", self.tasks, self.users
-
-        my_parse = p_c()
-
-        # my_parse.users.append('bottom')
-
         smt_output = p_c.smt_sort_task + \
-            p_c.smt_sort_user  + \
+            p_c.smt_sort_user + \
             p_c.smt_fun_executed + \
-                     p_c.smt_fun_before + \
-                     p_c.smt_fun_seniority + \
-                     p_c.smt_const_bottom + \
+            p_c.smt_fun_before + \
+            p_c.smt_fun_seniority + \
+            p_c.smt_const_bottom + \
             p_c.smt_fun_alloc_user + \
-        p_c.smt_before_transitivity +\
-        p_c.smt_fun_seniority_transitivity +\
-        p_c.smt_users_neq_bottom + \
-                     p_c.smt_non_cyclic_before + \
-                     p_c.smt_non_cyclic_seniority
-
-        # user_list = my_parse.users
-        # task_list = my_parse.tasks
-        # or_task_list = p_c.dict_or_task
-        # xor_task_list = p_c.dict_xor_task
-        # sod_list = p_c.dict_sod
-        # bod_list = p_c.dict_bod
-
-        print "user_list is ", users
-        print "user task is ", tasks
+            p_c.smt_before_transitivity +\
+            p_c.smt_fun_seniority_transitivity +\
+            p_c.smt_users_neq_bottom + \
+            p_c.smt_non_cyclic_before + \
+            p_c.smt_non_cyclic_seniority
 
         # Collect results to SMT solver
         original = smt_output
@@ -594,6 +556,9 @@ class p_c(object):
         s.add(a)
         s.check()
         s.model()
+
+        # Get all the before rules of the workflow
+        original += self.add_before_tasks(dict_before)
 
         # go through the options and check if they are possible given the basic model
         smt_options = self.get_task_options(dict_tasks, tasks)
@@ -663,46 +628,46 @@ class p_c(object):
 
         # Do the allocation of users and tasks if not specified
         alloc_user_task = ""
-        # if allocate_users:
-        #     # Loop through all users and allocate them to a task
-        #     # Use BOTTOM user to verify
-        #
-        #     c = []
-        #     for i in self.product(users, tasks):
-        #         c.append(i)
-        #     original_extra = original
-        #     for cs in c:
-        #         s.push()
-        #         original_extra += "(push)\n"
-        #         alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
-        #         original_extra += alloc_user_task
-        #         # unique_assignment = "(assert (=> (= (alloc_user " + cs[1] + ") " + cs[0] + ")"
-        #         # bracket = ""
-        #         # print c
-        #         # for css in c:
-        #         #     if css[0] != cs[0]:
-        #         #         # print "css is ", css
-        #         #         # print "cs is ", cs
-        #         #         implication = "(and (not (= (alloc_user " + cs[1] + ") " + css[0] + "))"
-        #         #         unique_assignment += implication
-        #         #         bracket += ")"
-        #         # print unique_assignment + bracket
-        #         # unique_assignment += bracket + ")) \n"
-        #         # original_extra += unique_assignment
-        #         # unique task allocation
-        #         e = z3.parse_smt2_string(original_extra)
-        #         s.add(e)
-        #         check = s.check()
-        #         print 'result of push', check
-        #         if check == sat:
-        #             m = s.model()
-        #             print m
-        #         elif check == unsat:
-        #             original_extra += "(pop)\n"
-        #             e = z3.parse_smt2_string(original_extra)
-        #             s.pop()
-        #             s.add(e)
-        #             print s.check()
+        if allocate_users:
+            # Loop through all users and allocate them to a task
+            # Use BOTTOM user to verify
+
+            c = []
+            for i in itertools.product(users, tasks):
+                c.append(i)
+            original_extra = original
+            for cs in c:
+                s.push()
+                original_extra += "(push)\n"
+                alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
+                original_extra += alloc_user_task
+                # unique_assignment = "(assert (=> (= (alloc_user " + cs[1] + ") " + cs[0] + ")"
+                # bracket = ""
+                # print c
+                # for css in c:
+                #     if css[0] != cs[0]:
+                #         # print "css is ", css
+                #         # print "cs is ", cs
+                #         implication = "(and (not (= (alloc_user " + cs[1] + ") " + css[0] + "))"
+                #         unique_assignment += implication
+                #         bracket += ")"
+                # print unique_assignment + bracket
+                # unique_assignment += bracket + ")) \n"
+                # original_extra += unique_assignment
+                # unique task allocation
+                e = z3.parse_smt2_string(original_extra)
+                s.add(e)
+                check = s.check()
+                print 'result of push', check
+                if check == sat:
+                    m = s.model()
+                    print m
+                elif check == unsat:
+                    original_extra += "(pop)\n"
+                    e = z3.parse_smt2_string(original_extra)
+                    s.pop()
+                    s.add(e)
+                    print s.check()
 
         print s.check()
         print s.model()
@@ -770,5 +735,5 @@ class p_c(object):
 
 if __name__ == '__main__':
     print "main"
-    p_c.main(p_c.prompt())
-    p_c.users = []
+    p = p_c()
+    p.main(p.prompt())
