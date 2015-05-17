@@ -250,9 +250,12 @@ class p_c(object):
                 | XOR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END
         '''
         p[0] = [p[3]] + [p[6]]
-        if "Or" in p[1]:
+        print p[1]
+        if p[1] == "Or":
+            print "in or"
             self.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
-        if "Xor" in p[1]:
+        elif p[1] == "Xor":
+            print "in xor"
             self.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
 
     def p_task_list(self, p):
@@ -403,26 +406,25 @@ class p_c(object):
         or_execution = ""
         for key, value in or_task_list.iteritems():
             key_list = [key]
-            bracket_count = 0
-            elem_count = 0
-            or_execution += "(or "
+            or_execution += "(assert (or "
             for elem in itertools.product(key_list, value):
-                if elem_count < 2:
-                    or_execution += "(and (executed " + elem[0] + ") "
-                    or_execution += "(executed " + elem[1] + "))"
-                    bracket_count += 1
-                else:
-                    or_execution = "(executed " + elem[1] + "))" + or_execution
-                    or_execution = "(and (executed " + elem[0] + ") " +or_execution
-                    or_execution = "(or " + or_execution
-                    # bracket_count += 1
-                    # if bracket_count % 2 == 0:
-                    or_execution += ")"
-                elem_count += 1
-            or_execution += "))\n"
-        or_execution = "(assert" + or_execution
+                or_execution += "(and (executed " + elem[0] + ") "
+                or_execution += "(executed " + elem[1] + "))"
+        or_execution += "))"
         print "OR EXECUTION RESULT", or_execution
         return or_execution
+
+    def executed_xor_tasks(self, xor_task_list):
+        xor_execution = ""
+        for key, value in xor_task_list.iteritems():
+            key_list = [key]
+            xor_execution += "(assert (xor "
+            for elem in itertools.product(key_list, value):
+                xor_execution += "(and (executed " + elem[0] + ") "
+                xor_execution += "(executed " + elem[1] + "))"
+        xor_execution += "))\n"
+        print "xOR EXECUTION RESULT", xor_execution
+        return xor_execution
 
     def unique_users_axiom(self, user_list):
         c = []
@@ -606,6 +608,8 @@ class p_c(object):
                                 s.model()
 
                                 try:
+                                    print "dict or task", dict_or_task
+                                    print "dict xor task", dict_xor_task
                                     if dict_or_task:
                                         print "EXECUTED OR TASKS"
                                         original += self.executed_or_tasks(dict_or_task)
@@ -613,6 +617,14 @@ class p_c(object):
                                         exe_or_tasks = z3.parse_smt2_string(original)
                                         s.add(exe_or_tasks)
                                         print "after adding executed tasks in or", s.check()
+                                        # if dict_xor_task:
+                                    if dict_xor_task:
+                                        print "EXECUTED XOR TASKS"
+                                        original += self.executed_xor_tasks(dict_xor_task)
+                                        print original
+                                        exe_xor_tasks = z3.parse_smt2_string(original)
+                                        s.add(exe_xor_tasks)
+                                        print "after adding executed tasks in xor", s.check()
                                 except Z3Exception as e:
                                     print "fail at executed or tasks", e
 
@@ -691,6 +703,8 @@ class p_c(object):
             print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
             print solution_map
             print original
+            if s.check() == "sat":
+                print s.model()
         return str(s.check()) + ', '.join(solution_map)
 
     def prompt(self):
