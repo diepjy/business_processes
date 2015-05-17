@@ -11,7 +11,7 @@ class Test_seniority(TestCase):
 
     def test_equal_seniority(self):
         s = p_c.p_c().main("Tasks: 't3' -min_sec_lv:='t4', 't4'; Users: 'u3', 'u4' -users:allocate; Seniority: ('u3', 'u4');")
-        self.assertEqual(s, "sat")
+        self.assertEqual(s, "sat (t3, u4), (t4, u4)")
 
     def test_equal_seniority_fail(self):
         s = p_c.p_c().main("Tasks: 't3' -min_sec_lv:='t4', 't4'; Users: 'u3', 'u4' -users:allocate; Seniority: ('u3', 'u4'); SoD: ('t3', 't4');")
@@ -19,12 +19,16 @@ class Test_seniority(TestCase):
 
     def test_more_seniority(self):
         s = p_c.p_c().main("Tasks: 't3' -min_sec_lv:>'t4', 't4'; Users: 'u3', 'u4', 'u5', 'u6' -users:allocate; Seniority: ('u3', 'u4'), ('u5', 'u4'), ('u6', 'u5'); SoD: ('t3', 't4');")
-        self.assertEqual(s, "sat")
+        self.assertEqual(s, "sat (t4, u6), (t3, u3)")
 
     def test_less_seniority(self):
         s = p_c.p_c().main("Tasks: 't3' -min_sec_lv:<'t4', 't4'; Users: 'u3', 'u4', 'u5', 'u6' -users:allocate; Seniority: ('u3', 'u4'), ('u5', 'u4'), ('u6', 'u5'); SoD: ('t3', 't4');")
-        self.assertEqual(s, "sat")
+        self.assertEqual(s, "sat (t4, u6), (t3, u5)")
 
     def test_neq_seniority(self):
         s = p_c.p_c().main("Tasks: 't3' -min_sec_lv:!='t4', 't4'; Users: 'u3', 'u4', 'u5', 'u6' -users:allocate; Seniority: ('u3', 'u4'), ('u5', 'u4'), ('u6', 'u5'); SoD: ('t3', 't4');")
-        self.assertEqual(s, "sat")
+        self.assertEqual(s, "sat (t4, u6), (t3, u5)")
+
+    def test_eq_seniority_autoalloc(self):
+        s = p_c.p_c().main("Tasks: 't3' -min_sec_lv:='t4', 't4'; Users: 'u3', 'u4' -users:allocate; Seniority: ('u3', 'u4'); ")
+        self.assertEqual(s, "sat (t3, u4), (t4, u4)")

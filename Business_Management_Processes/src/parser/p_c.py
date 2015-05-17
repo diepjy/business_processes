@@ -280,7 +280,7 @@ class p_c(object):
         '''users_global_option : ALLOCATE end_rule'''
         p[0] = p[1]
         if p[0] == 'allocate':
-            p_c.allocate_users = True
+            self.allocate_users = True
 
     def p_end(self, p):
         '''end : END
@@ -696,16 +696,18 @@ class p_c(object):
                     for model_user in model_map_user:
                         if str(model_user[1]) == str(user_solution):
                             solution_map.append((t, model_user[0]))
+        print solution_map
         if case_bottom_user:
             print "cannot assign"
-            print solution_map
         else:
             print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-            print solution_map
             print original
             if s.check() == "sat":
                 print s.model()
-        return str(s.check()) + ', '.join(solution_map)
+        if not solution_map:
+            return str(s.check())
+        else:
+            return str(s.check()) + " " + str(solution_map).strip('[]')
 
     def prompt(self):
         return raw_input('busines_process > ')
