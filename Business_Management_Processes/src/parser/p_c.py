@@ -15,6 +15,7 @@ class p_c(object):
     smt_fun_before = "(declare-fun before (Task Task) Bool) \n"
     smt_fun_seniority = "(declare-fun seniority (User User) Bool) \n"
     smt_fun_executed = "(declare-fun executed (Task) Bool)\n"
+    smt_fun_time_needed = "(declare-fun time_needed (Task) Real)\n"
 
     smt_fun_alloc_user = "(declare-fun alloc_user (Task) User) \n"
 
@@ -443,6 +444,7 @@ class p_c(object):
             auth += "(assert (or "
             for u in value:
                 auth += "(=(alloc_user " + key + ")" + u +")"
+            auth += "(=(alloc_user " + key +") bottom)"
             auth += "))\n"
         return auth
 
@@ -520,7 +522,8 @@ class p_c(object):
             p_c.smt_fun_seniority + \
             p_c.smt_const_bottom + \
             p_c.smt_fun_alloc_user + \
-            p_c.smt_before_transitivity +\
+            p_c.smt_fun_time_needed + \
+            p_c.smt_before_transitivity + \
             p_c.smt_fun_seniority_transitivity +\
             p_c.smt_users_neq_bottom + \
             p_c.smt_non_cyclic_before + \
@@ -708,6 +711,9 @@ class p_c(object):
             return str(s.check())
         else:
             return str(s.check()) + " " + str(solution_map).strip('[]')
+
+    # def verify_result(self, result):
+    #
 
     def prompt(self):
         return raw_input('busines_process > ')
