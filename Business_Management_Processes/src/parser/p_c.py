@@ -1,6 +1,9 @@
 __author__ = 'joanna'
 
+#for terminal
 from z3 import *
+#for pycharm
+# from bin.z3 import z3
 from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
@@ -105,7 +108,7 @@ class p_c(object):
         dict_bod = self.dict_bod
         allocate_users = self.allocate_users
         dict_before = self.dict_before
-        print dict_tasks
+        print dict_seniority
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -751,23 +754,28 @@ class p_c(object):
                     if s.check() == sat:
                         # It shouldn't be sat
                         print "FAIL - unverified"
-                        self.verify_result_seniroity(model, original, s)
+                        self.verify_result_seniroity(model, original, s, u)
                         verify = False
+                        s.pop()
+                        verify_original += "(pop)\n"
                     else:
                         # It should be unsat
                         print "PASS - verified"
+                        s.pop()
+                        verify_original += "(pop)\n"
                 # If they are different users, the result should be sat
                 elif u[0] != u[1]:
                     if s.check() == sat:
                         # It shouldn't be sat
                         print "PASS - verified"
+                        s.pop()
+                        verify_original += "(pop)\n"
                     else:
                         # It should be unsat
                         print "FAIL - unverified"
-                        verify = False
-                print "pop!!!"
-                s.pop()
-                verify_original += "(pop)\n"
+                        verify = self.verify_result_seniroity(model, original, s, u)
+                        s.pop()
+                        verify_original += "(pop)\n"
             print verify_original
             print s.check()
             return verify
@@ -822,9 +830,38 @@ class p_c(object):
             print s.check()
             return verify
 
-    def verify_result_seniroity(self, model, original, s):
+    def verify_result_seniroity(self, model, original, s, u):
+        print "VERIFY SENIORITY"
         print model
         print dict_tasks
+        verify_user_list = users[:]
+        verify_user_list.remove("bottom")
+        verify_original = original[:]
+        verify = True
+        s.push()
+        for t_key, t_value in dict_tasks.iteritems():
+            print t_key
+            print t_value
+            if "=" in t_value and "!=" not in t_value:
+                print "="
+            elif ">" in t_value:
+                print ">"
+                verify_original += "(assert " \
+                                   "(and (seniority " + u[0] + " " + u[1] + ") " \
+                                   "(executed " + t_key + ") " \
+                                   "(= (alloc_user " + t_key +")" + u[0] + ")))"
+            elif "<" in t_value:
+                print "<"
+            elif "!=" in t_value:
+                print "!="
+
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            if s.check() == unsat:
+                print "not >>>>>>>"
+                s.pop()
+                verify = True
+            return verify
 
     def prompt(self):
         return raw_input('busines_process > ')
