@@ -1,6 +1,6 @@
 __author__ = 'joanna'
 
-from bin.z3 import *
+from z3 import *
 from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
@@ -75,13 +75,9 @@ class p_c(object):
         self.dict_bod = []
         self.allocate_users = False
 
-    # global users
-    smt = ""
-
     def p_prog(self, p):
         '''prog : begin
         '''
-        p_c.smt = p_c.smt.translate(None, '!@#$\'')
         global users
         global tasks
         global dict_tasks
@@ -97,6 +93,7 @@ class p_c(object):
         global dict_before
         users = self.users
         tasks = self.tasks
+        # list of options to a task
         dict_tasks = self.dict_tasks
         dict_users = self.dict_users
         dict_seniority = self.dict_seniority
@@ -108,6 +105,7 @@ class p_c(object):
         dict_bod = self.dict_bod
         allocate_users = self.allocate_users
         dict_before = self.dict_before
+        print dict_tasks
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -193,7 +191,7 @@ class p_c(object):
         p_c.task = p[0]
         # if p[0] not in p_c.tasks:
         self.tasks.append(p[0].replace("'", ""))
-        if len(p) == 3:
+        if len(p) == 3 and p[2] != ";":
             self.dict_tasks[p[1].replace("'", "")] = p[2]
 
     def p_user_node(self, p):
@@ -708,10 +706,14 @@ class p_c(object):
                 verify_sod = self.verify_result_sod(s.model(), original, s)
                 if verify_sod:
                     print "VERIFIED SOD"
+                else:
+                    print "UNVERIFIED SOD"
             if dict_bod:
                 verify_bod = self.verify_result_bod(s.model(), original, s)
                 if verify_bod:
                     print "VERIFIED BOD"
+                else:
+                    print "UNVERIFIED BOD"
         if not solution_map:
             return str(s.check())
         else:
@@ -749,6 +751,7 @@ class p_c(object):
                     if s.check() == sat:
                         # It shouldn't be sat
                         print "FAIL - unverified"
+                        self.verify_result_seniroity(model, original, s)
                         verify = False
                     else:
                         # It should be unsat
@@ -819,6 +822,9 @@ class p_c(object):
             print s.check()
             return verify
 
+    def verify_result_seniroity(self, model, original, s):
+        print model
+        print dict_tasks
 
     def prompt(self):
         return raw_input('busines_process > ')

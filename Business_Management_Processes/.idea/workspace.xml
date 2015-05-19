@@ -30,7 +30,7 @@
     <SUITE FILE_PATH="coverage/Business_Management_Processes$MyLexer.coverage" NAME="MyLexer Coverage Results" MODIFIED="1427974157835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$smt_test.coverage" NAME="smt_test Coverage Results" MODIFIED="1429369910803" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$work_at.coverage" NAME="work_at Coverage Results" MODIFIED="1424427903296" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/Business_Management_Processes$p_c.coverage" NAME="p_c Coverage Results" MODIFIED="1432051308442" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
+    <SUITE FILE_PATH="coverage/Business_Management_Processes$p_c.coverage" NAME="p_c Coverage Results" MODIFIED="1432054586835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$Unittests_in_test_alloc_user.coverage" NAME="Unittests in test_alloc_user Coverage Results" MODIFIED="1431798694376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/Unit_Tests" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$calc.coverage" NAME="calc Coverage Results" MODIFIED="1427968858251" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
     <SUITE FILE_PATH="coverage/Business_Management_Processes$test.coverage" NAME="test Coverage Results" MODIFIED="1429274648187" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/parser" />
@@ -61,10 +61,10 @@
       <file leaf-file-name="p_c.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/parser/p_c.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5914286" vertical-offset="12609" max-vertical-offset="15012">
-              <caret line="712" column="30" selection-start-line="712" selection-start-column="30" selection-end-line="712" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.67164177" vertical-offset="0" max-vertical-offset="15120">
+              <caret line="15" column="64" selection-start-line="15" selection-start-column="64" selection-end-line="15" selection-end-column="64" />
               <folding>
-                <element signature="e#23#43#0" expanded="true" />
+                <element signature="e#23#39#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -250,28 +250,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Business_Management_Processes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Business_Management_Processes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Business_Management_Processes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Unit_Tests" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -677,7 +655,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2654321" sideWeight="0.4996016" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2654321" sideWeight="0.4996016" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39969134" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287037" sideWeight="0.5003984" order="8" side_tool="true" content_ui="tabs" />
@@ -688,7 +666,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23266932" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2777778" sideWeight="0.4996016" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34567901" sideWeight="0.4996016" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26234567" sideWeight="0.4996016" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287037" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -726,7 +704,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="13122">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#23#43#0" expanded="true" />
+            <element signature="e#23#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -763,7 +741,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="10897" max-vertical-offset="12726">
           <caret line="610" column="87" selection-start-line="610" selection-start-column="87" selection-end-line="610" selection-end-column="87" />
           <folding>
-            <element signature="e#23#43#0" expanded="true" />
+            <element signature="e#23#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -794,7 +772,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="13392">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#23#43#0" expanded="true" />
+            <element signature="e#23#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -825,7 +803,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="2124" max-vertical-offset="5076">
           <caret line="152" column="17" selection-start-line="152" selection-start-column="17" selection-end-line="152" selection-end-column="17" />
           <folding>
-            <element signature="e#23#43#0" expanded="true" />
+            <element signature="e#23#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -849,7 +827,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5076">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#23#43#0" expanded="true" />
+            <element signature="e#23#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -880,7 +858,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1191" max-vertical-offset="2898">
           <caret line="103" column="23" selection-start-line="103" selection-start-column="23" selection-end-line="103" selection-end-column="23" />
           <folding>
-            <element signature="e#23#43#0" expanded="true" />
+            <element signature="e#23#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1055,10 +1033,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/parser/p_c.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5914286" vertical-offset="12609" max-vertical-offset="15012">
-          <caret line="712" column="30" selection-start-line="712" selection-start-column="30" selection-end-line="712" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.67164177" vertical-offset="0" max-vertical-offset="15120">
+          <caret line="15" column="64" selection-start-line="15" selection-start-column="64" selection-end-line="15" selection-end-column="64" />
           <folding>
-            <element signature="e#23#43#0" expanded="true" />
+            <element signature="e#23#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
