@@ -700,20 +700,65 @@ class p_c(object):
                         if str(model_user[1]) == str(user_solution):
                             solution_map.append((t, model_user[0]))
         print solution_map
-        if case_bottom_user:
-            print "cannot assign"
-        else:
-            print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-            print original
-            if s.check() == "sat":
-                print s.model()
+        print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+        print s.check()
+        print original
+        if s.check() == sat:
+            if dict_sod:
+                self.verify_result_sod(s.model(), original, s)
         if not solution_map:
             return str(s.check())
         else:
             return str(s.check()) + " " + str(solution_map).strip('[]')
 
-    # def verify_result(self, result):
-    #
+    # Pass the model and check that it is consistent with the input
+    # Sod verification: if it's the same user, should return unsat
+    def verify_result_sod(self, model, original, s):
+        print model
+        verify_user_list = users[:]
+        verify_user_list.remove("bottom")
+        verify_original = original[:]
+        print dict_sod
+        print "verify list", verify_user_list
+        s.push()
+        for sod in dict_sod:
+            print sod[0]
+            print sod[1]
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            for u in itertools.product(verify_user_list, verify_user_list):
+                print "check before add", s.check()
+                print u
+                s.push()
+                verify_original += "(push)\n"
+                verify_original += "(assert (and (executed " + sod[0] +") (= (alloc_user " + sod[0] +")" + u[0] + ")))\n"
+                verify_original += "(assert (and (executed " + sod[1] +") (= (alloc_user " + sod[1] +")" + u[1] + ")))\n"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                # If they are the same user, the result should be unsat
+                print "after add", s.check()
+                if u[0] == u[1]:
+                    print "equal"
+                    if s.check() == sat:
+                        # It shouldn't be sat
+                        print "FAIL - unverified"
+                    else:
+                        # It should be unsat
+                        print "PASS - verified"
+                # If they are different users, the result should be sat
+                elif u[0] != u[1]:
+                    if s.check() == sat:
+                        # It shouldn't be sat
+                        print "PASS - verified"
+                    else:
+                        # It should be unsat
+                        print "FAIL - unverified"
+                print "pop!!!"
+                s.pop()
+                verify_original += "(pop)\n"
+            print verify_original
+            print s.check()
+
 
     def prompt(self):
         return raw_input('busines_process > ')
