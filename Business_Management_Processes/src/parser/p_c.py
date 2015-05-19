@@ -705,7 +705,13 @@ class p_c(object):
         print original
         if s.check() == sat:
             if dict_sod:
-                self.verify_result_sod(s.model(), original, s)
+                verify_sod = self.verify_result_sod(s.model(), original, s)
+                if verify_sod:
+                    print "VERIFIED SOD"
+            if dict_bod:
+                verify_bod = self.verify_result_bod(s.model(), original, s)
+                if verify_bod:
+                    print "VERIFIED BOD"
         if not solution_map:
             return str(s.check())
         else:
@@ -719,6 +725,7 @@ class p_c(object):
         verify_user_list.remove("bottom")
         verify_original = original[:]
         print dict_sod
+        verify = True
         print "verify list", verify_user_list
         s.push()
         for sod in dict_sod:
@@ -742,6 +749,7 @@ class p_c(object):
                     if s.check() == sat:
                         # It shouldn't be sat
                         print "FAIL - unverified"
+                        verify = False
                     else:
                         # It should be unsat
                         print "PASS - verified"
@@ -753,11 +761,63 @@ class p_c(object):
                     else:
                         # It should be unsat
                         print "FAIL - unverified"
+                        verify = False
                 print "pop!!!"
                 s.pop()
                 verify_original += "(pop)\n"
             print verify_original
             print s.check()
+            return verify
+
+    def verify_result_bod(self, model, original, s):
+        print model
+        verify_user_list = users[:]
+        verify_user_list.remove("bottom")
+        verify_original = original[:]
+        print dict_sod
+        verify = True
+        print "verify list", verify_user_list
+        s.push()
+        for sod in dict_bod:
+            print sod[0]
+            print sod[1]
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            for u in itertools.product(verify_user_list, verify_user_list):
+                print "check before add", s.check()
+                print u
+                s.push()
+                verify_original += "(push)\n"
+                verify_original += "(assert (and (executed " + sod[0] +") (= (alloc_user " + sod[0] +")" + u[0] + ")))\n"
+                verify_original += "(assert (and (executed " + sod[1] +") (= (alloc_user " + sod[1] +")" + u[1] + ")))\n"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                # If they are different users, the result should be unsat
+                print "after add", s.check()
+                if u[0] != u[1]:
+                    print "equal"
+                    if s.check() == sat:
+                        # It shouldn't be sat
+                        print "FAIL - unverified"
+                        verify = False
+                    else:
+                        # It should be unsat
+                        print "PASS - verified"
+                # If they are the same user, the result should be sat
+                elif u[0] == u[1]:
+                    if s.check() == sat:
+                        # It shouldn't be sat
+                        print "PASS - verified"
+                    else:
+                        # It should be unsat
+                        print "FAIL - unverified"
+                        verify = False
+                print "pop!!!"
+                s.pop()
+                verify_original += "(pop)\n"
+            print verify_original
+            print s.check()
+            return verify
 
 
     def prompt(self):
