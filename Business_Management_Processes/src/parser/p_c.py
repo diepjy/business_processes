@@ -1,9 +1,6 @@
 __author__ = 'joanna'
 
-#for terminal
 from z3 import *
-#for pycharm
-# from bin.z3 import z3
 from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
@@ -108,7 +105,6 @@ class p_c(object):
         dict_bod = self.dict_bod
         allocate_users = self.allocate_users
         dict_before = self.dict_before
-        print dict_seniority
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -158,15 +154,6 @@ class p_c(object):
                           '''
         p[0] = [p[2]] + [p[4]]
         self.dict_seniority[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
-
-    # ie Alloc: ('u3', 't3')
-    # def p_allocation_pair(self, p):
-    #     '''allocation_pair : LPAREN NODE COMMA NODE RPAREN END rules
-    #                       | LPAREN NODE COMMA NODE RPAREN COMMA user_node_pair
-    #                       | LPAREN NODE COMMA NODE RPAREN END
-    #     '''
-    #     p[0] = [p[2]] + [p[4]]
-    #     self.dict_user_alloc[p[2].replace("'", "")] = p[4].replace("'", "")
 
     def p_authorised_pair(self, p):
         '''authorised_pair : LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END rules
@@ -304,9 +291,7 @@ class p_c(object):
     def get_task_options(self, d, task_list):
         smt_options = ""
         for key, value in d.iteritems():
-            if value == ";":
-                print "no options set"
-            elif "min_sec_lv" in value:
+            if "min_sec_lv" in value:
                 if "=" in value and "!=" not in value:
                     # BOD
                     print "= seniority"
@@ -382,13 +367,6 @@ class p_c(object):
                                            ")))" \
                                            ")" \
                                            ")\n"
-            elif value == "start":
-                print "START!!!!!!"
-                smt_options += "(assert (forall ((t Task)) " \
-                               "(before " \
-                               + key + \
-                               " t)" \
-                               "))\n"
         return smt_options
 
     def executed_and_tasks(self, xor_task_list, or_task_list, task_list):
@@ -401,7 +379,6 @@ class p_c(object):
         for p in task_list:
             if p not in or_xor_tasks:
                 executed_tasks += "(assert (executed " + p + "))\n"
-        print "The executed AND tasks", executed_tasks
         return executed_tasks
 
     def executed_or_tasks(self, or_task_list):
@@ -413,7 +390,6 @@ class p_c(object):
                 or_execution += "(and (executed " + elem[0] + ") "
                 or_execution += "(executed " + elem[1] + "))"
         or_execution += "))"
-        print "OR EXECUTION RESULT", or_execution
         return or_execution
 
     def executed_xor_tasks(self, xor_task_list):
@@ -425,7 +401,6 @@ class p_c(object):
                 xor_execution += "(and (executed " + elem[0] + ") "
                 xor_execution += "(executed " + elem[1] + "))"
         xor_execution += "))\n"
-        print "xOR EXECUTION RESULT", xor_execution
         return xor_execution
 
     def unique_users_axiom(self, user_list):
@@ -486,17 +461,13 @@ class p_c(object):
         return tasks
 
     def add_before_tasks(self, before_tasks):
-        print "add before tasks", before_tasks
         before = ""
         for t_key, t_value in before_tasks.iteritems():
-            print t_key
-            print t_value
             for t in t_value:
                 before += "(assert (before " + t_key + " " + t + "))\n"
         return before
 
     def add_seniority(self, seniority_list):
-        print "add seniority", seniority_list
         seniority = ""
         for u_key, u_value in seniority_list.iteritems():
             for u in u_value:
@@ -534,30 +505,25 @@ class p_c(object):
         original = smt_output
         original += self.add_users(users)
         original += self.add_tasks(tasks)
-        print original
         f = z3.parse_smt2_string(original)
         s = z3.Solver()
         s.add(f)
         print 'Result of first check', s.check()
         m = s.model()
-        print m
 
         auth = self.authorised_task_to_users_axiom(dict_task_user_auth)
         original += auth
-        print original
         a = z3.parse_smt2_string(original)
         s.add(a)
         print "Result of authorised_task_to_users_axiom", s.check()
         s.model()
 
-        print "adding execution bottom axiom"
         original += self.bottom_user_execution_axiom
         original += self.not_bottom_user_execution_axiom
-        print original
         bottom_user_axiom = z3.parse_smt2_string(original)
         s.add(bottom_user_axiom)
         print "after adding execution bottom axiom", s.check()
-        print s.model()
+        s.model
 
         try:
             # Get all the before rules of the workflow
@@ -573,59 +539,47 @@ class p_c(object):
                 smt_options = self.get_task_options(dict_tasks, tasks)
                 original += smt_options
 
-                print "original with options:", original
                 o = z3.parse_smt2_string(original)
                 s.add(o)
                 print "after options added check", s.check()
-                print s.model()
+                s.model()
 
                 try:
                     original += self.only_users(users)
-                    print original
                     o = z3.parse_smt2_string(original)
                     s.add(o)
                     print "after adding only_users axiom", s.check()
-                    print s.model()
+                    s.model()
 
                     try:
-                        print "EXE SOD"
                         original += self.executable_sod(dict_sod)
-                        print original
                         sod = z3.parse_smt2_string(original)
                         s.add(sod)
                         print "after execution sod added check", s.check()
-                        print s.model()
+                        s.model()
 
                         try:
                             original += self.unique_users_axiom(users)
                             unique = z3.parse_smt2_string(original)
                             s.add(unique)
                             print "after options added check", s.check()
-                            print s.model()
+                            s.model()
 
                             try:
                                 original += self.executed_and_tasks(dict_xor_task, dict_or_task, tasks)
-                                print original
                                 exe_and_tasks = z3.parse_smt2_string(original)
                                 s.add(exe_and_tasks)
                                 print "after adding executed tasks in and", s.check()
                                 s.model()
 
                                 try:
-                                    print "dict or task", dict_or_task
-                                    print "dict xor task", dict_xor_task
                                     if dict_or_task:
-                                        print "EXECUTED OR TASKS"
                                         original += self.executed_or_tasks(dict_or_task)
-                                        print original
                                         exe_or_tasks = z3.parse_smt2_string(original)
                                         s.add(exe_or_tasks)
                                         print "after adding executed tasks in or", s.check()
-                                        # if dict_xor_task:
                                     if dict_xor_task:
-                                        print "EXECUTED XOR TASKS"
                                         original += self.executed_xor_tasks(dict_xor_task)
-                                        print original
                                         exe_xor_tasks = z3.parse_smt2_string(original)
                                         s.add(exe_xor_tasks)
                                         print "after adding executed tasks in xor", s.check()
@@ -653,7 +607,6 @@ class p_c(object):
         # Do the allocation of users and tasks if not specified
         alloc_user_task = ""
         if allocate_users:
-            print "alloc_users"
             # Loop through all users and allocate them to a task
             # Use BOTTOM user to verify
             c = []
@@ -671,7 +624,6 @@ class p_c(object):
                 print 'result of push', check
                 if check == sat:
                     m = s.model()
-                    print m
                 elif check == unsat:
                     original_extra += "(pop)\n"
                     e = z3.parse_smt2_string(original_extra)
@@ -681,12 +633,13 @@ class p_c(object):
 
         print s.check()
 
-        #Assignment and verification
+        print "ASSIGNMENT"
+        #Assignment and verification of the model
         model_map_task = []
         model_map_user = []
         solution_map = []
+        m = s.model()
         Task = DeclareSort('Task')
-        case_bottom_user = False
         for ms in m:
             if str(ms) in tasks:
                 model_map_task.append((ms, m[ms]))
@@ -696,27 +649,60 @@ class p_c(object):
             if str_ms == "alloc_user":
                 for model_task in model_map_task:
                     t = Const(str(model_task[0]), Task)
+                    print "tasks", str(model_task[0])
                     user_solution = m.eval(ms(t))
                     for model_user in model_map_user:
                         if str(model_user[1]) == str(user_solution):
+                            print "model user", str(model_user[0])
                             solution_map.append((t, model_user[0]))
-        print solution_map
+                    print user_solution
         print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
         print s.check()
-        print original
         if s.check() == sat:
-            if dict_sod:
-                verify_sod = self.verify_result_sod(s.model(), original, s)
-                if verify_sod:
-                    print "VERIFIED SOD"
-                else:
-                    print "UNVERIFIED SOD"
-            if dict_bod:
-                verify_bod = self.verify_result_bod(s.model(), original, s)
-                if verify_bod:
-                    print "VERIFIED BOD"
-                else:
-                    print "UNVERIFIED BOD"
+            verify_userlist = users[:]
+            verify_userlist.remove("bottom")
+            for u in itertools.product(verify_userlist, verify_userlist):
+                print u
+                if dict_sod:
+                    verify_sod = self.verify_result_sod(s.model(), original, s, u)
+                    if verify_sod:
+                        # Don't need to do anything
+                        print "VERIFIED SOD"
+                    else:
+                        # Need to check other cases to see why it doesn't satisfy
+                        print "UNVERIFIED SOD"
+                        verify_bod = self.verify_result_bod(s.model(), original, s, u)
+                        if verify_bod:
+                            # Don't need to do anything
+                            print "VERFIFIED BOD"
+                        else:
+                            #Need to check other cases to see why it doesn't satisfy
+                            print "UNVERIFIED BOD"
+                            verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
+                            if verify_seniroity:
+                                print "VERIFIED SENIORITY"
+                            else:
+                                print "UNVERIFIED SENIORITY"
+
+                elif dict_bod and not dict_sod:
+                    verify_bod = self.verify_result_bod(s.model(), original, s, u)
+                    if verify_bod:
+                        # Don't need to do anything
+                        print "VERFIFIED BOD"
+                    else:
+                        #Need to check other cases to see why it doesn't satisfy
+                        print "UNVERIFIED BOD"
+                        verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
+                        if verify_seniroity:
+                            print "VERIFIED SENIORITY"
+                        else:
+                            print "UNVERIFIED SENIORITY"
+                elif dict_seniority and not dict_sod and not dict_bod:
+                    verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
+                    if verify_seniroity:
+                        print "VERIFIED SENIORITY"
+                    else:
+                        print "UNVERIFIED SENIORITY"
         if not solution_map:
             return str(s.check())
         else:
@@ -724,74 +710,67 @@ class p_c(object):
 
     # Pass the model and check that it is consistent with the input
     # Sod verification: if it's the same user, should return unsat
-    def verify_result_sod(self, model, original, s):
-        print model
+    def verify_result_sod(self, model, original, s, u):
+        # for sod in dict_sod:
+        # Task = DeclareSort('Task')
+        # print model
+        # for ms in model:
+        #     print ms
+        #     t = Const("t3", Task)
+        #     if str(ms) == "alloc_user":
+        #         print "eval t3", model.eval(ms(t))
+        #         print "delarations is", model.decls()
+            # If they are the same user, the result should be unsat
         verify_user_list = users[:]
         verify_user_list.remove("bottom")
         verify_original = original[:]
-        print dict_sod
         verify = True
-        print "verify list", verify_user_list
         s.push()
         for sod in dict_sod:
-            print sod[0]
-            print sod[1]
             v = z3.parse_smt2_string(verify_original)
             s.add(v)
-            for u in itertools.product(verify_user_list, verify_user_list):
-                print "check before add", s.check()
-                print u
-                s.push()
-                verify_original += "(push)\n"
-                verify_original += "(assert (and (executed " + sod[0] +") (= (alloc_user " + sod[0] +")" + u[0] + ")))\n"
-                verify_original += "(assert (and (executed " + sod[1] +") (= (alloc_user " + sod[1] +")" + u[1] + ")))\n"
-                v = z3.parse_smt2_string(verify_original)
-                s.add(v)
-                # If they are the same user, the result should be unsat
-                print "after add", s.check()
-                if u[0] == u[1]:
-                    print "equal"
-                    if s.check() == sat:
-                        # It shouldn't be sat
-                        print "FAIL - unverified"
-                        self.verify_result_seniroity(model, original, s, u)
-                        verify = False
-                        s.pop()
-                        verify_original += "(pop)\n"
-                    else:
-                        # It should be unsat
-                        print "PASS - verified"
-                        s.pop()
-                        verify_original += "(pop)\n"
-                # If they are different users, the result should be sat
-                elif u[0] != u[1]:
-                    if s.check() == sat:
-                        # It shouldn't be sat
-                        print "PASS - verified"
-                        s.pop()
-                        verify_original += "(pop)\n"
-                    else:
-                        # It should be unsat
-                        print "FAIL - unverified"
-                        verify = self.verify_result_seniroity(model, original, s, u)
-                        s.pop()
-                        verify_original += "(pop)\n"
-            print verify_original
+            s.push()
+            verify_original += "(push)\n"
+            verify_original += "(assert (and (executed " + sod[0] +") (= (alloc_user " + sod[0] +")" + u[0] + ")))\n"
+            verify_original += "(assert (and (executed " + sod[1] +") (= (alloc_user " + sod[1] +")" + u[1] + ")))\n"
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            # If they are the same user, the result should be unsat
+            print "after add", s.check()
+            if u[0] == u[1]:
+                if s.check() == sat:
+                    # It shouldn't be sat
+                    print "FAIL - unverified"
+                    verify = False
+                    s.pop()
+                    verify_original += "(pop)\n"
+                else:
+                    # It should be unsat
+                    print "PASS - verified"
+                    s.pop()
+                    verify_original += "(pop)\n"
+            # If they are different users, the result should be sat
+            elif u[0] != u[1]:
+                if s.check() == sat:
+                    # It shouldn't be sat
+                    print "PASS - verified"
+                    s.pop()
+                    verify_original += "(pop)\n"
+                else:
+                    # It should be unsat
+                    print "FAIL - unverified"
+                    s.pop()
+                    verify_original += "(pop)\n"
             print s.check()
-            return verify
+        return verify
 
-    def verify_result_bod(self, model, original, s):
-        print model
+    def verify_result_bod(self, model, original, s, u):
         verify_user_list = users[:]
         verify_user_list.remove("bottom")
         verify_original = original[:]
-        print dict_sod
         verify = True
-        print "verify list", verify_user_list
         s.push()
-        for sod in dict_bod:
-            print sod[0]
-            print sod[1]
+        for bod in dict_bod:
             v = z3.parse_smt2_string(verify_original)
             s.add(v)
             for u in itertools.product(verify_user_list, verify_user_list):
@@ -799,8 +778,8 @@ class p_c(object):
                 print u
                 s.push()
                 verify_original += "(push)\n"
-                verify_original += "(assert (and (executed " + sod[0] +") (= (alloc_user " + sod[0] +")" + u[0] + ")))\n"
-                verify_original += "(assert (and (executed " + sod[1] +") (= (alloc_user " + sod[1] +")" + u[1] + ")))\n"
+                verify_original += "(assert (and (executed " + bod[0] +") (= (alloc_user " + bod[0] +")" + u[0] + ")))\n"
+                verify_original += "(assert (and (executed " + bpd[1] +") (= (alloc_user " + bod[1] +")" + u[1] + ")))\n"
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
                 # If they are different users, the result should be unsat
@@ -826,47 +805,54 @@ class p_c(object):
                 print "pop!!!"
                 s.pop()
                 verify_original += "(pop)\n"
-            print verify_original
             print s.check()
-            return verify
+        return verify
 
     def verify_result_seniroity(self, model, original, s, u):
-        print "VERIFY SENIORITY"
-        print model
-        print dict_tasks
         verify_user_list = users[:]
         verify_user_list.remove("bottom")
         verify_original = original[:]
         verify = True
         s.push()
         for t_key, t_value in dict_tasks.iteritems():
-            print t_key
-            print t_value
             if "=" in t_value and "!=" not in t_value:
                 print "="
+                # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
+                verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                if s.check() == unsat:
+                    # They should be the same user - but it's not - so unsat
+                    verify = False
             elif ">" in t_value:
                 print ">"
                 verify_original += "(assert " \
                                    "(and (seniority " + u[0] + " " + u[1] + ") " \
                                    "(executed " + t_key + ") " \
                                    "(= (alloc_user " + t_key +")" + u[0] + ")))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                print "CHECKING"
+                if s.check() == unsat:
+                    for u_key, u_value in dict_seniority.iteritems():
+                        print u_key
+                        print dict_seniority
+                        # If the input says that the user is more senior - then it should be unsat
+                        if u_key == u[1] and u[0] in u_value:
+                            print "not >>>>>>>"
+                            s.pop()
+                            verify = True
+                else:
+                    verify = True
             elif "<" in t_value:
                 print "<"
             elif "!=" in t_value:
                 print "!="
-
-            v = z3.parse_smt2_string(verify_original)
-            s.add(v)
-            if s.check() == unsat:
-                print "not >>>>>>>"
-                s.pop()
-                verify = True
-            return verify
+        return verify
 
     def prompt(self):
         return raw_input('busines_process > ')
 
 if __name__ == '__main__':
-    print "main"
     p = p_c()
     p.main(p.prompt())
