@@ -663,46 +663,47 @@ class p_c(object):
             verify_userlist.remove("bottom")
             for u in itertools.product(verify_userlist, verify_userlist):
                 print u
-                if dict_sod:
-                    verify_sod = self.verify_result_sod(s.model(), original, s, u)
-                    if verify_sod:
-                        # Don't need to do anything
-                        print "VERIFIED SOD"
-                    else:
-                        # Need to check other cases to see why it doesn't satisfy
-                        print "UNVERIFIED SOD"
-                        verify_bod = self.verify_result_bod(s.model(), original, s, u)
-                        if verify_bod:
-                            # Don't need to do anything
-                            print "VERFIFIED BOD"
-                        else:
-                            #Need to check other cases to see why it doesn't satisfy
-                            print "UNVERIFIED BOD"
-                            verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
-                            if verify_seniroity:
-                                print "VERIFIED SENIORITY"
-                            else:
-                                print "UNVERIFIED SENIORITY"
+                # if dict_sod:
+                verify_sod = self.verify_result_sod(original, s, u)
+                if verify_sod:
+                    # Don't need to do anything
+                    print "VERIFIED SOD"
+                else:
+                    # Need to check other cases to see why it doesn't satisfy
+                    print "UNVERIFIED SOD"
+                verify_bod = self.verify_result_bod(original, s, u)
+                if verify_bod:
+                    # Don't need to do anything
+                    print "VERFIFIED BOD"
+                else:
+                    #Need to check other cases to see why it doesn't satisfy
+                    print "UNVERIFIED BOD"
+                verify_seniroity = self.verify_result_seniroity(original, s, u)
+                if verify_seniroity:
+                    print "VERIFIED SENIORITY"
+                else:
+                    print "UNVERIFIED SENIORITY"
+                print "================================================================"
 
-                elif dict_bod and not dict_sod:
-                    verify_bod = self.verify_result_bod(s.model(), original, s, u)
-                    if verify_bod:
-                        # Don't need to do anything
-                        print "VERFIFIED BOD"
-                    else:
-                        #Need to check other cases to see why it doesn't satisfy
-                        print "UNVERIFIED BOD"
-                        verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
-                        if verify_seniroity:
-                            print "VERIFIED SENIORITY"
-                        else:
-                            print "UNVERIFIED SENIORITY"
-                elif dict_seniority and not dict_sod and not dict_bod:
-                    verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
-                    if verify_seniroity:
-                        print "VERIFIED SENIORITY"
-                    else:
-                        print "UNVERIFIED SENIORITY"
+                # elif dict_bod and not dict_sod:
+                #     verify_bod = self.verify_result_bod(s.model(), original, s, u)
+                #     if verify_bod:
+                #         # Don't need to do anything
+                #         print "VERFIFIED BOD"
+                #     else:
+                #         #Need to check other cases to see why it doesn't satisfy
+                #         print "UNVERIFIED BOD"
+                #         verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
+                #         if verify_seniroity:
+                #             print "VERIFIED SENIORITY"
+                #         else:
+                #             print "UNVERIFIED SENIORITY"
+                # elif dict_seniority and not dict_sod and not dict_bod:
+                #     verify_seniroity = self.verify_result_seniroity(s.model(), original, s, u)
+                #     if verify_seniroity:
+                #         print "VERIFIED SENIORITY"
+                #     else:
+                #         print "UNVERIFIED SENIORITY"
         if not solution_map:
             return str(s.check())
         else:
@@ -710,7 +711,7 @@ class p_c(object):
 
     # Pass the model and check that it is consistent with the input
     # Sod verification: if it's the same user, should return unsat
-    def verify_result_sod(self, model, original, s, u):
+    def verify_result_sod(self, original, s, u):
         # for sod in dict_sod:
         # Task = DeclareSort('Task')
         # print model
@@ -736,7 +737,6 @@ class p_c(object):
             v = z3.parse_smt2_string(verify_original)
             s.add(v)
             # If they are the same user, the result should be unsat
-            print "after add", s.check()
             if u[0] == u[1]:
                 if s.check() == sat:
                     # It shouldn't be sat
@@ -759,12 +759,14 @@ class p_c(object):
                 else:
                     # It should be unsat
                     print "FAIL - unverified"
+                    verify = False
                     s.pop()
                     verify_original += "(pop)\n"
-            print s.check()
+        print "sod check verification", s.check()
+        print "verify in sod", verify
         return verify
 
-    def verify_result_bod(self, model, original, s, u):
+    def verify_result_bod(self, original, s, u):
         verify_user_list = users[:]
         verify_user_list.remove("bottom")
         verify_original = original[:]
@@ -773,42 +775,41 @@ class p_c(object):
         for bod in dict_bod:
             v = z3.parse_smt2_string(verify_original)
             s.add(v)
-            for u in itertools.product(verify_user_list, verify_user_list):
-                print "check before add", s.check()
-                print u
-                s.push()
-                verify_original += "(push)\n"
-                verify_original += "(assert (and (executed " + bod[0] +") (= (alloc_user " + bod[0] +")" + u[0] + ")))\n"
-                verify_original += "(assert (and (executed " + bpd[1] +") (= (alloc_user " + bod[1] +")" + u[1] + ")))\n"
-                v = z3.parse_smt2_string(verify_original)
-                s.add(v)
-                # If they are different users, the result should be unsat
-                print "after add", s.check()
-                if u[0] != u[1]:
-                    print "equal"
-                    if s.check() == sat:
-                        # It shouldn't be sat
-                        print "FAIL - unverified"
-                        verify = False
-                    else:
-                        # It should be unsat
-                        print "PASS - verified"
-                # If they are the same user, the result should be sat
-                elif u[0] == u[1]:
-                    if s.check() == sat:
-                        # It shouldn't be sat
-                        print "PASS - verified"
-                    else:
-                        # It should be unsat
-                        print "FAIL - unverified"
-                        verify = False
-                print "pop!!!"
-                s.pop()
-                verify_original += "(pop)\n"
-            print s.check()
+            # for u in itertools.product(verify_user_list, verify_user_list):
+            print "check before add", s.check()
+            print u
+            s.push()
+            verify_original += "(push)\n"
+            verify_original += "(assert (and (executed " + bod[0] +") (= (alloc_user " + bod[0] +")" + u[0] + ")))\n"
+            verify_original += "(assert (and (executed " + bod[1] +") (= (alloc_user " + bod[1] +")" + u[1] + ")))\n"
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            # If they are different users, the result should be unsat
+            if u[0] != u[1]:
+                print "equal"
+                if s.check() == sat:
+                    # It shouldn't be sat
+                    print "FAIL - unverified"
+                    verify = False
+                else:
+                    # It should be unsat
+                    print "PASS - verified"
+            # If they are the same user, the result should be sat
+            elif u[0] == u[1]:
+                if s.check() == sat:
+                    # It shouldn't be sat
+                    print "PASS - verified"
+                else:
+                    # It should be unsat
+                    print "FAIL - unverified"
+                    verify = False
+            print "pop!!!"
+            s.pop()
+            verify_original += "(pop)\n"
+        print "bod verification check", s.check()
         return verify
 
-    def verify_result_seniroity(self, model, original, s, u):
+    def verify_result_seniroity(self, original, s, u):
         verify_user_list = users[:]
         verify_user_list.remove("bottom")
         verify_original = original[:]
@@ -824,8 +825,36 @@ class p_c(object):
                 if s.check() == unsat:
                     # They should be the same user - but it's not - so unsat
                     verify = False
+                else:
+                    verify = True
             elif ">" in t_value:
                 print ">"
+                s.push()
+                verify_original += "(push)\n"
+                verify_original += "(assert " \
+                                   "(and (seniority " + u[0] + " " + u[1] + ") " \
+                                   "(executed " + t_key + ") " \
+                                   "(= (alloc_user " + t_key +")" + u[0] + ")))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                print "CHECKING"
+                if s.check() == unsat:
+                    print "UNSAT"
+                    for u_key, u_value in dict_seniority.iteritems():
+                        print "u_key", u_key
+                        print "u[0]", u[0]
+                        print "u[1]", u[1]
+                        print dict_seniority
+                        # If the input says that the user is more senior - then it should be unsat
+                        if u[0] == u_key and u[1] in u_value:
+                            verify = False
+                else:
+                    # Check if they are actually senior in dict_seniority
+                    print "verify is true"
+                    verify = True
+                s.pop()
+            elif "<" in t_value:
+                print "<"
                 verify_original += "(assert " \
                                    "(and (seniority " + u[0] + " " + u[1] + ") " \
                                    "(executed " + t_key + ") " \
@@ -835,19 +864,25 @@ class p_c(object):
                 print "CHECKING"
                 if s.check() == unsat:
                     for u_key, u_value in dict_seniority.iteritems():
-                        print u_key
+                        print "u_key", u_key
+                        print "u[0]", u[0]
+                        print "u[1]", u[1]
                         print dict_seniority
                         # If the input says that the user is more senior - then it should be unsat
-                        if u_key == u[1] and u[0] in u_value:
-                            print "not >>>>>>>"
-                            s.pop()
-                            verify = True
+
                 else:
                     verify = True
-            elif "<" in t_value:
-                print "<"
             elif "!=" in t_value:
                 print "!="
+                # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
+                verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                if s.check() == unsat:
+                    # They should be the same user - but it's not - so unsat
+                    verify = False
+                else:
+                    verify = True
         return verify
 
     def prompt(self):
