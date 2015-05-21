@@ -869,7 +869,8 @@ class p_c(object):
                         print "u[1]", u[1]
                         print dict_seniority
                         # If the input says that the user is more senior - then it should be unsat
-
+                        if u[0] == u_key and u[1] in u_value:
+                            verify = False
                 else:
                     verify = True
             elif "!=" in t_value:
