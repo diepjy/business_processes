@@ -5,6 +5,7 @@ from lexer_class import *
 from ply.lex import lex
 from ply.yacc import yacc
 import itertools
+import ast
 
 class p_c(object):
     tokens = lexer_class.tokens
@@ -63,7 +64,10 @@ class p_c(object):
     def __init__(self):
         self.users = []
         self.tasks = []
-        self.dict_tasks = { }
+        self.dict_eq_tasks = { }
+        self.dict_gt_tasks = { }
+        self.dict_lt_tasks = { }
+        self.dict_neq_taks = { }
         self.dict_users = { }
         self.dict_seniority = { }
         self.dict_before = { }
@@ -80,7 +84,10 @@ class p_c(object):
         '''
         global users
         global tasks
-        global dict_tasks
+        global dict_eq_tasks
+        global dict_gt_tasks
+        global dict_lt_tasks
+        global dict_neq_tasks
         global dict_users
         global dict_seniority
         global dict_user_alloc
@@ -94,7 +101,10 @@ class p_c(object):
         users = self.users
         tasks = self.tasks
         # list of options to a task
-        dict_tasks = self.dict_tasks
+        dict_eq_tasks = self.dict_eq_tasks
+        dict_lt_tasks = self.dict_lt_tasks
+        dict_gt_tasks = self.dict_gt_tasks
+        dict_neq_tasks = self.dict_neq_taks
         dict_users = self.dict_users
         dict_seniority = self.dict_seniority
         dict_user_alloc = self.dict_user_alloc
@@ -105,6 +115,10 @@ class p_c(object):
         dict_bod = self.dict_bod
         allocate_users = self.allocate_users
         dict_before = self.dict_before
+        print "eq", dict_eq_tasks
+        print "lt", dict_lt_tasks
+        print "gt", dict_gt_tasks
+        print "neq", dict_neq_tasks
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -182,7 +196,14 @@ class p_c(object):
         # if p[0] not in p_c.tasks:
         self.tasks.append(p[0].replace("'", ""))
         if len(p) == 3 and p[2] != ";":
-            self.dict_tasks[p[1].replace("'", "")] = p[2]
+            if "=" in p[2] and "!=" not in p[2]:
+                self.dict_eq_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace("=", ""))
+            elif ">" in p[2]:
+                self.dict_gt_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace(">", ""))
+            elif "<" in p[2]:
+                self.dict_lt_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace("<", ""))
+            elif "!=" in p[2]:
+                self.dict_neq_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace("!=", ""))
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -198,10 +219,11 @@ class p_c(object):
                   | OPTION variable_option_flag COLON op COMMA task_node
                   | OPTION variable_option_flag COLON op end
                   '''
-        p[0] = p[2] + p[3] + p[4]
+
         if len(p) == 6:
-            print "length is 6"
             p[0] = p[2] + p[3] + p[4] + p[5]
+        else:
+            p[0] = p[4]
 
     def p_task_option(self, p):
         '''task_option : OPTION option_flag task_option
@@ -223,12 +245,12 @@ class p_c(object):
         p[0] = p[1]
 
     def p_op(self, p):
-        '''op : EQ NODE
-              | GEQ NODE
-              | LEQ NODE
-              | NEQ NODE
+        '''op : EQ LSQPAREN task_list RSQPAREN
+              | GEQ LSQPAREN task_list RSQPAREN
+              | LEQ LSQPAREN task_list RSQPAREN
+              | NEQ LSQPAREN task_list RSQPAREN
               '''
-        p[0] = p[1] + p[2]
+        p[0] = p[1] + p[2] + p[3] + p[4]
 
     def p_execution(self, p):
         '''fork : OR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END rules
@@ -288,85 +310,93 @@ class p_c(object):
         print "Syntax error in input!"
         print p
 
-    def get_task_options(self, d, task_list):
+    def get_eq_task_options(self, d, task_list):
         smt_options = ""
         for key, value in d.iteritems():
-            if "min_sec_lv" in value:
-                if "=" in value and "!=" not in value:
-                    # BOD
-                    print "= seniority"
-                    for t in task_list:
-                        if t in value:
-                            smt_options += "(assert " \
-                                           "(=>" \
-                                           "(and (executed " \
-                                           + key + \
-                                           ") (executed " \
-                                           + t + \
-                                           "))" \
-                                           "(=(alloc_user " \
-                                           + key + \
-                                           ") (alloc_user " \
-                                           + t + \
-                                           "))" \
-                                           ")" \
-                                           ")\n"
-                elif ">" in value:
-                    # More senior allocation
-                    print ">>>>>>> seniority"
-                    for t in task_list:
-                        if t in value:
-                            smt_options += "(assert " \
-                                           "(=>" \
-                                           "(and (executed " \
-                                           + key + \
-                                           ") (executed " \
-                                           + t + \
-                                           "))" \
-                                           "(seniority (alloc_user " \
-                                           + key + \
-                                           ") (alloc_user " \
-                                           + t + \
-                                           "))" \
-                                           ")" \
-                                           ")\n"
-                elif "<" in value:
-                    print "<<<<<<< seniority"
-                    for t in task_list:
-                        if t in value:
-                            smt_options += "(assert " \
-                                           "(=>" \
-                                           "(and (executed " \
-                                           + t + \
-                                           ") (executed " \
-                                           + key + \
-                                           "))" \
-                                           "(seniority (alloc_user " \
-                                           + t + \
-                                           ") (alloc_user " \
-                                           + key + \
-                                           "))" \
-                                           ")" \
-                                           ")\n"
-                elif "!=" in value:
-                    # SOD
-                    print "!!!!!!! seniority"
-                    for t in task_list:
-                        if t in value:
-                            smt_options += "(assert " \
-                                           "(=>" \
-                                           "(and (executed " \
-                                           + key + \
-                                           ") (executed " \
-                                           + t + \
-                                           "))" \
-                                           "(not(=(alloc_user " \
-                                           + key + \
-                                           ") (alloc_user " \
-                                           + t + \
-                                           ")))" \
-                                           ")" \
-                                           ")\n"
+            # BOD
+            print "= seniority"
+            for t in task_list:
+                if t in value:
+                    smt_options += "(assert " \
+                                   "(=>" \
+                                   "(and (executed " \
+                                   + key + \
+                                   ") (executed " \
+                                   + t + \
+                                   "))" \
+                                   "(=(alloc_user " \
+                                   + key + \
+                                   ") (alloc_user " \
+                                   + t + \
+                                   "))" \
+                                   ")" \
+                                   ")\n"
+        return smt_options
+
+    def get_lt_task_options(self, d, task_list):
+        smt_options = ""
+        for key, value in d.iteritems():
+            print "<<<<<<< seniority"
+            for t in task_list:
+                if t in value:
+                    smt_options += "(assert " \
+                                   "(=>" \
+                                   "(and (executed " \
+                                   + t + \
+                                   ") (executed " \
+                                   + key + \
+                                   "))" \
+                                   "(seniority (alloc_user " \
+                                   + t + \
+                                   ") (alloc_user " \
+                                   + key + \
+                                   "))" \
+                                   ")" \
+                                   ")\n"
+        return smt_options
+
+    def get_gt_task_options(self, d, task_list):
+        smt_options = ""
+        for key, value in d.iteritems():
+            print ">>>>>>> seniority"
+            for t in task_list:
+                if t in value:
+                    smt_options += "(assert " \
+                                   "(=>" \
+                                   "(and (executed " \
+                                   + key + \
+                                   ") (executed " \
+                                   + t + \
+                                   "))" \
+                                   "(seniority (alloc_user " \
+                                   + key + \
+                                   ") (alloc_user " \
+                                   + t + \
+                                   "))" \
+                                   ")" \
+                                   ")\n"
+        return smt_options
+
+    def get_neq_task_options(self, d, task_list):
+        smt_options = ""
+        for key, value in d.iteritems():
+            print "!!!!!!! seniority"
+            for t in task_list:
+                if t in value:
+                    smt_options += "(assert " \
+                                   "(=>" \
+                                   "(and (executed " \
+                                   + key + \
+                                   ") (executed " \
+                                   + t + \
+                                   "))" \
+                                   "(not(=(alloc_user " \
+                                   + key + \
+                                   ") (alloc_user " \
+                                   + t + \
+                                   ")))" \
+                                   ")" \
+                                   ")\n"
         return smt_options
 
     def executed_and_tasks(self, xor_task_list, or_task_list, task_list):
@@ -536,8 +566,18 @@ class p_c(object):
 
             try:
                 # go through the options and check if they are possible given the basic model
-                smt_options = self.get_task_options(dict_tasks, tasks)
-                original += smt_options
+                if dict_eq_tasks:
+                    smt_options = self.get_eq_task_options(dict_eq_tasks, tasks)
+                    original += smt_options
+                if dict_lt_tasks:
+                    smt_options = self.get_lt_task_options(dict_lt_tasks, tasks)
+                    original += smt_options
+                if dict_gt_tasks:
+                    smt_options = self.get_gt_task_options(dict_gt_tasks, tasks)
+                    original += smt_options
+                if dict_neq_tasks:
+                    smt_options = self.get_neq_task_options(dict_neq_tasks, tasks)
+                    original += smt_options
 
                 o = z3.parse_smt2_string(original)
                 s.add(o)
@@ -689,8 +729,13 @@ class p_c(object):
                 verified = verified and verified_
                 print verified
                 print "================================================================"
-        print original
+        # print original
         if verified:
+            final_solver = z3.Solver()
+            final = z3.parse_smt2_string(original)
+            final_solver.add(final)
+            final_solver.check()
+            self.evaluate_final_model(final_solver.model())
             print "VERIFIED!!!!!"
             if not solution_map:
                 return str(s.check())
@@ -703,16 +748,6 @@ class p_c(object):
     # Pass the model and check that it is consistent with the input
     # Sod verification: if it's the same user, should return unsat
     def verify_result_sod(self, original, s, u):
-        # for sod in dict_sod:
-        # Task = DeclareSort('Task')
-        # print model
-        # for ms in model:
-        #     print ms
-        #     t = Const("t3", Task)
-        #     if str(ms) == "alloc_user":
-        #         print "eval t3", model.eval(ms(t))
-        #         print "delarations is", model.decls()
-            # If they are the same user, the result should be unsat
         verify_user_list = users[:]
         verify_user_list.remove("bottom")
         verify_original = original[:]
@@ -806,94 +841,123 @@ class p_c(object):
         if dict_seniority:
             verify = True
             s.push()
-            for t_key, t_value in dict_tasks.iteritems():
-                if "=" in t_value and "!=" not in t_value:
-                    print "="
-                    # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
-                    verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
-                    v = z3.parse_smt2_string(verify_original)
-                    s.add(v)
-                    print "s.check in seniority", s.check()
-                    if s.check() == unsat:
-                        # They should be the same user - but it's not - so unsat
-                        if u[0] == u[1]:
-                            # If they are the same user but unsat - then false
+            for t_key, t_value in dict_eq_tasks.iteritems():
+                print "="
+                # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
+                verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                print "s.check in seniority", s.check()
+                if s.check() == unsat:
+                    # They should be the same user - but it's not - so unsat
+                    if u[0] == u[1]:
+                        # If they are the same user but unsat - then false
+                        verify = False
+                else:
+                    if u[0] != u[1]:
+                        # If it is sat and they are different users - then false
+                        verify = False
+                s.pop()
+            for t_key, t_value in dict_gt_tasks.iteritems():
+                print ">"
+                s.push()
+                verify_original += "(push)\n"
+                verify_original += "(assert " \
+                                   "(and (seniority " + u[0] + " " + u[1] + ") " \
+                                   "(executed " + t_key + ") " \
+                                   "(= (alloc_user " + t_key +")" + u[0] + ")))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                print "CHECKING"
+                if s.check() == unsat:
+                    print "UNSAT"
+                    for u_key, u_value in dict_seniority.iteritems():
+                        # If the input says that the user is more senior - then it should be unsat
+                        if u[0] == u_key and u[1] in u_value:
                             verify = False
-                    else:
-                        if u[0] != u[1]:
-                            # If it is sat and they are different users - then false
+                else:
+                    # Check if they are actually senior in dict_seniority
+                    print "verify is true"
+                    if not dict_seniority.has_key(u[0]):
                             verify = False
-                    s.pop()
-                elif ">" in t_value:
-                    print ">"
-                    s.push()
-                    verify_original += "(push)\n"
-                    verify_original += "(assert " \
-                                       "(and (seniority " + u[0] + " " + u[1] + ") " \
-                                       "(executed " + t_key + ") " \
-                                       "(= (alloc_user " + t_key +")" + u[0] + ")))"
-                    v = z3.parse_smt2_string(verify_original)
-                    s.add(v)
-                    print "CHECKING"
-                    if s.check() == unsat:
-                        print "UNSAT"
-                        for u_key, u_value in dict_seniority.iteritems():
-                            # If the input says that the user is more senior - then it should be unsat
-                            if u[0] == u_key and u[1] in u_value:
-                                verify = False
-                    else:
-                        # Check if they are actually senior in dict_seniority
-                        print "verify is true"
-                        if not dict_seniority.has_key(u[0]):
-                                verify = False
-                        for u_key, u_value in dict_seniority.iteritems():
-                            if u[0] == u_key and u[1] not in u_value:
-                                verify = False
-                    s.pop()
-                elif "<" in t_value:
-                    print "<"
-                    verify_original += "(assert " \
-                                       "(and (seniority " + u[1] + " " + u[0] + ") " \
-                                       "(executed " + t_key + ") " \
-                                       "(= (alloc_user " + t_key +")" + u[0] + ")))"
-                    v = z3.parse_smt2_string(verify_original)
-                    s.add(v)
-                    print "CHECKING"
-                    if s.check() == unsat:
-                        print "UNSAT"
-                        for u_key, u_value in dict_seniority.iteritems():
-                            # If the input says that the user is more senior - then it should be unsat
-                            if u[1] == u_key and u[0] in u_value:
-                                verify = False
-                    else:
-                        # Check if they are actually senior in dict_seniority
-                        print "verify is true"
-                        print dict_seniority
-                        if not dict_seniority.has_key(u[1]):
-                            print "key not in senioriy"
+                    for u_key, u_value in dict_seniority.iteritems():
+                        if u[0] == u_key and u[1] not in u_value:
                             verify = False
-                        for u_key, u_value in dict_seniority.iteritems():
-                            if u[0] == u_key and u[1] not in u_value:
-                                print "value not in seniority"
-                                verify = False
-                    s.pop()
-                elif "!=" in t_value:
-                    print "!="
-                    # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
-                    verify_original += "(assert (not(= " + u[0] + " " + u[1] + ")))"
-                    v = z3.parse_smt2_string(verify_original)
-                    s.add(v)
-                    if s.check() == unsat:
-                        # They should be the same user - but it's not - so unsat
-                        # But if it's unsat but they're actually different users then verify should be false
-                        if u[0] != u[1]:
+                s.pop()
+            for t_key, t_value in dict_lt_tasks.iteritems():
+                print "<"
+                verify_original += "(assert " \
+                                   "(and (seniority " + u[1] + " " + u[0] + ") " \
+                                   "(executed " + t_key + ") " \
+                                   "(= (alloc_user " + t_key +")" + u[0] + ")))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                print "CHECKING"
+                if s.check() == unsat:
+                    print "UNSAT"
+                    for u_key, u_value in dict_seniority.iteritems():
+                        # If the input says that the user is more senior - then it should be unsat
+                        if u[1] == u_key and u[0] in u_value:
                             verify = False
-                    else:
-                        #If it's sat and they are actually the same user - verify should be false
-                        if u[0] == u[1]:
+                else:
+                    # Check if they are actually senior in dict_seniority
+                    print "verify is true"
+                    print dict_seniority
+                    if not dict_seniority.has_key(u[1]):
+                        print "key not in senioriy"
+                        verify = False
+                    for u_key, u_value in dict_seniority.iteritems():
+                        if u[0] == u_key and u[1] not in u_value:
+                            print "value not in seniority"
                             verify = False
-                    s.pop()
+                s.pop()
+            for t_key, t_value in dict_neq_tasks.iteritems():
+                print "!="
+                # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
+                verify_original += "(assert (not(= " + u[0] + " " + u[1] + ")))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                if s.check() == unsat:
+                    # They should be the same user - but it's not - so unsat
+                    # But if it's unsat but they're actually different users then verify should be false
+                    if u[0] != u[1]:
+                        verify = False
+                else:
+                    #If it's sat and they are actually the same user - verify should be false
+                    if u[0] == u[1]:
+                        verify = False
+                s.pop()
         return verify
+
+    def evaluate_final_model(self, model):
+        model_user_map = { }
+        model_task_map = { }
+        model_function_map = { }
+        print model
+        for ms in model:
+            if str(ms) in users:
+                model_user_map[ms] = model[ms]
+            if str(ms) in tasks:
+                model_task_map[ms] = model[ms]
+            if "before" in str(ms):
+                model_function_map["before"] = model[ms]
+            if "alloc_user" in str(ms):
+                model_function_map["alloc_user"] = model[ms]
+                Task = DeclareSort('Task')
+                for t_key, t_value in model_task_map.iteritems():
+                    t = Const(str(t_key), Task)
+                    user_solution = model.eval(ms(t))
+                    print user_solution
+                    for u_key, u_value in model_user_map.iteritems():
+                        if str(u_value) == str(user_solution):
+                            print "alloc_user:", t_key, u_key
+            if "executed" in str(ms):
+                model_function_map["executed"] = model[ms]
+            if "seniority" in str(ms):
+                model_function_map["seniority"] = model[ms]
+        print "model user map", model_user_map
+        print "model task map", model_task_map
+        print "model function map", model_function_map
 
     def prompt(self):
         return raw_input('busines_process > ')
