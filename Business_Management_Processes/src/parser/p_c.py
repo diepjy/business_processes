@@ -824,10 +824,14 @@ class p_c(object):
                 print "s.check in seniority", s.check()
                 if s.check() == unsat:
                     # They should be the same user - but it's not - so unsat
-                    verify = True
+                    if u[0] == u[1]:
+                        # If they are the same user but unsat - then false
+                        verify = False
                 else:
                     if u[0] != u[1]:
+                        # If it is sat and they are different users - then false
                         verify = False
+                s.pop()
             elif ">" in t_value:
                 print ">"
                 s.push()
@@ -896,10 +900,15 @@ class p_c(object):
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
                 if s.check() == unsat:
-                    # They should be different users - but it's not - so unsat
-                    verify = True
+                    # They should be the same user - but it's not - so unsat
+                    # But if it's unsat but they're actually different users then verify should be false
+                    if u[0] != u[1]:
+                        verify = False
                 else:
-                    verify = False
+                    #If it's sat and they are actually the same user - verify should be false
+                    if u[0] == u[1]:
+                        verify = False
+                s.pop()
         return verify
 
     def prompt(self):
