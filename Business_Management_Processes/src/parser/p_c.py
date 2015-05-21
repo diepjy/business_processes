@@ -683,6 +683,7 @@ class p_c(object):
                     print "VERIFIED SENIORITY"
                 else:
                     print "UNVERIFIED SENIORITY"
+                print "this user pair has verification:", (verify_sod or verify_bod) and verify_seniroity
                 print "================================================================"
 
                 # elif dict_bod and not dict_sod:
@@ -752,12 +753,10 @@ class p_c(object):
             # If they are different users, the result should be sat
             elif u[0] != u[1]:
                 if s.check() == sat:
-                    # It shouldn't be sat
                     print "PASS - verified"
                     s.pop()
                     verify_original += "(pop)\n"
                 else:
-                    # It should be unsat
                     print "FAIL - unverified"
                     verify = False
                     s.pop()
@@ -822,11 +821,13 @@ class p_c(object):
                 verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
+                print "s.check in seniority", s.check()
                 if s.check() == unsat:
                     # They should be the same user - but it's not - so unsat
-                    verify = False
-                else:
                     verify = True
+                else:
+                    if u[0] != u[1]:
+                        verify = False
             elif ">" in t_value:
                 print ">"
                 s.push()
@@ -851,39 +852,54 @@ class p_c(object):
                 else:
                     # Check if they are actually senior in dict_seniority
                     print "verify is true"
-                    verify = True
+                    if not dict_seniority.has_key(u[0]):
+                            verify = False
+                    for u_key, u_value in dict_seniority.iteritems():
+                        if u[0] == u_key and u[1] not in u_value:
+                            verify = False
                 s.pop()
             elif "<" in t_value:
                 print "<"
                 verify_original += "(assert " \
-                                   "(and (seniority " + u[0] + " " + u[1] + ") " \
+                                   "(and (seniority " + u[1] + " " + u[0] + ") " \
                                    "(executed " + t_key + ") " \
                                    "(= (alloc_user " + t_key +")" + u[0] + ")))"
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
                 print "CHECKING"
                 if s.check() == unsat:
+                    print "UNSAT"
                     for u_key, u_value in dict_seniority.iteritems():
                         print "u_key", u_key
                         print "u[0]", u[0]
                         print "u[1]", u[1]
                         print dict_seniority
                         # If the input says that the user is more senior - then it should be unsat
-                        if u[0] == u_key and u[1] in u_value:
+                        if u[1] == u_key and u[0] in u_value:
                             verify = False
                 else:
-                    verify = True
+                    # Check if they are actually senior in dict_seniority
+                    print "verify is true"
+                    print dict_seniority
+                    if not dict_seniority.has_key(u[1]):
+                        print "key not in senioriy"
+                        verify = False
+                    for u_key, u_value in dict_seniority.iteritems():
+                        if u[0] == u_key and u[1] not in u_value:
+                            print "value not in seniority"
+                            verify = False
+                s.pop()
             elif "!=" in t_value:
                 print "!="
                 # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
-                verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
+                verify_original += "(assert (not(= " + u[0] + " " + u[1] + ")))"
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
                 if s.check() == unsat:
-                    # They should be the same user - but it's not - so unsat
-                    verify = False
-                else:
+                    # They should be different users - but it's not - so unsat
                     verify = True
+                else:
+                    verify = False
         return verify
 
     def prompt(self):
