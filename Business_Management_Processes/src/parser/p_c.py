@@ -200,7 +200,7 @@ class p_c(object):
                 if "duration" in o:
                     print "duration in p[2]"
                     # Remove duration from the options and add to duration ductionary
-                    self.dict_duration[p[1].replace("'", "")] = o
+                    self.dict_duration[p[1].replace("'", "")] = o.replace("duration", "")
                 if "=" in o and "!=" not in o:
                     self.dict_eq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("=", ""))
                 elif ">" in o:
@@ -277,7 +277,7 @@ class p_c(object):
 
     def p_time(self, p):
         '''time : LPAREN NUMBER RPAREN'''
-        p[0] = p[1] + str(p[2]) + p[3]
+        p[0] = str(p[2])
 
     def p_execution(self, p):
         '''fork : OR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END rules
@@ -527,6 +527,11 @@ class p_c(object):
                 seniority += "(assert (seniority " + u_key + " " + u + ")) \n"
         return seniority
 
+    def add_duration(self, duration_list):
+        duration = ""
+        for task, dur in duration_list.iteritems():
+            duration += "(assert (= (duration " + task + ")" + dur + "))\n"
+        return duration
 
     def main(self, prompt_input):
         lexer = lex(module=lexer_class(), optimize=1)
@@ -582,6 +587,8 @@ class p_c(object):
             # Get all the before rules of the workflow
             original += self.add_before_tasks(dict_before)
             original += self.add_seniority(dict_seniority)
+            original += self.add_duration(dict_duration)
+            print original
             a = z3.parse_smt2_string(original)
             s.add(a)
             print "Result of before and seniority", s.check()
