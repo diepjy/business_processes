@@ -933,6 +933,8 @@ class p_c(object):
         model_user_map = { }
         model_task_map = { }
         model_function_map = { }
+        model_list = []
+        model_result_map = { }
         print model
         for ms in model:
             if str(ms) in users:
@@ -944,20 +946,38 @@ class p_c(object):
             if "alloc_user" in str(ms):
                 model_function_map["alloc_user"] = model[ms]
                 Task = DeclareSort('Task')
+                model_list_list = []
                 for t_key, t_value in model_task_map.iteritems():
+                    print "t_key", t_key
+                    print "t_value", t_value
                     t = Const(str(t_key), Task)
                     user_solution = model.eval(ms(t))
                     print user_solution
                     for u_key, u_value in model_user_map.iteritems():
                         if str(u_value) == str(user_solution):
                             print "alloc_user:", t_key, u_key
+                            model_list_list.append((u_key, t_key))
+                if model_list_list not in model_list:
+                    model_list.append(model_list_list)
+                    model_result_map["alloc_user"] = model_list
             if "executed" in str(ms):
                 model_function_map["executed"] = model[ms]
+                # List of executed tasks
+                executed_task_list = []
+                for t_key, t_value in model_task_map.iteritems():
+                    t = Const(str(t_key), Task)
+                    executed_task = model.eval(ms(t))
+                    if executed_task:
+                        executed_task_list.append(t_key)
+                    model_result_map["executed_tasks"] = executed_task_list
+                    print "executed task", executed_task
             if "seniority" in str(ms):
                 model_function_map["seniority"] = model[ms]
         print "model user map", model_user_map
         print "model task map", model_task_map
         print "model function map", model_function_map
+        print "model list:", model_list
+        print "model result map", model_result_map
 
     def prompt(self):
         return raw_input('busines_process > ')
