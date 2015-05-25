@@ -936,6 +936,8 @@ class p_c(object):
         model_list = []
         model_result_map = { }
         print model
+        Task = DeclareSort('Task')
+        User = DeclareSort('User')
         for ms in model:
             if str(ms) in users:
                 model_user_map[ms] = model[ms]
@@ -943,9 +945,19 @@ class p_c(object):
                 model_task_map[ms] = model[ms]
             if "before" in str(ms):
                 model_function_map["before"] = model[ms]
+                before_task_list = []
+                for t in itertools.product(tasks, tasks):
+                    print t
+                    t1 = Const(str(t[0]), Task)
+                    t2 = Const(str(t[1]), Task)
+                    before_tasks = model.eval(ms(t1, t2))
+                    print "before_tasks", before_tasks
+                    # TOD): Why does this let false???
+                    if str(model.eval(ms(t1, t2))) == "True":
+                        before_task_list.append(t)
+                model_result_map["before"] = before_task_list
             if "alloc_user" in str(ms):
                 model_function_map["alloc_user"] = model[ms]
-                Task = DeclareSort('Task')
                 model_list_list = []
                 for t_key, t_value in model_task_map.iteritems():
                     print "t_key", t_key
@@ -971,8 +983,22 @@ class p_c(object):
                         executed_task_list.append(t_key)
                     model_result_map["executed_tasks"] = executed_task_list
                     print "executed task", executed_task
-            if "seniority" in str(ms):
+            if "seniority" in str(ms) and "!" not in str(ms):
                 model_function_map["seniority"] = model[ms]
+                senior_users_list = []
+                for u in itertools.product(users, users):
+                    print u
+                    u1 = Const(str(u[0]), User)
+                    u2 = Const(str(u[1]), User)
+                    senior_users = model.eval(ms(u1, u2))
+                    print "senior users", senior_users
+                    # TOD): Why does this let false???
+                    if str(model.eval(ms(u1, u2))) == "True":
+                        # print "senior_users"
+                        # if (u[0], u[1]) not in senior_users_list:
+                        # print "senior users", (u[0], u[1])
+                        senior_users_list.append(u)
+                model_result_map["seniority"] = senior_users_list
         print "model user map", model_user_map
         print "model task map", model_task_map
         print "model function map", model_function_map
