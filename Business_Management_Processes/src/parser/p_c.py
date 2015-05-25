@@ -16,7 +16,7 @@ class p_c(object):
     smt_fun_before = "(declare-fun before (Task Task) Bool) \n"
     smt_fun_seniority = "(declare-fun seniority (User User) Bool) \n"
     smt_fun_executed = "(declare-fun executed (Task) Bool)\n"
-    smt_fun_time_needed = "(declare-fun time_needed (Task) Real)\n"
+    smt_fun_duration = "(declare-fun duration (Task) Real)\n"
 
     smt_fun_alloc_user = "(declare-fun alloc_user (Task) User) \n"
 
@@ -78,6 +78,7 @@ class p_c(object):
         self.dict_sod = []
         self.dict_bod = []
         self.allocate_users = False
+        self.dict_duration = {}
 
     def p_prog(self, p):
         '''prog : begin
@@ -98,9 +99,9 @@ class p_c(object):
         global dict_bod
         global allocate_users
         global dict_before
+        global dict_duration
         users = self.users
         tasks = self.tasks
-        # list of options to a task
         dict_eq_tasks = self.dict_eq_tasks
         dict_lt_tasks = self.dict_lt_tasks
         dict_gt_tasks = self.dict_gt_tasks
@@ -115,10 +116,9 @@ class p_c(object):
         dict_bod = self.dict_bod
         allocate_users = self.allocate_users
         dict_before = self.dict_before
-        print "eq", dict_eq_tasks
-        print "lt", dict_lt_tasks
-        print "gt", dict_gt_tasks
-        print "neq", dict_neq_tasks
+        dict_duration = self.dict_duration
+        print "dict gt tasks", dict_gt_tasks
+        print "dict duration", dict_duration
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -142,7 +142,6 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
         self.dict_before[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
-        print "before ",  self.dict_before
         p[0] = [p[2]] + [p[4]]
 
     def p_bod_task_pair(self, p):
@@ -195,15 +194,22 @@ class p_c(object):
         p_c.task = p[0]
         # if p[0] not in p_c.tasks:
         self.tasks.append(p[0].replace("'", ""))
-        if len(p) == 3 and p[2] != ";":
-            if "=" in p[2] and "!=" not in p[2]:
-                self.dict_eq_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace("=", ""))
-            elif ">" in p[2]:
-                self.dict_gt_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace(">", ""))
-            elif "<" in p[2]:
-                self.dict_lt_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace("<", ""))
-            elif "!=" in p[2]:
-                self.dict_neq_tasks[p[1].replace("'", "")] = ast.literal_eval(p[2].replace("!=", ""))
+        print "p[2] is", p[2]
+        if len(p) >= 2 and p[2] != ";":
+            for o in p[2]:
+                if "duration" in o:
+                    print "duration in p[2]"
+                    # Remove duration from the options and add to duration ductionary
+                    self.dict_duration[p[1].replace("'", "")] = o
+                if "=" in o and "!=" not in o:
+                    self.dict_eq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("=", ""))
+                elif ">" in o:
+                    print ">>>>"
+                    self.dict_gt_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace(">", ""))
+                elif "<" in o:
+                    self.dict_lt_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("<", ""))
+                elif "!=" in o:
+                    self.dict_neq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("!=", ""))
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -218,12 +224,28 @@ class p_c(object):
         '''variable_task_option : OPTION variable_option_flag COLON op variable_task_option
                   | OPTION variable_option_flag COLON op COMMA task_node
                   | OPTION variable_option_flag COLON op end
+                  | OPTION variable_option_flag COLON time variable_task_option
+                  | OPTION variable_option_flag COLON time COMMA task_node
+                  | OPTION variable_option_flag COLON time end
                   '''
-
-        if len(p) == 6:
-            p[0] = p[2] + p[3] + p[4] + p[5]
+        print "p4 is", p[4]
+        print "p2 is", p[2]
+        print "length is", len(p)
+        if len(p) == 7:
+            print "len is 7!!!!"
+            if "duration" in p[2]:
+                print "duration with len 7"
+                p[0] = p[2] + p[4]
+            else:
+                print "else case of len 7"
+                p[0] = [p[4]]
+        elif "duration" in p[2]:
+            print "DURATION"
+            p[0] = [p[2] + p[4]] + [p[5]]
+        # elif "duration" in p[2] and len
         else:
-            p[0] = p[4]
+            print "ELSE"
+            p[0] = [p[4]] + [p[5]]
 
     def p_task_option(self, p):
         '''task_option : OPTION option_flag task_option
@@ -235,6 +257,7 @@ class p_c(object):
     # ie -min_sec_lv:'t4'
     def p_variable_option_flag(self, p):
         '''variable_option_flag : MIN_SEC_LV
+                                | DURATION
         '''
         p[0] = p[1]
 
@@ -252,6 +275,10 @@ class p_c(object):
               '''
         p[0] = p[1] + p[2] + p[3] + p[4]
 
+    def p_time(self, p):
+        '''time : LPAREN NUMBER RPAREN'''
+        p[0] = p[1] + str(p[2]) + p[3]
+
     def p_execution(self, p):
         '''fork : OR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END rules
                 | OR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN COMMA fork
@@ -261,12 +288,9 @@ class p_c(object):
                 | XOR LPAREN NODE COMMA LSQPAREN task_list RSQPAREN RPAREN END
         '''
         p[0] = [p[3]] + [p[6]]
-        print p[1]
         if p[1] == "Or":
-            print "in or"
             self.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
         elif p[1] == "Xor":
-            print "in xor"
             self.dict_xor_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(",")
 
     def p_task_list(self, p):
@@ -275,7 +299,6 @@ class p_c(object):
         '''
         if len(p) == 2:
             p[0] = p[1]
-        print len(p)
         if len(p) > 2:
             p[0] = p[1] + p[2] + p[3]
 
@@ -524,7 +547,7 @@ class p_c(object):
             p_c.smt_fun_seniority + \
             p_c.smt_const_bottom + \
             p_c.smt_fun_alloc_user + \
-            p_c.smt_fun_time_needed + \
+            p_c.smt_fun_duration + \
             p_c.smt_before_transitivity + \
             p_c.smt_fun_seniority_transitivity +\
             p_c.smt_users_neq_bottom + \
@@ -1004,6 +1027,9 @@ class p_c(object):
         print "model function map", model_function_map
         print "model list:", model_list
         print "model result map", model_result_map
+
+    def worst_time_completion(self):
+        print "worst time completion!!!"
 
     def prompt(self):
         return raw_input('busines_process > ')

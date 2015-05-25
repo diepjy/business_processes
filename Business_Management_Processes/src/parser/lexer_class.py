@@ -16,7 +16,8 @@ class lexer_class(object):
         'Or' : 'OR',
         'Xor' : 'XOR',
         'Execution' : 'EXECUTION',
-        'Authorised' : 'AUTHORISED'
+        'Authorised' : 'AUTHORISED',
+        'duration' : 'DURATION'
     }
 
     # List of token names
@@ -33,7 +34,8 @@ class lexer_class(object):
         'LEQ',
         'NEQ',
         'LSQPAREN',
-        'RSQPAREN'
+        'RSQPAREN',
+        'NUMBER'
     ] + list(reserved.values())
 
     # Regular expression rules for simple tokens
@@ -56,6 +58,16 @@ class lexer_class(object):
     def t_ID(self, t):
         r'[a-zA-Z_][a-zA-Z_0-9]*'
         t.type = self.reserved.get(t.value,'ID')
+        return t
+
+    def t_NUMBER(self, t):
+        r'\d+'
+        try:
+            t.value = int(t.value)
+        except ValueError:
+            print("Integer value too large %s" % t.value)
+            t.value = 0
+        #print "parsed number %s" % repr(t.value)
         return t
 
     # Define a rule so we can track line numbers
