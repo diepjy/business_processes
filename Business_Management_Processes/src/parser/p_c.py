@@ -970,7 +970,9 @@ class p_c(object):
                 else:
                     # It should be unsat
                     print "FAIL - unverified"
-                    verify = False
+                    s.pop()
+                    # Check why it's being unverified by checking seniority constraints
+                    verify = self.verify_result_seniroity(original, s, u)
             s.pop()
             verify_original += "(pop)\n"
         print "bod verification check", s.check()
