@@ -794,22 +794,22 @@ class p_c(object):
                 else:
                     # Need to check other cases to see why it doesn't satisfy
                     print "UNVERIFIED SOD"
-                # verify_bod = self.verify_result_bod(original, s, u)
-                # if verify_bod:
-                #     # Don't need to do anything
-                #     print "VERFIFIED BOD"
-                # else:
-                #     #Need to check other cases to see why it doesn't satisfy
-                #     print "UNVERIFIED BOD"
-                # verify_seniroity = self.verify_result_seniroity(original, s, u)
-                # if verify_seniroity:
-                #     print "VERIFIED SENIORITY"
-                # else:
-                #     print "UNVERIFIED SENIORITY"
-                # verified_ = (verify_sod or verify_bod) and verify_seniroity
-                # print "this user pair has verification:", verified_
-                # verified = verified and verified_
-                # print verified
+                verify_bod = self.verify_result_bod(original, s, u)
+                if verify_bod:
+                    # Don't need to do anything
+                    print "VERFIFIED BOD"
+                else:
+                    #Need to check other cases to see why it doesn't satisfy
+                    print "UNVERIFIED BOD"
+                verify_seniroity = self.verify_result_seniroity(original, s, u)
+                if verify_seniroity:
+                    print "VERIFIED SENIORITY"
+                else:
+                    print "UNVERIFIED SENIORITY"
+                verified_ = verify_sod and verify_bod and verify_seniroity
+                print "this user pair has verification:", verified_
+                verified = verified and verified_
+                print verified
                 print "================================================================"
         # print original
         if verified:
@@ -982,9 +982,8 @@ class p_c(object):
         verify_user_list = users[:]
         verify_user_list.remove("bottom")
         verify_original = original[:]
-        verify = False
+        verify = True
         if dict_seniority:
-            verify = True
             s.push()
             for t_key, t_value in dict_eq_tasks.iteritems():
                 print "="
@@ -1016,37 +1015,63 @@ class p_c(object):
                 print s.check()
                 if s.check() == unsat:
                     for u_key, u_value in dict_seniority.iteritems():
+                        print "u_key", u_key
+                        print "u_value", u_value
+                        print "u[0]", u[0]
+                        print "u[1]", u[1]
                         # If the input says that the user is more senior - then it should be unsat
                         if u[0] == u_key and u[1] in u_value:
                             verify = False
+                        print verify
                 else:
                     # Check if they are actually senior in dict_seniority
-                    if not dict_seniority.has_key(u[0]):
-                            verify = False
+                    # if not dict_seniority.has_key(u[0]):
+                    #         verify = False
                     for u_key, u_value in dict_seniority.iteritems():
                         if u[0] == u_key and u[1] not in u_value:
                             verify = False
+                    print verify
                 s.pop()
             for t_key, t_value in dict_lt_tasks.iteritems():
                 print "<"
-                verify_original += "(assert " \
-                                   "(and (seniority " + u[1] + " " + u[0] + ") " \
-                                   "(executed " + t_key + ") " \
-                                   "(= (alloc_user " + t_key +")" + u[0] + ")))"
+                for v in t_value:
+                    verify_original += "(assert " \
+                                       "(and" \
+                                       "(executed " + t_key + ") " \
+                                       "(= (alloc_user " + t_key +")" + u[1] + ")" \
+                                       "(= (alloc_user " + v + ")" + u[0] + ")))"
+                    print "verify original", "(assert " \
+                                       "(and" \
+                                       "(executed " + t_key + ") " \
+                                       "(= (alloc_user " + t_key +")" + u[1] + ")" \
+                                       "(= (alloc_user " + v + ")" + u[0] + ")))"
+                # print original
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
+                print s.check()
                 if s.check() == unsat:
                     for u_key, u_value in dict_seniority.iteritems():
+                        print "u_key", u_key
+                        print "u_value", u_value
+                        print "u[0]", u[0]
+                        print "u[1]", u[1]
                         # If the input says that the user is more senior - then it should be unsat
-                        if u[1] == u_key and u[0] in u_value:
+                        # If u[0] is actually senior to u[1], then it should be unsat
+                        # If u[1] is actually senior to u[0], then it should be sat - so why is it in unsat
+                        if u[0] == u_key and u[1] in u_value:
+                            # If in fact they u[0] is more senior than u[1] then it should be false
                             verify = False
+                        print verify
                 else:
-                    # Check if they are actually senior in dict_seniority
-                    if not dict_seniority.has_key(u[1]):
-                        verify = False
+                    # Check if they are actually senior in dict_seniority, if they are then it should be sat
+                    # if u[1] in dict_seniority:
+                    #     print "dict seniority has got key", u[1]
+                    #     verify = False
                     for u_key, u_value in dict_seniority.iteritems():
                         if u[0] == u_key and u[1] not in u_value:
+                            print "has u_key, doesn't have u_value"
                             verify = False
+                    print verify
                 s.pop()
             for t_key, t_value in dict_neq_tasks.iteritems():
                 print "!="
