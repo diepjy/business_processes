@@ -125,6 +125,13 @@ class p_c(object):
         print "dict neq tasks", dict_neq_tasks
         print "dict duration", dict_duration
         print "dict seniority", dict_seniority
+        print "dict sod", dict_sod
+        print "dict bod", dict_bod
+        print "dict user alloc", dict_user_alloc
+        print "dict before", dict_before
+        print "dict_duration", dict_duration
+        print "dict or", dict_or_task
+        print "dict xor", dict_xor_task
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -147,8 +154,14 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
-        self.dict_before[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
+        # self.dict_before[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
         p[0] = [p[2]] + [p[4]]
+        if not p[2].replace("'", "") in self.dict_seniority:
+            self.dict_before[p[2].replace("'", "")] = []
+            self.dict_before[p[2].replace("'", "")].append(p[4].replace("'", ""))
+        else:
+            self.dict_before[p[2].replace("'", "")].append(p[4].replace("'", ""))
+
 
     def p_bod_task_pair(self, p):
         '''bod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -157,6 +170,11 @@ class p_c(object):
                      '''
         p[0] = [p[2]] + [p[4]]
         self.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
+        # if not p[2].replace("'", "") in self.dict_seniority:
+        #     self.dict_bod[p[2].replace("'", "")] = []
+        #     self.dict_bod[p[2].replace("'", "")].append(p[4].replace("'", ""))
+        # else:
+        #     self.dict_bod[p[2].replace("'", "")].append(p[4].replace("'", ""))
 
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -164,7 +182,12 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
         p[0] = [p[2]] + [p[4]]
-        self.dict_sod[p[2].replace("'", "")].append(p[4].replace("'", ""))
+        self.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
+        # if not p[2].replace("'", "") in self.dict_seniority:
+        #     self.dict_sod[p[2].replace("'", "")] = []
+        #     self.dict_sod[p[2].replace("'", "")].append(p[4].replace("'", ""))
+        # else:
+        #     self.dict_sod[p[2].replace("'", "")].append(p[4].replace("'", ""))
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -184,7 +207,12 @@ class p_c(object):
                            | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END
         '''
         p[0] = [p[2]] + [p[5]]
-        self.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
+        # self.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
+        if not p[2].replace("'", "") in self.dict_seniority:
+            self.dict_task_user_auth[p[2].replace("'", "")] = []
+            self.dict_task_user_auth[p[2].replace("'", "")].append(p[4].replace("'", ""))
+        else:
+            self.dict_task_user_auth[p[2].replace("'", "")].append(p[4].replace("'", ""))
 
     def p_user_list(self, p):
         '''user_list : NODE COMMA user_list
@@ -753,6 +781,7 @@ class p_c(object):
         print s.check()
         verified = True
         if s.check() == sat:
+            model = s.model()
             verify_userlist = users[:]
             verify_userlist.remove("bottom")
             for u in itertools.product(verify_userlist, verify_userlist):
@@ -765,22 +794,22 @@ class p_c(object):
                 else:
                     # Need to check other cases to see why it doesn't satisfy
                     print "UNVERIFIED SOD"
-                verify_bod = self.verify_result_bod(original, s, u)
-                if verify_bod:
-                    # Don't need to do anything
-                    print "VERFIFIED BOD"
-                else:
-                    #Need to check other cases to see why it doesn't satisfy
-                    print "UNVERIFIED BOD"
-                verify_seniroity = self.verify_result_seniroity(original, s, u)
-                if verify_seniroity:
-                    print "VERIFIED SENIORITY"
-                else:
-                    print "UNVERIFIED SENIORITY"
-                verified_ = (verify_sod or verify_bod) and verify_seniroity
-                print "this user pair has verification:", verified_
-                verified = verified and verified_
-                print verified
+                # verify_bod = self.verify_result_bod(original, s, u)
+                # if verify_bod:
+                #     # Don't need to do anything
+                #     print "VERFIFIED BOD"
+                # else:
+                #     #Need to check other cases to see why it doesn't satisfy
+                #     print "UNVERIFIED BOD"
+                # verify_seniroity = self.verify_result_seniroity(original, s, u)
+                # if verify_seniroity:
+                #     print "VERIFIED SENIORITY"
+                # else:
+                #     print "UNVERIFIED SENIORITY"
+                # verified_ = (verify_sod or verify_bod) and verify_seniroity
+                # print "this user pair has verification:", verified_
+                # verified = verified and verified_
+                # print verified
                 print "================================================================"
         # print original
         if verified:
@@ -852,6 +881,24 @@ class p_c(object):
         verify_original = original[:]
         verify = True
         s.push()
+        res = s.check()
+        if res == sat:
+            m = s.model()
+            # print m
+        else:
+            verify = False
+            return verify
+        print u
+        # Task = DeclareSort('Task')
+        # for t_key, t_value in dict_sod:
+        #     print t_key
+        #     print t_value
+        #     ts_key = Const(str(t_key), Task)
+        #     ts_value = Const(str(t_value), Task)
+        #     for ms in m:
+        #         if "alloc_user" in str(ms) and "alloc_user!" not in str(ms):
+        #             print "model t_key", t_key, m.eval(ms(ts_key))
+        #             print "model t_value", t_value, m.eval(ms(ts_value))
         for sod in dict_sod:
             v = z3.parse_smt2_string(verify_original)
             s.add(v)
@@ -865,7 +912,7 @@ class p_c(object):
             if u[0] == u[1]:
                 if s.check() == sat:
                     # It shouldn't be sat
-                    print "FAIL - unverified"
+                    print "FAIL - unverified in equal"
                     verify = False
                     s.pop()
                     verify_original += "(pop)\n"
@@ -881,9 +928,11 @@ class p_c(object):
                     s.pop()
                     verify_original += "(pop)\n"
                 else:
-                    print "FAIL - unverified"
-                    verify = False
+                    print "FAIL - unverified in unequal"
                     s.pop()
+                    # Check why it's being unverified by checking seniority constraints
+                    verify = self.verify_result_seniroity(original, s, u)
+                    # verify = False
                     verify_original += "(pop)\n"
         print "verify in sod", verify
         return verify
@@ -952,6 +1001,7 @@ class p_c(object):
                         verify = False
                 s.pop()
             for t_key, t_value in dict_gt_tasks.iteritems():
+                print ">"
                 s.push()
                 verify_original += "(push)\n"
                 verify_original += "(assert " \
@@ -961,6 +1011,7 @@ class p_c(object):
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
                 print "CHECKING"
+                print s.check()
                 if s.check() == unsat:
                     for u_key, u_value in dict_seniority.iteritems():
                         # If the input says that the user is more senior - then it should be unsat
@@ -975,6 +1026,7 @@ class p_c(object):
                             verify = False
                 s.pop()
             for t_key, t_value in dict_lt_tasks.iteritems():
+                print "<"
                 verify_original += "(assert " \
                                    "(and (seniority " + u[1] + " " + u[0] + ") " \
                                    "(executed " + t_key + ") " \
