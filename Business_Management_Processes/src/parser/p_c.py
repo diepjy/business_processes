@@ -1004,11 +1004,12 @@ class p_c(object):
             for t_key, t_value in dict_gt_tasks.iteritems():
                 print ">"
                 s.push()
-                verify_original += "(push)\n"
-                verify_original += "(assert " \
-                                   "(and (seniority " + u[0] + " " + u[1] + ") " \
-                                   "(executed " + t_key + ") " \
-                                   "(= (alloc_user " + t_key +")" + u[0] + ")))"
+                for v in t_value:
+                    verify_original += "(assert " \
+                                       "(and " \
+                                       "(executed " + t_key + ") " \
+                                       "(= (alloc_user " + t_key +")" + u[0] + ")" \
+                                       "(= (alloc_user " + v + ")" + u[1] + ")))"
                 v = z3.parse_smt2_string(verify_original)
                 s.add(v)
                 print "CHECKING"
@@ -1033,6 +1034,7 @@ class p_c(object):
                     print verify
                 s.pop()
             for t_key, t_value in dict_lt_tasks.iteritems():
+                s.push()
                 print "<"
                 for v in t_value:
                     verify_original += "(assert " \
