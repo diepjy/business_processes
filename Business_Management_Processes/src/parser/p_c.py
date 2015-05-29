@@ -6,7 +6,6 @@ from ply.lex import lex
 from ply.yacc import yacc
 import itertools
 import ast
-from decimal import Decimal
 
 class p_c(object):
     tokens = lexer_class.tokens
@@ -64,17 +63,17 @@ class p_c(object):
     def __init__(self):
         self.users = []
         self.tasks = []
-        self.dict_eq_tasks = { }
-        self.dict_gt_tasks = { }
-        self.dict_lt_tasks = { }
-        self.dict_neq_taks = { }
-        self.dict_users = { }
-        self.dict_seniority = { }
-        self.dict_before = { }
-        self.dict_user_alloc = { }
-        self.dict_task_user_auth = { }
-        self.dict_or_task = { }
-        self.dict_xor_task = { }
+        self.dict_eq_tasks = {}
+        self.dict_gt_tasks = {}
+        self.dict_lt_tasks = {}
+        self.dict_neq_tasks = {}
+        self.dict_users = {}
+        self.dict_seniority = {}
+        self.dict_before = {}
+        self.dict_user_alloc = {}
+        self.dict_task_user_auth = {}
+        self.dict_or_task = {}
+        self.dict_xor_task = {}
         self.dict_sod = []
         self.dict_bod = []
         self.allocate_users = False
@@ -105,7 +104,7 @@ class p_c(object):
         dict_eq_tasks = self.dict_eq_tasks
         dict_lt_tasks = self.dict_lt_tasks
         dict_gt_tasks = self.dict_gt_tasks
-        dict_neq_tasks = self.dict_neq_taks
+        dict_neq_tasks = self.dict_neq_tasks
         dict_users = self.dict_users
         dict_seniority = self.dict_seniority
         dict_user_alloc = self.dict_user_alloc
@@ -123,7 +122,6 @@ class p_c(object):
         print "dict neq tasks", dict_neq_tasks
         print "dict neq tasks", dict_neq_tasks
         print "dict neq tasks", dict_neq_tasks
-        print "dict duration", dict_duration
         print "dict seniority", dict_seniority
         print "dict sod", dict_sod
         print "dict bod", dict_bod
@@ -154,7 +152,6 @@ class p_c(object):
                      | LPAREN NODE COMMA NODE RPAREN COMMA before_task_node_pair
                      | LPAREN NODE COMMA NODE RPAREN END
                      '''
-        # self.dict_before[p[2].replace("'", "")] = (p[4].replace("'", "")).split(",")
         p[0] = [p[2]] + [p[4]]
         if not p[2].replace("'", "") in self.dict_seniority:
             self.dict_before[p[2].replace("'", "")] = []
@@ -170,11 +167,6 @@ class p_c(object):
                      '''
         p[0] = [p[2]] + [p[4]]
         self.dict_bod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
-        # if not p[2].replace("'", "") in self.dict_seniority:
-        #     self.dict_bod[p[2].replace("'", "")] = []
-        #     self.dict_bod[p[2].replace("'", "")].append(p[4].replace("'", ""))
-        # else:
-        #     self.dict_bod[p[2].replace("'", "")].append(p[4].replace("'", ""))
 
     def p_sod_task_pair(self, p):
         '''sod_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -183,11 +175,6 @@ class p_c(object):
                      '''
         p[0] = [p[2]] + [p[4]]
         self.dict_sod.append([p[2].replace("'", "")] + [p[4].replace("'", "")])
-        # if not p[2].replace("'", "") in self.dict_seniority:
-        #     self.dict_sod[p[2].replace("'", "")] = []
-        #     self.dict_sod[p[2].replace("'", "")].append(p[4].replace("'", ""))
-        # else:
-        #     self.dict_sod[p[2].replace("'", "")].append(p[4].replace("'", ""))
 
     def p_user_pair(self, p):
         '''user_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -207,7 +194,6 @@ class p_c(object):
                            | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END
         '''
         p[0] = [p[2]] + [p[5]]
-        # self.dict_task_user_auth[p[2].replace("'", "")] = (p[5].replace("'", "")).split(",")
         if not p[2].replace("'", "") in self.dict_seniority:
             self.dict_task_user_auth[p[2].replace("'", "")] = []
             self.dict_task_user_auth[p[2].replace("'", "")].append(p[4].replace("'", ""))
@@ -228,14 +214,13 @@ class p_c(object):
                 | NODE COMMA task_node
                 | NODE variable_task_option
                 '''
-                # | NODE task_option'''
         p[0] = p[1]
         p_c.task = p[0]
         self.tasks.append(p[0].replace("'", ""))
         if len(p) >= 2 and p[2] != ";":
             for o in p[2]:
                 if "duration" in o:
-                    # Remove duration from the options and add to duration ductionary
+                    # Remove duration from the options and add to duration dictionary
                     self.dict_duration[p[1].replace("'", "")] = o.replace("duration", "")
                 if "=" in o and "!=" not in o:
                     self.dict_eq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("=", ""))
@@ -586,21 +571,24 @@ class p_c(object):
         f = z3.parse_smt2_string(original)
         s = z3.Solver()
         s.add(f)
-        print 'Result of first check', s.check()
+        # print 'Result of first check', s.check()
+        s.check()
         m = s.model()
 
         auth = self.authorised_task_to_users_axiom(dict_task_user_auth)
         original += auth
         a = z3.parse_smt2_string(original)
         s.add(a)
-        print "Result of authorised_task_to_users_axiom", s.check()
+        # print "Result of authorised_task_to_users_axiom",
+        s.check()
         s.model()
 
         original += self.bottom_user_execution_axiom
         original += self.not_bottom_user_execution_axiom
         bottom_user_axiom = z3.parse_smt2_string(original)
         s.add(bottom_user_axiom)
-        print "after adding execution bottom axiom", s.check()
+        # print "after adding execution bottom axiom",
+        s.check()
         s.model
 
         try:
@@ -610,7 +598,7 @@ class p_c(object):
             original += self.add_duration(dict_duration)
             a = z3.parse_smt2_string(original)
             s.add(a)
-            print "Result of before and seniority", s.check()
+            # print "Result of before and seniority", s.check()
             s.model()
 
             try:
@@ -630,35 +618,35 @@ class p_c(object):
 
                 o = z3.parse_smt2_string(original)
                 s.add(o)
-                print "after options added check", s.check()
+                # print "after options added check", s.check()
                 s.model()
 
                 try:
                     original += self.only_users(users)
                     o = z3.parse_smt2_string(original)
                     s.add(o)
-                    print "after adding only_users axiom", s.check()
+                    # print "after adding only_users axiom", s.check()
                     s.model()
 
                     try:
                         original += self.executable_sod(dict_sod)
                         sod = z3.parse_smt2_string(original)
                         s.add(sod)
-                        print "after execution sod added check", s.check()
+                        # print "after execution sod added check", s.check()
                         s.model()
 
                         try:
                             original += self.unique_users_axiom(users)
                             unique = z3.parse_smt2_string(original)
                             s.add(unique)
-                            print "after options added check", s.check()
+                            # print "after options added check", s.check()
                             s.model()
 
                             try:
                                 original += self.executed_and_tasks(dict_xor_task, dict_or_task, tasks)
                                 exe_and_tasks = z3.parse_smt2_string(original)
                                 s.add(exe_and_tasks)
-                                print "after adding executed tasks in and", s.check()
+                                # print "after adding executed tasks in and", s.check()
                                 s.model()
 
                                 try:
@@ -666,12 +654,12 @@ class p_c(object):
                                         original += self.executed_or_tasks(dict_or_task)
                                         exe_or_tasks = z3.parse_smt2_string(original)
                                         s.add(exe_or_tasks)
-                                        print "after adding executed tasks in or", s.check()
+                                        # print "after adding executed tasks in or", s.check()
                                     if dict_xor_task:
                                         original += self.executed_xor_tasks(dict_xor_task)
                                         exe_xor_tasks = z3.parse_smt2_string(original)
                                         s.add(exe_xor_tasks)
-                                        print "after adding executed tasks in xor", s.check()
+                                        # print "after adding executed tasks in xor", s.check()
                                 except Z3Exception as e:
                                     print "fail at executed or tasks", e
 
@@ -710,7 +698,7 @@ class p_c(object):
                 e = z3.parse_smt2_string(original_extra)
                 s.add(e)
                 check = s.check()
-                print 'result of push', check
+                # print 'result of push', check
                 if check == sat:
                     m = s.model()
                 elif check == unsat:
@@ -718,29 +706,24 @@ class p_c(object):
                     e = z3.parse_smt2_string(original_extra)
                     s.pop()
                     s.add(e)
-                    print s.check()
+                    # print s.check()
 
-        print s.check()
+        s.check()
         # print "UNSAT CORE", s.unsat_core()
 
-        print "COMPLETION TIME"
         completion_time = "(declare-const completion_time Real)"
         original += completion_time
         total_executed_task_duration = "(assert (= completion_time " \
                                        "(+"
         original += total_executed_task_duration
         for t in tasks:
-            print t
             original += "(ite (executed " + t + ") (duration " + t + ") 0)"
         original += ")))"
         c = z3.parse_smt2_string(original)
         s.add(c)
-        print "completion time check", s.check()
-        print "completion time model", s.model()
 
         worst_total_duration = self.worst_time_completion("completion_time", 0.001, s)
 
-        # print "ASSIGNMENT"
         #Assignment and verification of the model
         model_map_task = []
         model_map_user = []
@@ -760,63 +743,60 @@ class p_c(object):
                     for model_user in model_map_user:
                         if str(model_user[1]) == str(user_solution):
                             solution_map.append((t, model_user[0]))
-        print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-        print s.check()
-        verified = True
+
+        # print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+        # print s.check()
         if s.check() == sat:
+            verified = True
             verify_userlist = users[:]
             verify_userlist.remove("bottom")
             for u in itertools.product(verify_userlist, verify_userlist):
                 # if dict_sod:
                 verify_sod = self.verify_result_sod(original, s, u)
-                if verify_sod:
+                # if verify_sod:
                     # Don't need to do anything
-                    print "VERIFIED SOD"
-                else:
+                    # print "VERIFIED SOD"
+                # else:
                     # Need to check other cases to see why it doesn't satisfy
-                    print "UNVERIFIED SOD"
+                    # print "UNVERIFIED SOD"
                 verify_bod = self.verify_result_bod(original, s, u)
-                if verify_bod:
-                    # Don't need to do anything
-                    print "VERFIFIED BOD"
-                else:
-                    # Need to check other cases to see why it doesn't satisfy
-                    print "UNVERIFIED BOD"
+                # if verify_bod:
+                #     # Don't need to do anything
+                #     print "VERFIFIED BOD"
+                # else:
+                #     # Need to check other cases to see why it doesn't satisfy
+                #     print "UNVERIFIED BOD"
                 verify_seniroity = self.verify_result_seniroity(original, s, u)
-                if verify_seniroity:
-                    print "VERIFIED SENIORITY"
-                else:
-                    print "UNVERIFIED SENIORITY"
+                # if verify_seniroity:
+                #     print "VERIFIED SENIORITY"
+                # else:
+                #     print "UNVERIFIED SENIORITY"
                 verified_ = verify_sod and verify_bod and verify_seniroity
-                print "this user pair has verification:", verified_
+                # print "this user pair has verification:", verified_
                 verified = verified and verified_
-                print verified
-                print "================================================================"
+                # print verified
+                # print "================================================================"
+        else:
+            verified = False
         if verified:
             final_solver = z3.Solver()
             final = z3.parse_smt2_string(original)
             final_solver.add(final)
             final_solver.check()
-            self.evaluate_final_model(final_solver.model(), worst_total_duration)
+            final_user_model = self.evaluate_final_model(final_solver.model(), worst_total_duration)
             print "VERIFIED!!!!!"
-            if not solution_map:
-                return str(s.check())
-            else:
-                return str(s.check()) + " " + str(solution_map).strip('[]')
+            return final_user_model
         else:
             print "UNVERIFIED!!!"
             return str(unsat)
 
     def worst_time_completion(self, x, delta, s):
-        print "worst time completion!!!"
-        print x
         res = s.check()
         if res == unsat:
             return unsat
         else:
             m = s.model()
         # Finding the upper bound time
-        print m
         x_s = Real(x)
         # Unbounded search
         while res == sat:
@@ -828,29 +808,19 @@ class p_c(object):
             s.pop()
         # Bisection
         v = m[x_s]
-        print v
         v = float(v.as_decimal(10)[:])
-        print v
         max_time = 2*v
         min_time = v
-        print "max before", max_time
-        print "min before", min_time
         while (max_time-min_time) > delta:
             s.push()
             s.add((((max_time - min_time)/2)+min_time) <= x_s)
             res = s.check()
-            print "res in bisection", res
             if res == sat:
                 min_time = (((max_time-min_time)/2)+min_time)
             else:
                 max_time = (((max_time-min_time)/2)+min_time)
             s.pop()
-        print s.check()
-        print s.model()
         y = (max_time+min_time)/2
-        print "max in end", max_time
-        print "min in end", min_time
-        print "y", y
         # Check all executed tasks and see if they fall above the lower bound.
         s.push()
         duration_total = 0
@@ -860,13 +830,10 @@ class p_c(object):
             if "executed" in str(ms) and "!" not in str(ms):
                 for ts in tasks:
                     t = Const(ts, Task)
-                    print m.eval(ms(t))
                     for mss in m:
                         if "duration" in str(mss):
                             duration_total = duration_total + m.eval(mss(t))
-        print duration_total
         s.add(dur_tot >= duration_total)
-        print "check verification", s.check()
         if s.check() == unsat:
             return unsat
         s.pop()
@@ -900,23 +867,23 @@ class p_c(object):
             if u[0] == u[1]:
                 if s.check() == sat:
                     # It shouldn't be sat
-                    print "FAIL - unverified in equal"
+                    # print "FAIL - unverified in equal"
                     verify = False
                     s.pop()
                     verify_original += "(pop)\n"
                 else:
                     # It should be unsat
-                    print "PASS - verified"
+                    # print "PASS - verified"
                     s.pop()
                     verify_original += "(pop)\n"
             # If they are different users, the result should be sat
             elif u[0] != u[1]:
                 if s.check() == sat:
-                    print "PASS - verified"
+                    # print "PASS - verified"
                     s.pop()
                     verify_original += "(pop)\n"
                 else:
-                    print "FAIL - unverified in unequal"
+                    # print "FAIL - unverified in unequal"
                     s.pop()
                     # Check why it's being unverified by checking seniority constraints
                     verify = self.verify_result_seniroity(original, s, u)
@@ -943,25 +910,18 @@ class p_c(object):
             if u[0] != u[1]:
                 if s.check() == sat:
                     # It shouldn't be sat
-                    print "FAIL - unverified"
+                    # print "FAIL - unverified"
                     verify = False
-                else:
-                    # It should be unsat
-                    print "PASS - verified"
             # If they are the same user, the result should be sat
             elif u[0] == u[1]:
-                if s.check() == sat:
-                    # It shouldn't be sat
-                    print "PASS - verified"
-                else:
-                    # It should be unsat
-                    print "FAIL - unverified"
+                if s.check() == unsat:
                     s.pop()
+                    # It should be unsat
+                    # print "FAIL - unverified"
                     # Check why it's being unverified by checking seniority constraints
                     verify = self.verify_result_seniroity(original, s, u)
             s.pop()
             verify_original += "(pop)\n"
-        print "bod verification check", s.check()
         return verify
 
     def verify_result_seniroity(self, original, s, u):
@@ -1108,13 +1068,12 @@ class p_c(object):
                         senior_users_list.append(u)
                 model_result_map["seniority"] = senior_users_list
         completion_time = Real('completion_time')
-        print round(total_worst_duration)
         model_result_map["worst time completion"] = round(total_worst_duration)
-        print "model result map", model_result_map
+        return model_result_map
 
     def prompt(self):
         return raw_input('busines_process > ')
 
 if __name__ == '__main__':
     p = p_c()
-    p.main(p.prompt())
+    print p.main(p.prompt())
