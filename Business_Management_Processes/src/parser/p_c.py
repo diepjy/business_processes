@@ -6,6 +6,7 @@ from ply.lex import lex
 from ply.yacc import yacc
 import itertools
 import ast
+import sys
 
 class p_c(object):
     tokens = lexer_class.tokens
@@ -222,14 +223,15 @@ class p_c(object):
                 if "duration" in o:
                     # Remove duration from the options and add to duration dictionary
                     self.dict_duration[p[1].replace("'", "")] = o.replace("duration", "")
-                if "=" in o and "!=" not in o:
-                    self.dict_eq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("=", ""))
-                elif ">" in o:
-                    self.dict_gt_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace(">", ""))
-                elif "<" in o:
-                    self.dict_lt_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("<", ""))
-                elif "!=" in o:
-                    self.dict_neq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("!=", ""))
+                elif not self.dict_seniority:
+                    if "=" in o and "!=" not in o:
+                        self.dict_eq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("=", ""))
+                    elif ">" in o:
+                        self.dict_gt_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace(">", ""))
+                    elif "<" in o:
+                        self.dict_lt_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("<", ""))
+                    elif "!=" in o:
+                        self.dict_neq_tasks[p[1].replace("'", "")] = ast.literal_eval(o.replace("!=", ""))
 
     def p_user_node(self, p):
         '''user_node : NODE end
@@ -544,9 +546,11 @@ class p_c(object):
 
         s = prompt_input
 
+        print s
+
         lexer.input(s)
-        # for token in lexer:
-        #         print(token)
+        for token in lexer:
+                print(token)
         t = parser.parse(s, lexer=lexer)
         print t
 
@@ -598,7 +602,8 @@ class p_c(object):
             original += self.add_duration(dict_duration)
             a = z3.parse_smt2_string(original)
             s.add(a)
-            # print "Result of before and seniority", s.check()
+            # print "Result of before and seniority",
+            s.check()
             s.model()
 
             try:
@@ -1076,4 +1081,22 @@ class p_c(object):
 
 if __name__ == '__main__':
     p = p_c()
-    print p.main(p.prompt())
+    args = sys.argv[1:]
+    if args:
+        for arg in args:
+            f = open(arg)
+            content = f.read()
+            print content
+            print p.main(content)
+            f.close()
+    else:
+        print "usage is bla bla bla"
+        print p.main(p.prompt())
+    # script, filename = argv
+    # if argv:
+    #     # Read from file
+    #     f = open(filename)
+    #     print f.read()
+    # elif len(argv) == 0:
+    # # Read from command line
+    #     print p.main(p.prompt())
