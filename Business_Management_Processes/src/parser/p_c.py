@@ -738,7 +738,7 @@ class p_c(object):
         print "completion time check", s.check()
         print "completion time model", s.model()
 
-        self.worst_time_completion("completion_time", 0.001, s)
+        worst_total_duration = self.worst_time_completion("completion_time", 0.001, s)
 
         # print "ASSIGNMENT"
         #Assignment and verification of the model
@@ -797,7 +797,7 @@ class p_c(object):
             final = z3.parse_smt2_string(original)
             final_solver.add(final)
             final_solver.check()
-            self.evaluate_final_model(final_solver.model())
+            self.evaluate_final_model(final_solver.model(), worst_total_duration)
             print "VERIFIED!!!!!"
             if not solution_map:
                 return str(s.check())
@@ -851,8 +851,26 @@ class p_c(object):
         print "max in end", max_time
         print "min in end", min_time
         print "y", y
+        # Check all executed tasks and see if they fall above the lower bound.
+        s.push()
+        duration_total = 0
+        dur_tot = Real('duration_total')
+        Task = DeclareSort('Task')
+        for ms in m:
+            if "executed" in str(ms) and "!" not in str(ms):
+                for ts in tasks:
+                    t = Const(ts, Task)
+                    print m.eval(ms(t))
+                    for mss in m:
+                        if "duration" in str(mss):
+                            duration_total = duration_total + m.eval(mss(t))
+        print duration_total
+        s.add(dur_tot >= duration_total)
+        print "check verification", s.check()
+        if s.check() == unsat:
+            return unsat
+        s.pop()
         return y
-
 
     # Pass the model and check that it is consistent with the input
     # Sod verification: if it's the same user, should return unsat
@@ -1035,7 +1053,7 @@ class p_c(object):
                 s.pop()
         return verify
 
-    def evaluate_final_model(self, model):
+    def evaluate_final_model(self, model, total_worst_duration):
         model_user_map = { }
         model_task_map = { }
         model_function_map = { }
@@ -1089,6 +1107,9 @@ class p_c(object):
                     if str(senior_users) == "True":
                         senior_users_list.append(u)
                 model_result_map["seniority"] = senior_users_list
+        completion_time = Real('completion_time')
+        print round(total_worst_duration)
+        model_result_map["worst time completion"] = round(total_worst_duration)
         print "model result map", model_result_map
 
     def prompt(self):
