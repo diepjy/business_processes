@@ -12,7 +12,6 @@ class lexer_class(object):
         'users' : 'USERS_OPTION',
         'allocate' : 'ALLOCATE',
         'min_sec_lv' : 'MIN_SEC_LV',
-        'start' : 'START',
         'Or' : 'OR',
         'Xor' : 'XOR',
         'Execution' : 'EXECUTION',
