@@ -287,7 +287,8 @@ class p_c(object):
         p[0] = p[1] + p[2] + p[3] + p[4]
 
     def p_time(self, p):
-        '''time : LPAREN NUMBER RPAREN'''
+        '''time : LPAREN NUMBER RPAREN
+                '''
         p[0] = str(p[2])
 
     def p_execution(self, p):
@@ -1090,13 +1091,4 @@ if __name__ == '__main__':
             print p.main(content)
             f.close()
     else:
-        print "usage is bla bla bla"
         print p.main(p.prompt())
-    # script, filename = argv
-    # if argv:
-    #     # Read from file
-    #     f = open(filename)
-    #     print f.read()
-    # elif len(argv) == 0:
-    # # Read from command line
-    #     print p.main(p.prompt())

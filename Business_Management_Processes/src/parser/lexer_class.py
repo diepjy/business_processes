@@ -40,7 +40,6 @@ class lexer_class(object):
     # Regular expression rules for simple tokens
     t_COLON = r':'
     t_NODE = r'(%s|%s)' % (r'"(\\"|[^"])*"', r"'(\\'|[^'])*'")
-    # t_OPTION = r'-[a-zA-Z_][a-zA-Z0-9_]*'
     t_OPTION = r'-'
     t_COMMA = r','
     t_LPAREN = r'\('
@@ -60,13 +59,7 @@ class lexer_class(object):
         return t
 
     def t_NUMBER(self, t):
-        r'\d+'
-        try:
-            t.value = int(t.value)
-        except ValueError:
-            print("Integer value too large %s" % t.value)
-            t.value = 0
-        #print "parsed number %s" % repr(t.value)
+        r'[0-9]+[\.[0.9]+]?'
         return t
 
     # Define a rule so we can track line numbers
