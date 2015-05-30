@@ -1,0 +1,46 @@
+\begin{thebibliography}{1}
+
+\bibitem{AcyclicDigraph}
+Mark Senn.
+\newblock {\em Acyclic Digraph}, (accessed February, 2015).
+\newblock \url{http://mathworld.wolfram.com/AcyclicDigraph.html}.
+
+\bibitem{smt_appetizer}
+Leonardo de~Moura and Nikolaj Bjørner.
+\newblock Satisfiability modulo theories: An appetizer.
+\newblock pages 1--8, 2009.
+\newblock
+  \url{http://research.microsoft.com/en-us/um/people/leonardo/sbmf09.pdf}
+  (accessed Feburary, 2015).
+
+\bibitem{sat}
+{Carla P. Gomes, Henry Kautz, Ashish Sabharwal, and Bart Selmanr}.
+\newblock Satisfiability solvers.
+\newblock {\em Handbook of Knowledge Representation}, pages 91--92, 2008.
+\newblock
+  \url{http://www.cs.cornell.edu/gomes/papers/satsolvers-kr-handbook.pdf}
+  (accessed Feburary, 2015).
+
+\bibitem{smt}
+Microsoft Research.
+\newblock {\em Z3 Codeplex}, 2014.
+\newblock \url{http://z3.codeplex.com/}, (accessed February, 2015).
+
+\bibitem{yices}
+SRI International's Computer~Science Laboratory.
+\newblock {\em The Yices SMT Solver}, 2015.
+\newblock \url{http://yices.csl.sri.com/}, (accessed May, 2015).
+
+\bibitem{cvc4}
+{\em CVC4 - The SMT Solver}, 2015.
+\newblock \url{http://cvc4.cs.nyu.edu/web/}, (accessed May, 2015).
+
+\bibitem{mathsat5}
+Alessandro Cimatti, Alberto Griggio, Bastiaan Schaafsma, and Roberto
+  Sebastiani.
+\newblock {The MathSAT5 SMT Solver}.
+\newblock In Nir Piterman and Scott Smolka, editors, {\em Proceedings of
+  TACAS}, volume 7795 of {\em LNCS}. Springer, 2013.
+\newblock \url{http://mathsat.fbk.eu/index.html}, (accessed May, 2015).
+
+\end{thebibliography}

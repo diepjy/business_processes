@@ -1,0 +1,23 @@
+\contentsline {chapter}{Contents}{1}
+\contentsline {chapter}{\numberline {1}Introduction}{2}
+\contentsline {chapter}{\numberline {2}Background}{3}
+\contentsline {section}{\numberline {2.1}Workflows}{3}
+\contentsline {section}{\numberline {2.2}Tasks}{3}
+\contentsline {section}{\numberline {2.3}Users}{4}
+\contentsline {section}{\numberline {2.4}Business and Security Rules}{4}
+\contentsline {section}{\numberline {2.5}Satisfiability Modulo Theories (SMT)}{5}
+\contentsline {section}{\numberline {2.6}Z3}{5}
+\contentsline {subsection}{\numberline {2.6.1}Basics}{5}
+\contentsline {subsection}{\numberline {2.6.2}Functions}{6}
+\contentsline {subsection}{\numberline {2.6.3}Stack}{7}
+\contentsline {subsection}{\numberline {2.6.4}Sorts}{8}
+\contentsline {subsection}{\numberline {2.6.5}Quantifiers}{9}
+\contentsline {subsection}{\numberline {2.6.6}Satisfiability and Validity}{9}
+\contentsline {subsubsection}{Validity}{9}
+\contentsline {subsubsection}{Satisfiability}{9}
+\contentsline {chapter}{\numberline {3}Business Rules}{10}
+\contentsline {chapter}{\numberline {4}Implementation}{11}
+\contentsline {chapter}{\numberline {5}Evaluation}{12}
+\contentsline {chapter}{\numberline {6}Conclusion}{13}
+\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{14}
+\contentsline {chapter}{Bibliography}{15}
