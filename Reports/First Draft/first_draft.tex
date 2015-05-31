@@ -484,7 +484,7 @@ Then each task and user in the domain are able to be defined after the sort has 
 \end{lstlisting}
 We have now declared a user called \say{alice} and another user \say{bob} in the user domain, as well as defining two tasks in the task domain \say{receive\_large\_order} and \say{recieve\_small\_order}. 
 
-\subsection{User Allocation}
+\section{User Allocation}
 The most basic constraint in a workflow is that the tasks can only be executed if they have been allocated a user. Obviously, if there was not a user in the domain able to be allocated to a task, no one is able to execute and complete the task for the workflow to progress.\\
 In Z3, we define user allocation as a function, which takes in a task, and returns a user:
 \begin{itemize}
@@ -493,7 +493,8 @@ In Z3, we define user allocation as a function, which takes in a task, and retur
 
 \section{Separation of Duty}
 Separation of duties\cite{sod} is where users need to be different in order to complete a set of tasks. This is implemented usually implemented in order to avoid conflicts of interests that may cause fraud by an individual or break some rules within a business. This restricts and reduces powers of individuals within a business where there could be a chance of collusion happening. \\
-This is easy to spot within a workflow diagram giving in Figure~\ref{fig:Separation of duty}. We give a scenario that there are three users in the domain: Alice, Bob and Carol. The separation of duties are as follows: the user who is allocated the task of receiving the order and authorising the payment at checkout and cannot not handle any form of pricing the order. Whereas whichever user handles pricing of large orders cannot be the same user that handles pricing of small orders. The same users are not authorised to be allocated the tasks of creating and authorising orders, otherwise they could create fake orders or authorise orders with incorrect prices which may benefit themselves. It is also the case that large orders and small order prices should not be affected by each other, otherwise they could affect the final price or cause some sort of price fixing.\\
+This is where a user who is allocated a task $t$, must also be a different user to who is allocated task $t’$ if these tasks are bound as knowledge from task $t$ must not be used in order to execute task $t’$. It may be that separation of duties cannot use their knowledge to participate in certain tasks.\\
+This is easy to spot within a workflow diagram giving in Figure~\ref{fig:Part of the example workflow}. We give a scenario that there are three users in the domain: Alice, Bob and Carol. The separation of duties are as follows: the user who is allocated the task of receiving the order and authorising the payment at checkout and cannot not handle any form of pricing the order. Whereas whichever user handles pricing of large orders cannot be the same user that handles pricing of small orders. The same users are not authorised to be allocated the tasks of creating and authorising orders, otherwise they could create fake orders or authorise orders with incorrect prices which may benefit themselves. It is also the case that large orders and small order prices should not be affected by each other, otherwise they could affect the final price or cause some sort of price fixing.\\
 The main rules we will focus on Figure~\ref{fig:Z3 Separation of Duty} is between lines 14-18. As seen, we must give a rule that whichever user is allocated a certain task cannot be the same (not equal) as which ever user is allocated the other task which is defined in the separation of duty. 
 The resulting model in Figure~\ref{fig:Z3 result for separation of duty} shows that this is in fact satisfiable under the given separation of duty constraints and the model is consistent with the description. The allocation is as follows:
 \begin{itemize}
@@ -585,7 +586,7 @@ sat
       User!val!2)))
 )
 \end{lstlisting}
-\caption{Z2 result for separation of duty}
+\caption{Z3 result for separation of duty}
 \label{fig:Z3 result for separation of duty}
 \end{subfigure}
 \end{figure}
@@ -606,11 +607,304 @@ sat
 (a) edge node[above] {$OR$} (b)
 (a) edge node[below] {$OR$} (c);
 \end{tikzpicture}
-\caption{Separation of duty}
-\label{fig:Separation of duty}
+\caption{Part of the example workflow}
+\label{fig:Part of the example workflow}
 \end{figure}
 
 \section{Binding of Duty}
+Binding of duties\cite{bod} is where a user who is allocated a task $t$, must also be the same user who is allocated task $t’$ if these tasks are bound as knowledge from task $t$ must be used in order to execute task $t’$. It may be that binding of duties is needed as the user who is allocated these tasks have the required knowledge in order to execute both.\\
+Given Figure~\ref{fig:Part of the example workflow}, who ever is allocated the task of receiving an order has to price the order, regardless of whether it is a large or small order as they may be authorised to do so. \\
+As seen in Figure~\ref{fig:Z3 Binding of Duty}, the rule is specified between lines 14-17. Whichever user is allocated task price\_large\_order has to be the same (equal to) whichever user is allocated task price\_small\_order. This is matches the definition of binding of duties.\\
+Looking at the result produced in Figure~\ref{fig:Z3 result for binding of duty}, this is satisfiable for the given constraints and is consistent to the user input and is complete:
+\begin{itemize}
+\item Task checkout is allocated to user Alice
+\item All other tasks \texttt{(receive\_order, price\_large\_order, price\_small\_order)} are all allocated to user Carol. Which matches the user’s need for binding of duties.
+\end{itemize}
+\begin{figure}[!h]
+\begin{subfigure}{\textwidth}
+\lstset{numbers=left, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex,
+}
+\begin{lstlisting}[frame=single]
+(declare-sort Task)
+(declare-sort User)
+
+(declare-fun alloc_user (Task) User)
+
+(declare-const alice User)
+(declare-const bob User)
+(declare-const carol User)
+(declare-const receive_order Task)
+(declare-const price_large_order Task)
+(declare-const price_small_order Task)
+(declare-const checkout Task)
+
+(assert (not (= (alloc_user price_large_order) (alloc_user checkout))))
+(assert (not (= (alloc_user checkout) (alloc_user price_small_order))))
+(assert (= (alloc_user price_large_order) (alloc_user receive_order)))
+(assert (= (alloc_user receive_order) (alloc_user price_small_order)))
+
+(assert (forall ((u User)) (or(= u alice)(= u bob)(= u carol))))
+
+(check-sat)
+(get-model)
+\end{lstlisting}
+\caption{Z3 Binding of Duty}
+\label{fig:Z3 Binding of Duty}
+\end{subfigure}
+\end{figure}
+\clearpage
+\begin{figure}[!h]
+\ContinuedFloat
+\begin{subfigure}{\textwidth}
+\lstset{numbers=none, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex,
+}
+\begin{lstlisting}[frame=single]
+sat
+(model 
+  ;; universe for Task:
+  ;;   Task!val!2 Task!val!3 Task!val!0 Task!val!1 
+  ;; -----------
+  ;; definitions for universe elements:
+  (declare-fun Task!val!2 () Task)
+  (declare-fun Task!val!3 () Task)
+  (declare-fun Task!val!0 () Task)
+  (declare-fun Task!val!1 () Task)
+  ;; cardinality constraint:
+  (forall ((x Task))
+          (or (= x Task!val!2)
+              (= x Task!val!3)
+              (= x Task!val!0)
+              (= x Task!val!1)))
+  ;; -----------
+  ;; universe for User:
+  ;;   User!val!0 User!val!1 
+  ;; -----------
+  ;; definitions for universe elements:
+  (declare-fun User!val!0 () User)
+  (declare-fun User!val!1 () User)
+  ;; cardinality constraint:
+  (forall ((x User)) (or (= x User!val!0) (= x User!val!1)))
+  ;; -----------
+  (define-fun price_small_order () Task
+    Task!val!2)
+  (define-fun checkout () Task
+    Task!val!1)
+  (define-fun receive_order () Task
+    Task!val!3)
+  (define-fun carol () User
+    User!val!1)
+  (define-fun bob () User
+    User!val!0)
+  (define-fun price_large_order () Task
+    Task!val!0)
+  (define-fun alice () User
+    User!val!0)
+  (define-fun alloc_user ((x!1 Task)) User
+    (ite (= x!1 Task!val!1) User!val!0
+      User!val!1))
+)
+\end{lstlisting}
+\caption{Z3 result for binding of duty}
+\label{fig:Z3 result for binding of duty}
+\end{subfigure}
+\end{figure}
+
+\section{Seniority}
+In most businesses and corporations, there are different levels of seniority based on their positions in the company. Different seniority levels allow users to execute different tasks. For example, a confidential task maybe worked on by a less senior member of a department, but have to be authorised by a more senior member as they may have more experience or the appropriate training.\\
+An example of seniority allocation is given in Figure~\ref{fig:Seniority Relationships with tasks}. As we can see, whoever is allocated $t1$ must be the same user as whoever is allocated to task $t4$ as they will have the same level of seniority, the same user will have the same seniority. It does not make sense from a business perspective that the allocation needs to be different users of the same seniority as the trust and experience levels are the same. Also in the figure, whoever is assigned to $t1$ has to be more senior than whoever is assigned to $t2$ and $t3$. This also means that the users assigned to $t2$ and $t3$ have to be less senior than the user allocated to $t1$. The tasks $t2$ and $t3$ cannot have users of the same seniority, so therefore the users allocated to those tasks must not be the same.\\
+We can declare a new function for seniority which takes two users as parameters and returns a boolean whether the users are senior to each other:\\
+\texttt{(declare-fun seniority (User User) Bool)}\\
+Given the example below, \texttt{u} is senior to \texttt{u\ensuremath{'}}.\\
+\texttt{(assert (seniority (u u\ensuremath{'}))}\\
+The different types of seniority explained above are:
+\begin{itemize}
+\item $t$ has to be allocated a user that is more senior than the user allocated for $t\ensuremath{'}$ $(t > t\ensuremath{'})$: \texttt{(assert (seniority (alloc\_user t) (alloc\_user t\ensuremath{'})))}
+\item $t$ has to be allocated a user that is less senior than the user allocated for $t\ensuremath{'}$ $(t < t\ensuremath{'})$: \texttt{(assert (seniority (alloc\_user t\ensuremath{'}) (alloc\_user t)))}
+\item $t$ has to be allocated a user that is the same seniority as $t’$ $(t = t\ensuremath{'})$: \texttt{(assert (= (alloc\_user t) (alloc\_user t\ensuremath{'})))}
+\item $t$ has to be allocated a user that is not the same seniority as $t\ensuremath{'}$ $(t != t\ensuremath{'})$: \texttt{(assert (not (= (alloc\_user t) (alloc\_user t\ensuremath{'}))))}
+\end{itemize}
+We give a scenario in Figure~\ref{fig:Z3 Seniority} where whoever is allocated receive\_order has to be less senior than whoever is allocated checkout task. Also, price\_large order and price\_small\_order have to have the same seniority as each other as they are both tasks that can be executed with the same skill. However, whoever is allocated receive\_order must also be less senior than the pricing tasks. This can be expressed in Z3 as in lines 22-26:
+\begin{figure}[!h]
+\begin{subfigure}{\textwidth}
+\lstset{numbers=left, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex,
+}
+\begin{lstlisting}[frame=single]
+(declare-sort Task) 
+(declare-sort User) 
+
+(declare-fun seniority (User User) Bool) 
+
+(declare-fun alloc_user (Task) User) 
+(declare-fun duration (Task) Real)
+
+(assert (forall ((u User))(not (seniority u u))))
+
+(declare-const carol User) 
+(declare-const bob User) 
+(declare-const alice User) 
+(declare-const checkout Task)
+(declare-const price_small_order Task)
+(declare-const price_large_order Task)
+(declare-const receive_order Task)
+
+(assert (seniority bob carol)) 
+(assert (seniority alice bob)) 
+(assert (seniority alice carol))
+(assert (seniority (alloc_user checkout) (alloc_user receive_order)))
+(assert (seniority (alloc_user price_small_order) (alloc_user receive_order)))
+(assert (seniority (alloc_user price_large_order) (alloc_user receive_order)))
+(assert (seniority (alloc_user checkout) (alloc_user receive_order)))
+(assert (forall ((u User)) (or(= u carol)(= u bob)(= u alice))))
+
+(check-sat)
+(get-model)
+\end{lstlisting}
+\caption{Z3 Seniority}
+\label{fig:Z3 Seniority}
+\end{subfigure}
+\end{figure}
+\clearpage
+\begin{figure}[!h]
+\ContinuedFloat
+\begin{subfigure}{\textwidth}
+\lstset{numbers=none, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex, basicstyle=\tiny,
+}
+\begin{lstlisting}[frame=single]
+sat
+(model 
+  ;; universe for User:
+  ;;   User!val!2 User!val!1 User!val!0 
+  ;; -----------
+  ;; definitions for universe elements:
+  (declare-fun User!val!2 () User)
+  (declare-fun User!val!1 () User)
+  (declare-fun User!val!0 () User)
+  ;; cardinality constraint:
+  (forall ((x User)) (or (= x User!val!2) (= x User!val!1) (= x User!val!0)))
+  ;; -----------
+  ;; universe for Task:
+  ;;   Task!val!0 Task!val!1 Task!val!2 Task!val!3 
+  ;; -----------
+  ;; definitions for universe elements:
+  (declare-fun Task!val!0 () Task)
+  (declare-fun Task!val!1 () Task)
+  (declare-fun Task!val!2 () Task)
+  (declare-fun Task!val!3 () Task)
+  ;; cardinality constraint:
+  (forall ((x Task))
+          (or (= x Task!val!0)
+              (= x Task!val!1)
+              (= x Task!val!2)
+              (= x Task!val!3)))
+  ;; -----------
+  (define-fun receive_order () Task
+    Task!val!1)
+  (define-fun checkout () Task
+    Task!val!0)
+  (define-fun carol () User
+    User!val!1)
+  (define-fun bob () User
+    User!val!0)
+  (define-fun price_small_order () Task
+    Task!val!2)
+  (define-fun price_large_order () Task
+    Task!val!3)
+  (define-fun alice () User
+    User!val!2)
+  (define-fun seniority!16 ((x!1 User) (x!2 User)) Bool
+    (ite (and (= x!1 User!val!1) (= x!2 User!val!1)) false
+    (ite (and (= x!1 User!val!0) (= x!2 User!val!0)) false
+    (ite (and (= x!1 User!val!2) (= x!2 User!val!2)) false
+      true))))
+  (define-fun k!14 ((x!1 User)) User
+    (ite (= x!1 User!val!1) User!val!1
+    (ite (= x!1 User!val!0) User!val!0
+      User!val!2)))
+  (define-fun seniority ((x!1 User) (x!2 User)) Bool
+    (seniority!16 (k!14 x!1) (k!14 x!2)))
+  (define-fun alloc_user ((x!1 Task)) User
+    (ite (= x!1 Task!val!0) User!val!0
+    (ite (= x!1 Task!val!1) User!val!1
+      User!val!2)))
+)
+\end{lstlisting}
+\caption{Z3 result for binding of duty}
+\label{fig:Z3 result for binding of duty}
+\end{subfigure}
+\end{figure}
+
+\begin{figure}[!h]
+\centering
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex}} 
+%\draw (0,0) circle [radius=0.5];
+\node[vertex] (a) at  (0,0) {$t_{1}$};
+\node[vertex] (b) at  (4,2) {$t_{2}$};
+\node[vertex] (c) at (4,-2) {$t_{3}$};
+\node[vertex] (d) at (2,0) {$t_{4}$};
+%\draw[edge] (b)  to[bend left] (c);
+%\draw[edge] (c)  to[bend left] (b);
+\path[-latex]
+(a) edge node[above] {$>$} (b)
+(a) edge node[below] {$>$} (c)
+(a) edge node[above] {$=$} (d)
+(c) edge [bend right=60] node[right] {$\neq$} (b)
+(b) edge [bend right=60] node[right] {$\neq$} (c);
+\end{tikzpicture} \\
+\begin{tabular}{ |l|l| }
+\hline
+Symbol & Seniority \\ \hline
+$=$ & Users can be allocated this task with the same rank \\ \hline
+$\neq$ & Different ranked users \\ \hline
+$>$ & $t_x > t_y$ User who takes on $t_x$ is more senior than $t_y$ \\ \hline
+$<$ & $t_x < t_y$ User who takes on $t_x$ is less senior than $t_y$ \\ 
+\hline
+\end{tabular}
+\caption{Seniority Relationships with tasks}
+\label{fig:Seniority Relationships with tasks}
+\end{figure}
+
+\section{Worst Time Completion}
+In business, it is useful to find the worst time completion in a workflow as some task executions are not helping to optimise the total workflow duration. The aim is to then find the worst time to completion after setting rules and constraints. Users usually have finite time to execute a task and in business, there are deadline to be met. This can be established if tasks have an estimate worst time duration, the longest time it could take to execute this task. We will define a function for the duration of a task and each task will have a duration listed:
+\begin{itemize}
+\item \texttt{(declare-fun duration (Task) Real)}
+\item \texttt{(assert (= (duration t) 60))}
+\end{itemize}
+Task t has a worst time duration of sixty minutes to execute. Since in Z3, they do not have a time unit, the user can decide what the real value can be, i.e. minutes, hours.
+
+\section{Temporal Order of Task Execution}
+Temporal order of task execution is when tasks need to be executed in a certain order. We can easily represent this in the workflow as a directed graph, where the edges are directed to tasks (vertices) which is to be executed next. This rule is important to model in business management processes because some tasks cannot be executed before another and some tasks may be dependant on another to be executed. \\
+In Figure~\ref{fig:Part of the example workflow}, it has directional arrows between vertices to represent the temporal order of task execution. For example, we cannot price orders if we have not received orders. Similarly, we cannot proceed to checkout if no pricing has been handled on the orders.
+We can model temporal order of task execution in Z3 where task $t$ is executed before $t\ensuremath{'}$ as:
+\begin{itemize}
+\item \texttt{(declare-fun before (Task Task) Bool)}
+\item \texttt{(assert (before t t\ensuremath{'}))}
+\end{itemize}
+
+\section{Task Execution (and, or, exclusive-or)}
+Another constraint we are going to explore is which tasks are actually executed. In some workflows some tasks are not necessarily needed to be executed. Given in Figure~\ref{fig:Part of the example workflow} we can create a fork at task receive\_order and determine which pricing task is next to be executed. We can have three different types of forking:
+\begin{itemize}
+\item And - All tasks in the forking have to be executed, we cannot choose which tasks to execute.
+\item Or - One or more tasks in the forking have to be executed, we cannot choose to execute none.
+\item Exclusive or - One and only one tasks can be executed.
+\end{itemize}
+
+\section{Authorised User Allocation}
+In a business process, we can choose the authorise particular users to execute a task explicitly. This is similar to RBAC\cite{rbac} where a system restricts access to authorised users in a domain. Authorisation is usually assigned to them by their roles. We have not implemented roles in the set of workflow constraints, but rather just users who are only allowed by input. If there are more than one users authorised to execute a task, then we can use Z3 to choose which user to execute the task:
+\begin{itemize}
+\item \texttt{(assert (or (=(alloc\_user receive\_order) alice) (= (alloc\_user receive\_order) bob)))
+}
+\end{itemize}
+So either users Alice or Bob can be allocated the task of receiving the order to be executed and only them.
 
 \chapter{Implementation}
 

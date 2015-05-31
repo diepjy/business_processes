@@ -18,11 +18,16 @@
 \contentsline {chapter}{\numberline {3}Theory of Business Rules}{10}
 \contentsline {section}{\numberline {3.1}Business Management Workflows}{10}
 \contentsline {section}{\numberline {3.2}Tasks and Users}{10}
-\contentsline {subsection}{\numberline {3.2.1}User Allocation}{10}
-\contentsline {section}{\numberline {3.3}Separation of Duty}{10}
-\contentsline {section}{\numberline {3.4}Binding of Duty}{13}
-\contentsline {chapter}{\numberline {4}Implementation}{14}
-\contentsline {chapter}{\numberline {5}Evaluation}{15}
-\contentsline {chapter}{\numberline {6}Conclusion}{16}
-\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{17}
-\contentsline {chapter}{Bibliography}{18}
+\contentsline {section}{\numberline {3.3}User Allocation}{10}
+\contentsline {section}{\numberline {3.4}Separation of Duty}{10}
+\contentsline {section}{\numberline {3.5}Binding of Duty}{13}
+\contentsline {section}{\numberline {3.6}Seniority}{14}
+\contentsline {section}{\numberline {3.7}Worst Time Completion}{18}
+\contentsline {section}{\numberline {3.8}Temporal Order of Task Execution}{18}
+\contentsline {section}{\numberline {3.9}Task Execution (and, or, exclusive-or)}{18}
+\contentsline {section}{\numberline {3.10}Authorised User Allocation}{18}
+\contentsline {chapter}{\numberline {4}Implementation}{19}
+\contentsline {chapter}{\numberline {5}Evaluation}{20}
+\contentsline {chapter}{\numberline {6}Conclusion}{21}
+\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{22}
+\contentsline {chapter}{Bibliography}{23}

@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{AcyclicDigraph}
 Mark Senn.
@@ -49,5 +49,20 @@ Alessandro Cimatti, Alberto Griggio, Bastiaan Schaafsma, and Roberto
 \newblock
   \url{http://www.sans.edu/research/security-laboratory/article/it-separation-duties},
   (accessed Feburary, 2015).
+
+\bibitem{bod}
+{Sigrid Schefer, Mark Strembeck, Jan Mendling}.
+\newblock Checking satisfiability aspects of binding constraints in a business
+  process context.
+\newblock pages 465--466, 2012.
+\newblock (accessed Feburary, 2015).
+
+\bibitem{rbac}
+David~F. Ferraiolo and D.~Richard Kuhn.
+\newblock Role-based access controls.
+\newblock pages 1--2, 1992.
+\newblock
+  \url{http://research.microsoft.com/en-us/um/people/leonardo/sbmf09.pdf}
+  (accessed May, 2015).
 
 \end{thebibliography}
