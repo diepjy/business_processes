@@ -27,7 +27,13 @@
 \contentsline {section}{\numberline {3.9}Task Execution (and, or, exclusive-or)}{18}
 \contentsline {section}{\numberline {3.10}Authorised User Allocation}{18}
 \contentsline {chapter}{\numberline {4}Implementation}{19}
-\contentsline {chapter}{\numberline {5}Evaluation}{20}
-\contentsline {chapter}{\numberline {6}Conclusion}{21}
-\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{22}
-\contentsline {chapter}{Bibliography}{23}
+\contentsline {section}{\numberline {4.1}Project Focus}{19}
+\contentsline {section}{\numberline {4.2}Lexer and Parser}{19}
+\contentsline {subsection}{\numberline {4.2.1}PLY}{19}
+\contentsline {subsection}{\numberline {4.2.2}Lexer}{20}
+\contentsline {subsection}{\numberline {4.2.3}Parser}{20}
+\contentsline {section}{\numberline {4.3}Code Generation}{20}
+\contentsline {chapter}{\numberline {5}Evaluation}{21}
+\contentsline {chapter}{\numberline {6}Conclusion}{22}
+\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{23}
+\contentsline {chapter}{Bibliography}{24}

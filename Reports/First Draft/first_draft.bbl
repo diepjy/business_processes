@@ -65,4 +65,44 @@ David~F. Ferraiolo and D.~Richard Kuhn.
   \url{http://research.microsoft.com/en-us/um/people/leonardo/sbmf09.pdf}
   (accessed May, 2015).
 
+\bibitem{python}
+Python.
+\newblock {\em Python}, 2015.
+\newblock \url{https://www.python.org/}, (accessed December, 2014).
+
+\bibitem{Z3Python}
+Microsoft Research.
+\newblock {\em Z3}.
+\newblock
+  \url{http://research.microsoft.com/en-us/um/redmond/projects/z3/z3.html},
+  (accessed December, 2014).
+
+\bibitem{ply}
+PLY.
+\newblock {\em PLY (Python Lex-Yacc)}.
+\newblock \url{http://www.dabeaz.com/ply/}, (accessed May, 2014).
+
+\bibitem{plylexyacc}
+David~M. Beazley.
+\newblock {\em PLY (Python Lex-Yacc)}, 2009.
+\newblock \url{http://web.cs.dal.ca/~sjackson/lalr1.html}, (accessed May,
+  2014).
+
+\bibitem{lalr}
+Stephen Jackson.
+\newblock {\em A Tutorial Explaining LALR(1) Parsing}.
+\newblock \url{http://www.dabeaz.com/ply/ply.html}, (accessed May, 2014).
+
+\bibitem{antlr}
+Terence Parr.
+\newblock {\em Antlr4 - Python Target}, 2014.
+\newblock
+  \url{https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Python+Target},
+  (accessed Feb, 2014).
+
+\bibitem{pyparsing}
+Pyparsing.
+\newblock {\em Pyparsing}, 2015.
+\newblock \url{https://pyparsing.wikispaces.com/}, (accessed March, 2014).
+
 \end{thebibliography}

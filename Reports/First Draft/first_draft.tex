@@ -907,6 +907,60 @@ In a business process, we can choose the authorise particular users to execute a
 So either users Alice or Bob can be allocated the task of receiving the order to be executed and only them.
 
 \chapter{Implementation}
+\section{Project Focus}
+The main aim of this project is to design a simple language in which constraints on execution of tasks within can be specified. The result that should be returned is whether the workflow is satisfiable. Also, the model returned should be easy to read and understandable to the user. The project should implement an application which would decide whether a workflow is satisfiable or not, subject to all the constraints. We also need to verify that the model returned to the user is complete and consistent to the user input.\\
+The first discussion was whether to implement an algorithm that would solve these constraints or to use a back-end constraint solver. The benefit of using a back-end constraint solver like Z3 is that these algorithms are very efficient, perhaps more efficient than if it was implemented from scratch in this project. The application is built using Python\cite{python} and the Z3 python module\cite{Z3Python}. \\
+The language is a simple command line language, where a domain of tasks and users are defined. There are also predefined tokens which define certain constraints on a workflow as well as predefined axioms and rules. The application the interprets the workflow described in the language and checks if the workflow is satisfiable and gives back a suitable model.
+
+\section{Lexer and Parser} 
+\subsection{PLY}
+The interpreter is designed using PLY\cite{ply} (Python Lex-Yacc) which is a python module which is a parsing tool written in Python. It is made up of two compiler construction tools: lex and yacc\cite{plylexyacc}. Yacc is say{Yet another compiler compiler} and lex is the lexical analyser generator. The type of parsing used in PLY is LALR(1)\cite{lalr} Look-Ahead Left-Right parser.\\
+We chose to use PLY rather than any other resources for tokenising, lexing and parsing because the library we are using for Z3 is a module for Python. This meant we had to choose a lexer and parser that is written in Python. PLY is a pure Python implementation of lex and yacc and uses a lot of python features that make it easy to use. \\
+Other lexers and parsers were considered but was not what we needed for this project:
+\begin{itemize}
+\item Antlr\cite{antlr} - it has a good lexer and parser. It generates a parsing tree visitor which is useful for code generation. However, the language that we have developed in this project is quite basic and does not need such complicated tools.
+\item Pyparsing\cite{pyparsing} - it has an alternative approach to creating and executing simple grammars. It is different to traditional lex and yacc approach and does not use regular expressions. Therefore it may have been too heavy weight for this project. The main aim of this project is to focus on simple grammars with regular expressions.
+\end{itemize}
+\subsection{Lexer}
+The lexer uses the PLY lexer module. It takes in a list of tokens and reserved words that are exclusive to the language which the user is not allowed to use. We will later use these tokens and reserved words to apply parsing rules to them. Reserved words are keywords that are used in the syntax and the tokens are symbols. It can also detect illegal syntax.\\
+We have a list of reserved words for the language:
+\begin{itemize}
+\item \texttt{Tasks} - keyword to start the list of tasks
+\item \texttt{Users} - keyword to start the list of users
+\item \texttt{Before} - keyword to start the list of pairs of tasks temporal execution
+\item \texttt{SoD} - keyword to start the list of pairs of tasks that are bound to separation of duty
+\item \texttt{Seniority} - keyword to start the list of pairs of users that are senior to each other
+\item \texttt{BoD} - keyword to start the list of pairs of tasks that are bound to binding of duty
+\item \texttt{users} - keyword option for all users
+\item \texttt{allocate} - keyword to request of an allocation
+\item \texttt{min\_sec\_lv} - keyword option for giving a minimum security level seniority for a task
+\item \texttt{Or} - keyword that decides the execution of a task by using an or-fork
+\item \texttt{Xor} - keyword that decided the execution of a task by using a xor-fork
+\item \texttt{Execution} - keyword option for the execution of tasks
+\item \texttt{Authorised} - keyword option for the list of users who are authorised to be allocated to a task
+\item \texttt{duration} - keyword option to state the duration of a task
+\end{itemize}
+We also have a list of tokens:
+\begin{itemize}
+\item \texttt{Colon} - : 
+\item \texttt{Option} - -
+\item \texttt{Comma} - ,
+\item \texttt{LParen} - (
+\item \texttt{RParen} - )
+\item \texttt{End} - ;
+\item \texttt{Eq} - =
+\item \texttt{Lt} - $<$
+\item \texttt{Gt} - $>$
+\item \texttt{Neq} - !=
+\item \texttt{LSqParen} - [
+\item \texttt{RSqParen} - ]
+\item \texttt{Number} - (decimal)  [0-9]+[\textbackslash.[0.9]+]?
+\item \texttt{Node} - \say{(\textbackslash\textbackslash\ ``$|$[$\mathchar"5E$''])*}
+%"(\\"|[^"])*"
+\end{itemize}
+\subsection{Parser}
+
+\section{Code Generation}
 
 \chapter{Evaluation}
 
