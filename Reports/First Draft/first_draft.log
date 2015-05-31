@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.5.23)  31 MAY 2015 00:29
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.5.23)  31 MAY 2015 12:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -396,34 +396,24 @@ Package caption3 Info: TeX engine: e-TeX on input line 57.
 \c@subfigure=\count121
 \c@subtable=\count122
 )
-(/usr/share/texlive/texmf-dist/tex/latex/subfig/subfig.sty
-Package: subfig 2005/06/28 ver: 1.3 subfig package
-\c@KVtest=\count123
-\sf@farskip=\skip47
-\sf@captopadj=\dimen164
-\sf@capskip=\skip48
-\sf@nearskip=\skip49
-\sf@top=\skip50
-\sf@bottom=\skip51
-)
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count124
+\lst@mode=\count123
 \lst@gtempboxa=\box37
 \lst@token=\toks30
-\lst@length=\count125
-\lst@currlwidth=\dimen165
-\lst@column=\count126
-\lst@pos=\count127
-\lst@lostspace=\dimen166
-\lst@width=\dimen167
-\lst@newlines=\count128
-\lst@lineno=\count129
-\lst@maxwidth=\dimen168
+\lst@length=\count124
+\lst@currlwidth=\dimen164
+\lst@column=\count125
+\lst@pos=\count126
+\lst@lostspace=\dimen165
+\lst@width=\dimen166
+\lst@newlines=\count127
+\lst@lineno=\count128
+\lst@maxwidth=\dimen167
 
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2013/08/26 1.5b (Carsten Heinz)
-\c@lstnumber=\count130
-\lst@skipnumbers=\count131
+\c@lstnumber=\count129
+\lst@skipnumbers=\count130
 \lst@framebox=\box38
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
@@ -433,7 +423,7 @@ Package: listings 2013/08/26 1.5b (Carsten Heinz)
 
 (/usr/share/texlive/texmf-dist/tex/latex/lipsum/lipsum.sty
 Package: lipsum 2011/04/14 v1.2 150 paragraphs of Lorem Ipsum dummy text
-\c@lips@count=\count132
+\c@lips@count=\count131
 )
 (/usr/share/texlive/texmf-dist/tex/latex/mdframed/mdframed.sty
 Package: mdframed 2013/07/01 1.9b: mdframed
@@ -466,7 +456,7 @@ Package: l3names 2014/01/04 v4640 L3 Namespace for primitives
 )
 (/usr/share/texlive/texmf-dist/tex/latex/etex-pkg/etex.sty
 Package: etex 1998/03/26 v2.0 eTeX basic definition package (PEB)
-\et@xins=\count133
+\et@xins=\count132
 )
 Package: expl3 2014/01/07 v4646 L3 Experimental code bundle wrapper
 
@@ -484,18 +474,18 @@ Package: l3seq 2013/12/14 v4623 L3 Sequences and stacks
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3int.sty
 Package: l3int 2013/08/02 v4583 L3 Integers
-\c_max_int=\count134
-\l_tmpa_int=\count135
-\l_tmpb_int=\count136
-\g_tmpa_int=\count137
-\g_tmpb_int=\count138
+\c_max_int=\count133
+\l_tmpa_int=\count134
+\l_tmpb_int=\count135
+\g_tmpa_int=\count136
+\g_tmpb_int=\count137
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3quark.sty
 Package: l3quark 2013/12/14 v4623 L3 Quarks
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3prg.sty
 Package: l3prg 2014/01/04 v4642 L3 Control structures
-\g__prg_map_int=\count139
+\g__prg_map_int=\count138
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3clist.sty
 Package: l3clist 2013/07/28 v4581 L3 Comma separated lists
@@ -511,26 +501,26 @@ Package: l3msg 2013/07/28 v4581 L3 Messages
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3file.sty
 Package: l3file 2013/10/13 v4596 L3 File and I/O operations
-\l_iow_line_count_int=\count140
-\l__iow_target_count_int=\count141
-\l__iow_current_line_int=\count142
-\l__iow_current_word_int=\count143
-\l__iow_current_indentation_int=\count144
+\l_iow_line_count_int=\count139
+\l__iow_target_count_int=\count140
+\l__iow_current_line_int=\count141
+\l__iow_current_word_int=\count142
+\l__iow_current_indentation_int=\count143
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3skip.sty
 Package: l3skip 2013/07/28 v4581 L3 Dimensions and skips
-\c_zero_dim=\dimen169
-\c_max_dim=\dimen170
-\l_tmpa_dim=\dimen171
-\l_tmpb_dim=\dimen172
-\g_tmpa_dim=\dimen173
-\g_tmpb_dim=\dimen174
-\c_zero_skip=\skip52
-\c_max_skip=\skip53
-\l_tmpa_skip=\skip54
-\l_tmpb_skip=\skip55
-\g_tmpa_skip=\skip56
-\g_tmpb_skip=\skip57
+\c_zero_dim=\dimen168
+\c_max_dim=\dimen169
+\l_tmpa_dim=\dimen170
+\l_tmpb_dim=\dimen171
+\g_tmpa_dim=\dimen172
+\g_tmpb_dim=\dimen173
+\c_zero_skip=\skip47
+\c_max_skip=\skip48
+\l_tmpa_skip=\skip49
+\l_tmpb_skip=\skip50
+\g_tmpa_skip=\skip51
+\g_tmpb_skip=\skip52
 \c_zero_muskip=\muskip11
 \c_max_muskip=\muskip12
 \l_tmpa_muskip=\muskip13
@@ -540,20 +530,20 @@ Package: l3skip 2013/07/28 v4581 L3 Dimensions and skips
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3keys.sty
 Package: l3keys 2013/12/08 v4614 L3 Experimental key-value interfaces
-\g__keyval_level_int=\count145
-\l_keys_choice_int=\count146
+\g__keyval_level_int=\count144
+\l_keys_choice_int=\count145
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3fp.sty
 Package: l3fp 2014/01/04 v4642 L3 Floating points
-\c__fp_leading_shift_int=\count147
-\c__fp_middle_shift_int=\count148
-\c__fp_trailing_shift_int=\count149
-\c__fp_big_leading_shift_int=\count150
-\c__fp_big_middle_shift_int=\count151
-\c__fp_big_trailing_shift_int=\count152
-\c__fp_Bigg_leading_shift_int=\count153
-\c__fp_Bigg_middle_shift_int=\count154
-\c__fp_Bigg_trailing_shift_int=\count155
+\c__fp_leading_shift_int=\count146
+\c__fp_middle_shift_int=\count147
+\c__fp_trailing_shift_int=\count148
+\c__fp_big_leading_shift_int=\count149
+\c__fp_big_middle_shift_int=\count150
+\c__fp_big_trailing_shift_int=\count151
+\c__fp_Bigg_leading_shift_int=\count152
+\c__fp_Bigg_middle_shift_int=\count153
+\c__fp_Bigg_trailing_shift_int=\count154
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3box.sty
 Package: l3box 2013/07/28 v4581 L3 Experimental boxes
@@ -566,13 +556,13 @@ Package: l3box 2013/07/28 v4581 L3 Experimental boxes
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3coffins.sty
 Package: l3coffins 2013/12/14 v4624 L3 Coffin code layer
 \l__coffin_internal_box=\box44
-\l__coffin_internal_dim=\dimen175
-\l__coffin_offset_x_dim=\dimen176
-\l__coffin_offset_y_dim=\dimen177
-\l__coffin_x_dim=\dimen178
-\l__coffin_y_dim=\dimen179
-\l__coffin_x_prime_dim=\dimen180
-\l__coffin_y_prime_dim=\dimen181
+\l__coffin_internal_dim=\dimen174
+\l__coffin_offset_x_dim=\dimen175
+\l__coffin_offset_y_dim=\dimen176
+\l__coffin_x_dim=\dimen177
+\l__coffin_y_dim=\dimen178
+\l__coffin_x_prime_dim=\dimen179
+\l__coffin_y_prime_dim=\dimen180
 \c_empty_coffin=\box45
 \l__coffin_aligned_coffin=\box46
 \l__coffin_aligned_internal_coffin=\box47
@@ -581,51 +571,51 @@ Package: l3coffins 2013/12/14 v4624 L3 Coffin code layer
 \l__coffin_display_coffin=\box50
 \l__coffin_display_coord_coffin=\box51
 \l__coffin_display_pole_coffin=\box52
-\l__coffin_display_offset_dim=\dimen182
-\l__coffin_display_x_dim=\dimen183
-\l__coffin_display_y_dim=\dimen184
+\l__coffin_display_offset_dim=\dimen181
+\l__coffin_display_x_dim=\dimen182
+\l__coffin_display_y_dim=\dimen183
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3color.sty
 Package: l3color 2012/08/29 v4156 L3 Experimental color support
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3luatex.sty
 Package: l3luatex 2013/07/28 v4581 L3 Experimental LuaTeX-specific functions
-\g__cctab_allocate_int=\count156
-\g__cctab_stack_int=\count157
+\g__cctab_allocate_int=\count155
+\g__cctab_stack_int=\count156
 )
 (/usr/share/texlive/texmf-dist/tex/latex/l3kernel/l3candidates.sty
 Package: l3candidates 2014/01/06 v4643 L3 Experimental additions to l3kernel
-\l__box_top_dim=\dimen185
-\l__box_bottom_dim=\dimen186
-\l__box_left_dim=\dimen187
-\l__box_right_dim=\dimen188
-\l__box_top_new_dim=\dimen189
-\l__box_bottom_new_dim=\dimen190
-\l__box_left_new_dim=\dimen191
-\l__box_right_new_dim=\dimen192
+\l__box_top_dim=\dimen184
+\l__box_bottom_dim=\dimen185
+\l__box_left_dim=\dimen186
+\l__box_right_dim=\dimen187
+\l__box_top_new_dim=\dimen188
+\l__box_bottom_new_dim=\dimen189
+\l__box_left_new_dim=\dimen190
+\l__box_right_new_dim=\dimen191
 \l__box_internal_box=\box53
-\l__coffin_bounding_shift_dim=\dimen193
-\l__coffin_left_corner_dim=\dimen194
-\l__coffin_right_corner_dim=\dimen195
-\l__coffin_bottom_corner_dim=\dimen196
-\l__coffin_top_corner_dim=\dimen197
-\l__coffin_scaled_total_height_dim=\dimen198
-\l__coffin_scaled_width_dim=\dimen199
+\l__coffin_bounding_shift_dim=\dimen192
+\l__coffin_left_corner_dim=\dimen193
+\l__coffin_right_corner_dim=\dimen194
+\l__coffin_bottom_corner_dim=\dimen195
+\l__coffin_top_corner_dim=\dimen196
+\l__coffin_scaled_total_height_dim=\dimen197
+\l__coffin_scaled_width_dim=\dimen198
 )
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
 Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
 Package ifpdf Info: pdfTeX in PDF mode is detected.
 ))
 Package: xparse 2013/12/31 v4634 L3 Experimental document command parser
-\l__xparse_current_arg_int=\count158
-\l__xparse_m_args_int=\count159
-\l__xparse_mandatory_args_int=\count160
-\l__xparse_processor_int=\count161
-\l__xparse_v_nesting_int=\count162
+\l__xparse_current_arg_int=\count157
+\l__xparse_m_args_int=\count158
+\l__xparse_mandatory_args_int=\count159
+\l__xparse_processor_int=\count160
+\l__xparse_v_nesting_int=\count161
 )
 (/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2011/01/03 v2.1 e-TeX tools for LaTeX
-\etb@tempcnta=\count163
+\etb@tempcnta=\count162
 )
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/zref-abspage.sty
 Package: zref-abspage 2012/04/04 v2.24 Module abspage for zref (HO)
@@ -654,53 +644,53 @@ Package zref Info: New property: page on input line 761.
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/atbegshi.sty
 Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
 )
-\c@abspage=\count164
+\c@abspage=\count163
 Package zref Info: New property: abspage on input line 62.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/needspace/needspace.sty
 Package: needspace 2010/09/12 v1.3d reserve vertical space
 )
-\mdf@templength=\skip58
-\c@mdf@globalstyle@cnt=\count165
-\mdf@skipabove@length=\skip59
-\mdf@skipbelow@length=\skip60
-\mdf@leftmargin@length=\skip61
-\mdf@rightmargin@length=\skip62
-\mdf@innerleftmargin@length=\skip63
-\mdf@innerrightmargin@length=\skip64
-\mdf@innertopmargin@length=\skip65
-\mdf@innerbottommargin@length=\skip66
-\mdf@splittopskip@length=\skip67
-\mdf@splitbottomskip@length=\skip68
-\mdf@outermargin@length=\skip69
-\mdf@innermargin@length=\skip70
-\mdf@linewidth@length=\skip71
-\mdf@innerlinewidth@length=\skip72
-\mdf@middlelinewidth@length=\skip73
-\mdf@outerlinewidth@length=\skip74
-\mdf@roundcorner@length=\skip75
-\mdf@footenotedistance@length=\skip76
-\mdf@userdefinedwidth@length=\skip77
-\mdf@needspace@length=\skip78
-\mdf@frametitleaboveskip@length=\skip79
-\mdf@frametitlebelowskip@length=\skip80
-\mdf@frametitlerulewidth@length=\skip81
-\mdf@frametitleleftmargin@length=\skip82
-\mdf@frametitlerightmargin@length=\skip83
-\mdf@shadowsize@length=\skip84
-\mdf@extratopheight@length=\skip85
-\mdf@subtitleabovelinewidth@length=\skip86
-\mdf@subtitlebelowlinewidth@length=\skip87
-\mdf@subtitleaboveskip@length=\skip88
-\mdf@subtitlebelowskip@length=\skip89
-\mdf@subtitleinneraboveskip@length=\skip90
-\mdf@subtitleinnerbelowskip@length=\skip91
-\mdf@subsubtitleabovelinewidth@length=\skip92
-\mdf@subsubtitlebelowlinewidth@length=\skip93
-\mdf@subsubtitleaboveskip@length=\skip94
-\mdf@subsubtitlebelowskip@length=\skip95
-\mdf@subsubtitleinneraboveskip@length=\skip96
-\mdf@subsubtitleinnerbelowskip@length=\skip97
+\mdf@templength=\skip53
+\c@mdf@globalstyle@cnt=\count164
+\mdf@skipabove@length=\skip54
+\mdf@skipbelow@length=\skip55
+\mdf@leftmargin@length=\skip56
+\mdf@rightmargin@length=\skip57
+\mdf@innerleftmargin@length=\skip58
+\mdf@innerrightmargin@length=\skip59
+\mdf@innertopmargin@length=\skip60
+\mdf@innerbottommargin@length=\skip61
+\mdf@splittopskip@length=\skip62
+\mdf@splitbottomskip@length=\skip63
+\mdf@outermargin@length=\skip64
+\mdf@innermargin@length=\skip65
+\mdf@linewidth@length=\skip66
+\mdf@innerlinewidth@length=\skip67
+\mdf@middlelinewidth@length=\skip68
+\mdf@outerlinewidth@length=\skip69
+\mdf@roundcorner@length=\skip70
+\mdf@footenotedistance@length=\skip71
+\mdf@userdefinedwidth@length=\skip72
+\mdf@needspace@length=\skip73
+\mdf@frametitleaboveskip@length=\skip74
+\mdf@frametitlebelowskip@length=\skip75
+\mdf@frametitlerulewidth@length=\skip76
+\mdf@frametitleleftmargin@length=\skip77
+\mdf@frametitlerightmargin@length=\skip78
+\mdf@shadowsize@length=\skip79
+\mdf@extratopheight@length=\skip80
+\mdf@subtitleabovelinewidth@length=\skip81
+\mdf@subtitlebelowlinewidth@length=\skip82
+\mdf@subtitleaboveskip@length=\skip83
+\mdf@subtitlebelowskip@length=\skip84
+\mdf@subtitleinneraboveskip@length=\skip85
+\mdf@subtitleinnerbelowskip@length=\skip86
+\mdf@subsubtitleabovelinewidth@length=\skip87
+\mdf@subsubtitlebelowlinewidth@length=\skip88
+\mdf@subsubtitleaboveskip@length=\skip89
+\mdf@subsubtitlebelowskip@length=\skip90
+\mdf@subsubtitleinneraboveskip@length=\skip91
+\mdf@subsubtitleinnerbelowskip@length=\skip92
 
 (/usr/share/texlive/texmf-dist/tex/latex/mdframed/md-frame-0.mdf
 File: md-frame-0.mdf 2013/07/01\ 1.9b: md-frame-0
@@ -710,34 +700,34 @@ File: md-frame-0.mdf 2013/07/01\ 1.9b: md-frame-0
 \mdf@splitbox@one=\box56
 \mdf@splitbox@two=\box57
 \mdf@splitbox@save=\box58
-\mdfsplitboxwidth=\skip98
-\mdfsplitboxtotalwidth=\skip99
-\mdfsplitboxheight=\skip100
-\mdfsplitboxdepth=\skip101
-\mdfsplitboxtotalheight=\skip102
-\mdfframetitleboxwidth=\skip103
-\mdfframetitleboxtotalwidth=\skip104
-\mdfframetitleboxheight=\skip105
-\mdfframetitleboxdepth=\skip106
-\mdfframetitleboxtotalheight=\skip107
-\mdffootnoteboxwidth=\skip108
-\mdffootnoteboxtotalwidth=\skip109
-\mdffootnoteboxheight=\skip110
-\mdffootnoteboxdepth=\skip111
-\mdffootnoteboxtotalheight=\skip112
-\mdftotallinewidth=\skip113
-\mdfboundingboxwidth=\skip114
-\mdfboundingboxtotalwidth=\skip115
-\mdfboundingboxheight=\skip116
-\mdfboundingboxdepth=\skip117
-\mdfboundingboxtotalheight=\skip118
-\mdf@freevspace@length=\skip119
-\mdf@horizontalwidthofbox@length=\skip120
-\mdf@verticalmarginwhole@length=\skip121
-\mdf@horizontalspaceofbox=\skip122
-\mdfsubtitleheight=\skip123
-\mdfsubsubtitleheight=\skip124
-\c@mdfcountframes=\count166
+\mdfsplitboxwidth=\skip93
+\mdfsplitboxtotalwidth=\skip94
+\mdfsplitboxheight=\skip95
+\mdfsplitboxdepth=\skip96
+\mdfsplitboxtotalheight=\skip97
+\mdfframetitleboxwidth=\skip98
+\mdfframetitleboxtotalwidth=\skip99
+\mdfframetitleboxheight=\skip100
+\mdfframetitleboxdepth=\skip101
+\mdfframetitleboxtotalheight=\skip102
+\mdffootnoteboxwidth=\skip103
+\mdffootnoteboxtotalwidth=\skip104
+\mdffootnoteboxheight=\skip105
+\mdffootnoteboxdepth=\skip106
+\mdffootnoteboxtotalheight=\skip107
+\mdftotallinewidth=\skip108
+\mdfboundingboxwidth=\skip109
+\mdfboundingboxtotalwidth=\skip110
+\mdfboundingboxheight=\skip111
+\mdfboundingboxdepth=\skip112
+\mdfboundingboxtotalheight=\skip113
+\mdf@freevspace@length=\skip114
+\mdf@horizontalwidthofbox@length=\skip115
+\mdf@verticalmarginwhole@length=\skip116
+\mdf@horizontalspaceofbox=\skip117
+\mdfsubtitleheight=\skip118
+\mdfsubsubtitleheight=\skip119
+\c@mdfcountframes=\count165
 
 ****** mdframed patching \endmdf@trivlist
 
@@ -755,10 +745,10 @@ File: md-frame-0.mdf 2013/07/01\ 1.9b: md-frame-0
 . Defining document command \mdtheorem with arg. spec. ' O{} m o m o ' on line
 . 701.
 .................................................
-\mdf@envdepth=\count167
-\c@mdf@env@i=\count168
-\c@mdf@env@ii=\count169
-\c@mdf@zref@counter=\count170
+\mdf@envdepth=\count166
+\c@mdf@env@i=\count167
+\c@mdf@env@ii=\count168
+\c@mdf@zref@counter=\count169
 Package zref Info: New property: mdf@pagevalue on input line 895.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
@@ -776,7 +766,7 @@ Package: dirtytalk 2010/11/21 A package making "quoting" easier
 (/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
 )
-\c@dirtytalk@qdepth=\count171
+\c@dirtytalk@qdepth=\count170
 ) (./first_draft.aux
 
 LaTeX Warning: Label `fig:Predicate Logic with stack' multiply defined.
@@ -798,16 +788,16 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 20.
 LaTeX Font Info:    ... okay on input line 20.
  (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count172
-\scratchdimen=\dimen200
+\scratchcounter=\count171
+\scratchdimen=\dimen199
 \scratchbox=\box59
-\nofMPsegments=\count173
-\nofMParguments=\count174
+\nofMPsegments=\count172
+\nofMParguments=\count173
 \everyMPshowfont=\toks31
-\MPscratchCnt=\count175
-\MPscratchDim=\dimen201
-\MPnumerator=\count176
-\makeMPintoPDFobject=\count177
+\MPscratchCnt=\count174
+\MPscratchDim=\dimen200
+\MPnumerator=\count175
+\makeMPintoPDFobject=\count176
 \everyMPtoPDFconversion=\toks32
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
@@ -826,10 +816,9 @@ e
 ))
 ABD: EveryShipout initializing macros
 Package caption Info: Begin \AtBeginDocument code.
-Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
-\c@lstlisting=\count178
+\c@lstlisting=\count177
 \AtBeginShipoutBox=\box60
 LaTeX Font Info:    Try loading font information for U+msa on input line 40.
 
@@ -935,28 +924,40 @@ Underfull \hbox (badness 10000) in paragraph at lines 266--270
 
 [6] [7] [8] [9]
 Chapter 3.
+
+Underfull \hbox (badness 10000) in paragraph at lines 464--465
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 472--477
+
+ []
+
 [10
 
-]
+] [11] [12
+
+] [13]
 Chapter 4.
-[11
+[14
 
 ]
 Chapter 5.
-[12
+[15
 
 ]
 Chapter 6.
-[13
+[16
 
 ]
 Chapter 7.
-(./first_draft.bbl [14
+(./first_draft.bbl [17
 
 ]
 Missing character: There is no Ã in font cmr10!
 Missing character: There is no ¸ in font cmr10!
-) [15
+) [18
 
 ] (./first_draft.aux)
 
@@ -964,13 +965,13 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 20307 strings out of 494985
- 379361 string characters out of 6180356
- 592745 words of memory out of 5000000
- 23136 multiletter control sequences out of 15000+600000
+ 20212 strings out of 494985
+ 377845 string characters out of 6180356
+ 623217 words of memory out of 5000000
+ 23045 multiletter control sequences out of 15000+600000
  10433 words of font info for 39 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 56i,12n,60p,10441b,1410s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 56i,12n,60p,10441b,1404s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/tex
@@ -979,14 +980,14 @@ exmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 ti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on first_draft.pdf (18 pages, 454731 bytes).
+Output written on first_draft.pdf (21 pages, 466936 bytes).
 PDF statistics:
- 120 PDF objects out of 1000 (max. 8388607)
- 84 compressed objects within 1 object stream
+ 130 PDF objects out of 1000 (max. 8388607)
+ 91 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 

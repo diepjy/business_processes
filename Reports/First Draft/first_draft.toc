@@ -15,9 +15,14 @@
 \contentsline {subsection}{\numberline {2.6.6}Satisfiability and Validity}{9}
 \contentsline {subsubsection}{Validity}{9}
 \contentsline {subsubsection}{Satisfiability}{9}
-\contentsline {chapter}{\numberline {3}Business Rules}{10}
-\contentsline {chapter}{\numberline {4}Implementation}{11}
-\contentsline {chapter}{\numberline {5}Evaluation}{12}
-\contentsline {chapter}{\numberline {6}Conclusion}{13}
-\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{14}
-\contentsline {chapter}{Bibliography}{15}
+\contentsline {chapter}{\numberline {3}Theory of Business Rules}{10}
+\contentsline {section}{\numberline {3.1}Business Management Workflows}{10}
+\contentsline {section}{\numberline {3.2}Tasks and Users}{10}
+\contentsline {subsection}{\numberline {3.2.1}User Allocation}{10}
+\contentsline {section}{\numberline {3.3}Separation of Duty}{10}
+\contentsline {section}{\numberline {3.4}Binding of Duty}{13}
+\contentsline {chapter}{\numberline {4}Implementation}{14}
+\contentsline {chapter}{\numberline {5}Evaluation}{15}
+\contentsline {chapter}{\numberline {6}Conclusion}{16}
+\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{17}
+\contentsline {chapter}{Bibliography}{18}
