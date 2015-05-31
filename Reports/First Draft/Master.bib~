@@ -100,3 +100,15 @@ Ashish Sabharwal, and Bart Selmanr}",
 	note = "\url{http://www.dabeaz.com/ply/ply.html}, (accessed May, 2014)",
 	year = "",
     }
+@manual{antlr,
+	title = "Antlr4 - Python Target",
+	author = "Terence Parr",
+	note = "\url{https://theantlrguy.atlassian.net/wiki/display/ANTLR4/Python+Target}, (accessed Feb, 2014)",
+	year = "2014",
+    }
+@manual{pyparsing,
+	title = "Pyparsing",
+	author = "Pyparsing",
+	note = "\url{https://pyparsing.wikispaces.com/}, (accessed March, 2014)",
+	year = "2015",
+    }

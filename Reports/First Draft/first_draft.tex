@@ -73,7 +73,7 @@ Finally, I would like to thank my family and friends for their love, support and
 \chapter{Background}
 \section{Workflows}
 \setlength{\parindent}{4em}
-Business management processes can be represented as a workflow of tasks, where each of these tasks produce a certain output for the next task to be realised. These tasks are assigned in the workflow as a sequence, where in order to perform the next task, the current task must be completed. However, in order to start a task, it must meet all the constraints within workflow. However, in a large business, making sure that all the constraints are met in a workflow can become a large problem as the more tasks are added to a workflow.   Workflows are modeled as directed acyclic graphs\cite{AcyclicDigraph}, where there are no directed cycles. The vertices are tasks in the workflow and the directed edges connecting to each task vertex is the execution order. \par
+Business management processes can be represented as a workflow or flowchart of tasks, where each of these tasks produce a certain output for the next task to be realised. These tasks are assigned in the workflow as a sequence, where in order to perform the next task, the current task must be completed. Therefore, in order to start a task, it must meet all the constraints within workflow. However, in a large business, making sure that all the constraints are met in a workflow can become a large problem as the more tasks are added to a workflow. Workflows are modeled as directed acyclic graphs\cite{AcyclicDigraph}, where there are no directed cycles. The vertices are tasks in the workflow and the directed edges connecting to each task vertex is the execution order. \par
 \begin{figure}
 \centering
 \begin{subfigure}[b]{\textwidth}
@@ -149,14 +149,15 @@ An example of a business workflow is given in Figure~\ref{fig:Business workflow 
 \item Finally, the sale is approved and the new total is returned back to the customer.
 \end{itemize}
 
-However, the order of of execution in Figure~\ref{fig:Business workflow with nine tasks} is affected by how to graph is forked. These forks are represented as constraints or rules within a business which may prevent tasks being executed such as a government restriction on business logic. The fork at $t_{1}$ is an OR-fork showing that either $t_{2}$ or $t_{3}$ can be executed. Depending on whether $t_{2}$ or $t_{3}$ can be executed, determines whether $t_{4}$ can then be executed afterwards and affects the whole execution of the workflow.  \\
+However, the order of of execution in Figure~\ref{fig:Business workflow with nine tasks} is affected by how to graph is forked. These forks are represented as constraints or rules within a business which may prevent tasks being executed such as a government restriction on business logic. The fork at task $t_{1}$ is an OR-fork showing that either task $t_{2}$ or task $t_{3}$ can be executed. Depending on whether $t_{2}$ or $t_{3}$ can be executed, determines whether task $t_{4}$ can then be executed afterwards and affects the whole execution of the workflow.  \\
 
 \section{Tasks}
 In business management processes, users have to be allocated tasks for an execution to occur. These tasks are represented as vertices in the graph as $t_{n}$. The tasks in the example workflow given in Figure~\ref{fig:Business workflow with nine tasks} are listed in Table~\ref{fig:Table of tasks}.\\
-If users cannot be allocated to these tasks, then there is no way in which the task can be executed. Therefore it is not executed and the workflow becomes unsatisfiable.\\
+
+If users cannot be allocated to these tasks, then there is no way in which the task can be executed. Therefore it is not executed and the workflow may become unsatisfiable.\\
 
 \section{Users}
-A user belongs to the set of users who can be allocated to tasks in order to execute them. However, there are possible allocation constraints which refrain particular users from executing these tasks. In the example given below, Alice, Bob and Carol are users specified in the domain of the workflow, but David is not.\\
+A user $u$ belongs to the set of users who can be allocated to tasks in order to execute them. However, there are possible allocation constraints which refrain particular users from executing these tasks. In the example given below, Alice, Bob and Carol are users specified in the domain of the workflow, but David is not.\\
 \begin{center}
 \begin{tikzpicture}
 \draw (0,0) -- (4,0) -- (4,4) -- (0,4) -- cycle node[right=0.5cm, below=0.5] {David};
@@ -167,29 +168,32 @@ A user belongs to the set of users who can be allocated to tasks in order to exe
 \section{Business and Security Rules}
 Business and security rules are used to prevent fraud and follow business compliance rules. For example, in some cases, different users are needed to execute a certain set of tasks to perhaps prevent fraud or erroneous activities in a workflow. In Figure~\ref{fig:Business management process workflow} some constraints about which users in the business can execute these tasks are added below:
 \begin{itemize}
-\item Whomever is allocated task $t_{1}$ to receive the order from customers and pass them onto the relevant user, but cannot be allocated and execute $t_{2}$ and $t_{3}$, but can be allocated other tasks within the workflow besides $t_{2}$ and $t_{3}$.
-\item Whomever is allocated task $t_{2}$ to give a total of a large sale cannot be the same user that is allocated $t_{3}$ who gives a total of a small sale. Therefore whomever is allocated $t_{3}$ cannot be allocated to $t_{2}$.
+\item Whomever is allocated task $t_{1}$ receives the order from customers and pass them onto the relevant user, but cannot be allocated and execute $t_{2}$ and $t_{3}$, but can be allocated other tasks within the workflow besides $t_{2}$ and $t_{3}$.
+\item Whomever is allocated task $t_{2}$ gives a total of a large sale cannot be the same user that is allocated $t_{3}$ who gives a total of a small sale. Therefore whomever is allocated $t_{3}$ cannot be allocated to $t_{2}$.
 \end{itemize}
+
 With the additional constraints to the workflow it may be satisfiable given that there are enough users. But there may be other constraints that can make this workflow unsatisfiable. For example, if there are not enough users to be allocated to ensure that some of the tasks do not have the same user. So a valid workflow is a satisfied workflow if there can be users allocated tasks in the workflow that do not break the constraints within the given model.\\
 
 \section{Satisfiability Modulo Theories (SMT)}
 Satisfiability Modulo Theories (SMT)\cite{smt_appetizer} check the satisfiability of logical formulas over given theories. It helps to determine whether there is a solution in a formula which expresses a constraint. It is one of the fundamental problems in the area of computer science to check boolean satisfiability over logical domains and the completeness and incompleteness of logical theories and complexity theory. \\
-SMT is similar to Boolean or Propositional Satisfiability Problem (SAT)\cite{sat} , where the problem is to determine if there exists a determination that satisfies the boolean formula. But SAT ranges only over binary predicates which are predicated that only take in two arguments in their formula. Whereas SMT covers non-binary predicates with types and sorts. This project will focus on SMT rather than SAT as we can use non-binary predicates provided by SMT to define and solve some of these constraints. \\
+
+SMT is similar to Boolean or Propositional Satisfiability Problem (SAT)\cite{sat} , where the problem is to determine if there exists a determination that satisfies the boolean formula. But SAT ranges only over binary predicates which are predicates that only take in two arguments. Whereas SMT covers non-binary predicates with types and sorts. This project will focus on SMT rather than SAT as we can use non-binary predicates provided by SMT to define and solve some of these constraints. \\
 
 \section{Z3}
 Z3\cite{smt} is a SMT solver developed by Microsoft Research. It is used to integrate several decision procedures and verify the satisfiability of logical formulas over given theories. The theories our case, is the workflow model. There are many features of Z3 which will come in useful including:
 \begin{itemize}
-\item Uninterpreted functions - where a theory has an empty set of sentences. An example of this can be an axiom, where the satisfiability of the axiom depends on whether the uninterpreted function can be evaluated to true.
+\item Uninterpreted functions - A theory that has an empty set of sentences. An example of this can be an axiom, where the satisfiability of the axiom depends on whether the uninterpreted function can be evaluated to true.
 \item Linear arithmetic
 \item Bitvectors, arrays, datatypes
 \item Quantifiers
 \item Satisfiability core
 \item Returns a model
 \end{itemize}
-There were many other SMT solvers considered but did not include certain built in theories and features such as:
+
+There were many other SMT solvers we considered but did not include certain built in theories and features such as:
 \begin{itemize}
-\item Yices\cite{yices} - it has almost all features of Z3 but doesn’t have quantifiers, which is needed to define general rules to satisfy a formula in the domain. 
-\item CVC4\cite{cvc4} - Similar features of Z3 including quantifiers not included in Yices. But typically with CVC4, it is not very scalable. It is intended to run with small finite models, but realistically, business processes can be huge within large organisations.
+\item Yices\cite{yices} - It almost has all features of Z3 but doesn’t have quantifiers, which is needed to define general rules to satisfy a formula in the domain. 
+\item CVC4\cite{cvc4} - It has similar features to Z3 including quantifiers that are not included in Yices. But typically with CVC4, it is not very scalable. It is intended to run with small finite models, but realistically, business processes can be huge within large organisations.
 \item MathSAT 5\cite{mathsat5}- It is lacking a lot of features in Z3, especially the quantifiers.
 \end{itemize}
 
@@ -197,12 +201,13 @@ There were many other SMT solvers considered but did not include certain built i
 A simple example is illustrated in Figure~\ref{fig:Simple predicate logic} shows how some simple first order predicate logic in Figure~\ref{fig:Simple predicate logic using logic symbols} can be expressed in Z3 SMT solver in  Figure~\ref{fig:Simple predicate logic in Z3}.
 \begin{itemize}
 \item To define constants in Z3, in this case $x$ and $y$, we can declare them as constants using the keyword \texttt{(declare-const x Int)} where $x$ is the name of the constant and the type of $x$ is an Integer.
-\item Z3 uses assertions to add constraints to the solver as a keyword assert. 
-\item \texttt{(check-sat)} (line 5) is a call to Z3 to check if the theory is satisfiable. It returns sat is the theory is satisfiable and unsat if the theory is unsatisfiable.
-\item \texttt{(get-model)} (line 6) is a call to Z3 to return an interpretation of the theory which makes all the formulas defined in the Z3 stack true. If the theory returns false, no model able to be retrieved.  
+\item Z3 uses assertions to add constraints to the solver as a keyword \texttt{assert}. 
+\item \texttt{(check-sat)} (line 5) is a call to Z3 to check the satisfiability of the theory. It returns \texttt{sat} if the theory is satisfiable and \texttt{unsat} if the theory is unsatisfiable.
+\item \texttt{(get-model)} (line 6) is a call to Z3 to return an interpretation of the theory which makes all the formulas defined in the Z3 stack true. If the theory returns \texttt{unsat}, no model is able to be retrieved.  
 \end{itemize}
-In the example below, $x > 10$ is given as an assertion \texttt{(assert(> x 10))} and $y \times 10 \geq x$ is given the assertion \texttt{(assert (>= (* y 10) x))}. When this is run in Z3, a result is returned. \texttt{(check-sat)} returns as sat which means that this theory is satisfiable.\\ 
-What we can see also, is that Z3 gives back an appropriate model as a result that satisfies these constraints with $x = 11$ and $y = 2$. This is true as if we put $x = 11$ and $y = 2$ back into the constraints, $11 > 10$ and $20 \geq 11$.
+
+In the example below, $x > 10$ is given as an assertion \texttt{(assert(> x 10))}, and $y \times 10 \geq x$ is given the assertion \texttt{(assert (>= (* y 10) x))}. When this is run in Z3, a result is returned using  \texttt{(check-sat)}. It returns as \texttt{sat} which means that this theory is satisfiable.\\ 
+What we can also see, is that Z3 gives back an appropriate model as a result that satisfies these constraints with $x = 11$ and $y = 2$. This is true as if we put $x = 11$ and $y = 2$ back into the constraints, $11 > 10$ and $20 \geq 11$.
 \begin{figure}[!htb]
 \centering
 \begin{subfigure}[b]{\textwidth}
@@ -258,14 +263,18 @@ sat
 \end{figure}
 
 \subsection{Functions}
-Z3 also has uninterpreted functions where unlike most programming languages where functions have side effects, may never return a value or raise or throw exceptions, Z3 functions have no side effects since they are in classical first order logic and are total.
+Z3 also has uninterpreted functions. Unlike most programming languages where functions have side effects, may never return a value or raise or throw exceptions, Z3 functions have no side effects since they are in classical first order logic and are total.
 Everything in Z3 is a function, including constants as they don’t take in arguments.
 \begin{itemize}
 \item \texttt{(declare-fun f (Int) Int)} - We declare a function $f$ which takes in and integer as its parameter and returns an integer
 \end{itemize}
+
 In Figure~\ref{fig:Predicate Logic with Functions}, a function \texttt{f} has been declared which takes an integer as input, and returns an integer. Since this is an uninterpreted function, Z3 does not know what this function does. But we can add some constraints, so when we apply the function to the integer, it ensures that the interpretation is consistent within the theory and constraints. \\
-In Figure~\ref{fig:Z3 with functions}, there are two assertions \texttt{(assert (= (f x) x))} which represents $f(x) = x$ and \texttt{(assert (> (f y) (f x))} as $f(f) > f(x)$. The result that Z3 returns in Figure~ref{Z3 Result with functions} has still kept the values of \texttt{x} and \texttt{y} as it is the same as Figure~\ref{fig:Simple predicate logic}. But for function $f$, it takes in an integer as we have specified in our function declaration as \texttt{(x!1 Int)} which means that the first variable has a type Int (integer). It returns an integer which is consistent and the type integer is interpreted. \\
-Looking at the model returned in Figure~\ref{fig:Z3 Function Result}, we can see that \texttt{x} and texttt{y} are both interpreted as a function as well as texttt{f}. It interprets \texttt{f} to take in an integer, the \texttt{ite} stands for “if-then-else”. So we can read the definition of \texttt{f} as “if x!1 is equal to 20, then return 20, else if x!1 is equal to 2, then return 2 else, return 21. Else, return 20”. So for the case that \texttt{x} is put into the function \texttt{f}, then $x!1 = 20$, then the value of the function is 20, else if \texttt{y} is put into the function, then $x!1 = 2$, then the value of the function is 21. If any other input is put in, then it will return 20. \\
+
+In Figure~\ref{fig:Z3 with functions}, there are two assertions \texttt{(assert (= (f x) x))} which represents $f(x) = x$ and \texttt{(assert (> (f y) (f x))} as $f(y) > f(x)$. The result that Z3 returns in Figure~\ref{fig:Z3 Function Result} has still kept the values of \texttt{x} and \texttt{y} as it is the same as Figure~\ref{fig:Simple predicate logic}. But for function $f$, it takes in an integer as we have specified in our function declaration as \texttt{(x!1 Int)} which means that the first variable has a type Int (integer). It returns an integer which is consistent and the type integer is interpreted. \\
+
+Looking at the model returned in Figure~\ref{fig:Z3 Function Result}, we can see that \texttt{x} and \texttt{y} are both interpreted as a function as well as \texttt{f}. It interprets \texttt{f} to take in an integer, the \texttt{ite} stands for ``if-then-else''. So we can read the definition of \texttt{f} as “if x!1 is equal to 20, then return 20, else if x!1 is equal to 2, then return 2 else, return 21. Else, return 20”. So for the case that \texttt{x} is put into the function \texttt{f}, then $x!1 = 20$, then the value of the function is 20, else if \texttt{y} is put into the function, then $x!1 = 2$, then the value of the function is 21. If any other input is put in, then it will return 20. \\
+
 Z3 also includes built in arithmetic functions such as $=, -, +, \times, div, mod, \geq, \leq, >, <, not$ that support integer and real constants. \\
 
 \begin{figure}[!htb]
@@ -322,6 +331,7 @@ sat
 
 \subsection{Stack}
 Z3 has a stack implementation, where constraints and formulas can be pushed onto and popped off the stack using the commands \texttt{(push)} and \texttt{(pop)} which pushes and pops constraints off the stack respectively. These commands can be used to check the satisfiability of some rules or definitions. When the solver stack is pushed, the state of the solver is saved. When the stack is popped, any rules and assertions declared between that pop and the corresponding push on the stack is removed from the stack, and the interpretation is reverted back to its previous state before the push.\\
+
 In Figure~\ref{fig:Predicate Logic with stack}, the theory is satisfied before the push. However, when the stack is pushed and an assertion is added which violates the constraints already in the current frame which is $x < 2$, but $x > 2$ has been pushed onto the stack frame previously, the model becomes unsatisfied. Since the constraint $x < 2$ was between a push-pop frame, it can be popped off the stack and the model is returned back to its previous state on the stack.\\
 \begin{figure}[!htb]
 \centering
@@ -386,7 +396,7 @@ sat
 \subsection{Sorts}
 When a constant is defined, they are declared as a type which is a sort in Z3. For example, integers, reals and booleans are declared, they are a pre-defined sort in Z3. 
 \begin{itemize}
-\item \texttt{(define-sort t1 Task)} - the command defines a new symbol with the type Task.
+\item \texttt{(define-sort t1 Task)} - The command defines a new symbol with the type Task.
 \end{itemize}
 
 \subsection{Quantifiers}
@@ -399,13 +409,15 @@ One of the reasons why we chose Z3 as the back end constraint solver was because
 \subsubsection{Validity}
 A formula $f$ is valid if $f$ always evaluates to true for any assignment to an appropriate value. 
 \subsubsection{Satisfiability}
-A formula f is satisfiable if there is some assignment to an appropriate value to the function where f evaluates to true.\\
-As we mentioned previously, Z3 SMT Solver gives back the satisfiability of the interpretation. It has three states when the (check-sat) command is called:
+A formula $f$ is satisfiable if there is some assignment to an appropriate value to the function where $f$ evaluates to true.\\
+
+As we mentioned previously, Z3 SMT Solver gives back the satisfiability of the interpretation. It has three states when the \texttt{(check-sat)} command is called:
 \begin{itemize}
-\item \texttt{sat} - satisfied model, a model can be returned. We give an example of a satisfied formula in Figure~\ref{fig:Z3 with satisfied core}.
-\item \texttt{unsat} - unsatisfied model - a model cannot be returned. We give an example of an unsatisfied formula in Figure~\ref{fig:Z3 with unsatisfied core}.
-\item \texttt{unknown} - when Z3 does not know whether a formula is satisfiable or not. We give an example of an unknown result in Figure~\ref{fig:Z3 with unknown}.
+\item \texttt{sat} - Satisfied model, a model can be returned. We give an example of a satisfied formula in Figure~\ref{fig:Z3 with satisfied core}.
+\item \texttt{unsat} - Unsatisfied model - a model cannot be returned. We give an example of an unsatisfied formula in Figure~\ref{fig:Z3 with unsatisfied core}.
+\item \texttt{unknown} - When Z3 does not know whether a formula is satisfiable or not. %We give an example of an unknown result in Figure~\ref{fig:Z3 with unknown}.
 \end{itemize}
+
 What is good about whether a formula is satisfiable is that it is about finding a solution under a set of constraints. 
 \begin{figure}[!htb]
 \centering
@@ -440,28 +452,28 @@ What is good about whether a formula is satisfiable is that it is about finding 
 \caption{Z3 with unsatisfied core}
 \label{fig:Z3 with unsatisfied core}
 \end{subfigure}
-\begin{subfigure}[b]{\textwidth}
-\lstset{numbers=left, showspaces=false,
-    showstringspaces=false, tabsize=2, breaklines=true,
-    xleftmargin=5.0ex,
-}
-\begin{lstlisting}[frame=single]
-(declare-const a Int)
-(assert (> a 10))
-(assert (< a 10))
-(check-sat)
-(get-model)
-\end{lstlisting}
-\caption{Z3 with unknown}
-\label{fig:Z3 with unknown}
-\end{subfigure}
+%\begin{subfigure}[b]{\textwidth}
+%\lstset{numbers=left, showspaces=false,
+%    showstringspaces=false, tabsize=2, breaklines=true,
+%    xleftmargin=5.0ex,
+%}
+%\begin{lstlisting}[frame=single]
+%(declare-const a Int)
+%(assert (> a 10))
+%(assert (< a 10))
+%(check-sat)
+%(get-model)
+%\end{lstlisting}
+%\caption{Z3 with unknown}
+%\label{fig:Z3 with unknown}
+%\end{subfigure}
 \caption{Predicate Logic with stack}
 \label{fig:Predicate Logic with stack}
 \end{figure} 
 
 \chapter{Theory of Business Rules}
 \section{Business Management Workflows}
-There are many rules and restrictions within business management workflows in order to prevent fraud, and a matter of authorisation and following regulation. Each rule is different, and therefore will have different axioms that follow. We will talk about the rules that have been implemented in the application.\\
+There are many rules and restrictions within business management workflows in order to prevent fraud, and a matter of authorisation and following regulation. Each rule is different, and therefore will have different axioms that follow. We will talk about the rules that have been implemented in the application.
 
 \section{Tasks and Users}
 Firstly, tasks and users need to be defined in the application in order to define the basic workflow domain. These are defined in Z3 as sorts where they define the types task and user respectively:
@@ -469,6 +481,7 @@ Firstly, tasks and users need to be defined in the application in order to defin
 \item \texttt{(declare-sort Task)}
 \item \texttt{(declare-sort User)}
 \end{itemize}
+
 Then each task and user in the domain are able to be defined after the sort has been defined: \\
 \lstset{numbers=left, showspaces=false,
     showstringspaces=false, tabsize=2, breaklines=true,
@@ -485,7 +498,10 @@ Then each task and user in the domain are able to be defined after the sort has 
 We have now declared a user called \say{alice} and another user \say{bob} in the user domain, as well as defining two tasks in the task domain \say{receive\_large\_order} and \say{recieve\_small\_order}. 
 
 \section{User Allocation}
-The most basic constraint in a workflow is that the tasks can only be executed if they have been allocated a user. Obviously, if there was not a user in the domain able to be allocated to a task, no one is able to execute and complete the task for the workflow to progress.\\
+The most basic constraint in a workflow is that the tasks can only be executed if they have been allocated a user. Obviously, if there was not a user in the domain able to be allocated to a task, no one is able to execute and complete the task for the workflow to progress.
+\begin{center}
+$alloc\_user : Task \rightarrow User$
+\end{center}
 In Z3, we define user allocation as a function, which takes in a task, and returns a user:
 \begin{itemize}
 \item \texttt{(declare-fun alloc\_user (Task) User)}
@@ -493,10 +509,18 @@ In Z3, we define user allocation as a function, which takes in a task, and retur
 
 \section{Separation of Duty}
 Separation of duties\cite{sod} is where users need to be different in order to complete a set of tasks. This is implemented usually implemented in order to avoid conflicts of interests that may cause fraud by an individual or break some rules within a business. This restricts and reduces powers of individuals within a business where there could be a chance of collusion happening. \\
+
 This is where a user who is allocated a task $t$, must also be a different user to who is allocated task $t’$ if these tasks are bound as knowledge from task $t$ must not be used in order to execute task $t’$. It may be that separation of duties cannot use their knowledge to participate in certain tasks.\\
+
 This is easy to spot within a workflow diagram giving in Figure~\ref{fig:Part of the example workflow}. We give a scenario that there are three users in the domain: Alice, Bob and Carol. The separation of duties are as follows: the user who is allocated the task of receiving the order and authorising the payment at checkout and cannot not handle any form of pricing the order. Whereas whichever user handles pricing of large orders cannot be the same user that handles pricing of small orders. The same users are not authorised to be allocated the tasks of creating and authorising orders, otherwise they could create fake orders or authorise orders with incorrect prices which may benefit themselves. It is also the case that large orders and small order prices should not be affected by each other, otherwise they could affect the final price or cause some sort of price fixing.\\
+
 The main rules we will focus on Figure~\ref{fig:Z3 Separation of Duty} is between lines 14-18. As seen, we must give a rule that whichever user is allocated a certain task cannot be the same (not equal) as which ever user is allocated the other task which is defined in the separation of duty. 
-The resulting model in Figure~\ref{fig:Z3 result for separation of duty} shows that this is in fact satisfiable under the given separation of duty constraints and the model is consistent with the description. The allocation is as follows:
+
+The resulting model in Figure~\ref{fig:Z3 result for separation of duty} shows that this is in fact satisfiable under the given separation of duty constraints and the model is consistent with the description. 
+\begin{center}
+$alloc\_user(t) \neq alloc\_user(t\ensuremath{'})$
+\end{center}
+The allocation is as follows:
 \begin{itemize}
 \item Task price\_large\_order is allocated to user Alice.
 \item Task price\_small\_order is allocated to user Bob.
@@ -613,8 +637,14 @@ sat
 
 \section{Binding of Duty}
 Binding of duties\cite{bod} is where a user who is allocated a task $t$, must also be the same user who is allocated task $t’$ if these tasks are bound as knowledge from task $t$ must be used in order to execute task $t’$. It may be that binding of duties is needed as the user who is allocated these tasks have the required knowledge in order to execute both.\\
+\begin{center}
+$alloc\_user(t) = alloc\_user(t\ensuremath{'})$
+\end{center}
+
 Given Figure~\ref{fig:Part of the example workflow}, who ever is allocated the task of receiving an order has to price the order, regardless of whether it is a large or small order as they may be authorised to do so. \\
+
 As seen in Figure~\ref{fig:Z3 Binding of Duty}, the rule is specified between lines 14-17. Whichever user is allocated task price\_large\_order has to be the same (equal to) whichever user is allocated task price\_small\_order. This is matches the definition of binding of duties.\\
+
 Looking at the result produced in Figure~\ref{fig:Z3 result for binding of duty}, this is satisfiable for the given constraints and is consistent to the user input and is complete:
 \begin{itemize}
 \item Task checkout is allocated to user Alice
@@ -714,12 +744,21 @@ sat
 \end{figure}
 
 \section{Seniority}
-In most businesses and corporations, there are different levels of seniority based on their positions in the company. Different seniority levels allow users to execute different tasks. For example, a confidential task maybe worked on by a less senior member of a department, but have to be authorised by a more senior member as they may have more experience or the appropriate training.\\
-An example of seniority allocation is given in Figure~\ref{fig:Seniority Relationships with tasks}. As we can see, whoever is allocated $t1$ must be the same user as whoever is allocated to task $t4$ as they will have the same level of seniority, the same user will have the same seniority. It does not make sense from a business perspective that the allocation needs to be different users of the same seniority as the trust and experience levels are the same. Also in the figure, whoever is assigned to $t1$ has to be more senior than whoever is assigned to $t2$ and $t3$. This also means that the users assigned to $t2$ and $t3$ have to be less senior than the user allocated to $t1$. The tasks $t2$ and $t3$ cannot have users of the same seniority, so therefore the users allocated to those tasks must not be the same.\\
-We can declare a new function for seniority which takes two users as parameters and returns a boolean whether the users are senior to each other:\\
-\texttt{(declare-fun seniority (User User) Bool)}\\
-Given the example below, \texttt{u} is senior to \texttt{u\ensuremath{'}}.\\
-\texttt{(assert (seniority (u u\ensuremath{'}))}\\
+In most businesses and corporations, there are different levels of seniority based on their positions in the company. Different seniority levels allow users to execute different tasks. For example, a confidential task maybe worked on by a less senior member of a department, but have to be authorised by a more senior member as they may have more experience or the appropriate training\cite{seniority}.\\
+
+An example of seniority allocation is given in Figure~\ref{fig:Seniority Relationships with tasks}. As we can see, whoever is allocated $t1$ must be the same user as whoever is allocated to task $t4$ as they will have the same level of seniority, the same user will have the same seniority. From a business prospective, it does not make sense that the allocation has to have different users of the same seniority as the trust and experience levels are the same. Also in the figure, whoever is assigned to $t1$ has to be more senior than whoever is assigned to $t2$ and $t3$. This also means that the users assigned to $t2$ and $t3$ have to be less senior than the user allocated to $t1$. The tasks $t2$ and $t3$ cannot have users of the same seniority, so therefore the users allocated to those tasks must not be the same.\\
+
+We can declare a new function for seniority which takes two users as parameters and returns a boolean whether the users are senior to each other:
+\begin{center}
+$seniority : User \times User \rightarrow Bool$
+\end{center}
+\begin{itemize}
+\item \texttt{(declare-fun seniority (User User) Bool)}
+\end{itemize}
+Given the example below, \texttt{u} is senior to \texttt{u\ensuremath{'}}.
+\begin{itemize}
+\item \texttt{(assert (seniority (u u\ensuremath{'}))}
+\end{itemize}
 The different types of seniority explained above are:
 \begin{itemize}
 \item $t$ has to be allocated a user that is more senior than the user allocated for $t\ensuremath{'}$ $(t > t\ensuremath{'})$: \texttt{(assert (seniority (alloc\_user t) (alloc\_user t\ensuremath{'})))}
@@ -727,6 +766,7 @@ The different types of seniority explained above are:
 \item $t$ has to be allocated a user that is the same seniority as $t’$ $(t = t\ensuremath{'})$: \texttt{(assert (= (alloc\_user t) (alloc\_user t\ensuremath{'})))}
 \item $t$ has to be allocated a user that is not the same seniority as $t\ensuremath{'}$ $(t != t\ensuremath{'})$: \texttt{(assert (not (= (alloc\_user t) (alloc\_user t\ensuremath{'}))))}
 \end{itemize}
+
 We give a scenario in Figure~\ref{fig:Z3 Seniority} where whoever is allocated receive\_order has to be less senior than whoever is allocated checkout task. Also, price\_large order and price\_small\_order have to have the same seniority as each other as they are both tasks that can be executed with the same skill. However, whoever is allocated receive\_order must also be less senior than the pricing tasks. This can be expressed in Z3 as in lines 22-26:
 \begin{figure}[!h]
 \begin{subfigure}{\textwidth}
@@ -874,7 +914,11 @@ $<$ & $t_x < t_y$ User who takes on $t_x$ is less senior than $t_y$ \\
 \end{figure}
 
 \section{Worst Time Completion}
-In business, it is useful to find the worst time completion in a workflow as some task executions are not helping to optimise the total workflow duration. The aim is to then find the worst time to completion after setting rules and constraints. Users usually have finite time to execute a task and in business, there are deadline to be met. This can be established if tasks have an estimate worst time duration, the longest time it could take to execute this task. We will define a function for the duration of a task and each task will have a duration listed:
+In business, it is useful to find the worst time completion in a workflow as some task executions are not helping to optimise the total workflow duration. The aim is to then find the worst time to completion after setting rules and constraints. Users usually have finite time to execute a task and in business, there are deadline to be met. This can be established if tasks have an estimate worst time duration, the longest time it could take to execute this task. 
+\begin{center}
+$duration : Task \rightarrow Real$
+\end{center}
+We will define a function for the duration of a task and each task will have a duration listed:
 \begin{itemize}
 \item \texttt{(declare-fun duration (Task) Real)}
 \item \texttt{(assert (= (duration t) 60))}
@@ -883,8 +927,8 @@ Task t has a worst time duration of sixty minutes to execute. Since in Z3, they 
 
 \section{Temporal Order of Task Execution}
 Temporal order of task execution is when tasks need to be executed in a certain order. We can easily represent this in the workflow as a directed graph, where the edges are directed to tasks (vertices) which is to be executed next. This rule is important to model in business management processes because some tasks cannot be executed before another and some tasks may be dependant on another to be executed. \\
-In Figure~\ref{fig:Part of the example workflow}, it has directional arrows between vertices to represent the temporal order of task execution. For example, we cannot price orders if we have not received orders. Similarly, we cannot proceed to checkout if no pricing has been handled on the orders.
-We can model temporal order of task execution in Z3 where task $t$ is executed before $t\ensuremath{'}$ as:
+
+In Figure~\ref{fig:Part of the example workflow}, it has directional arrows between vertices to represent the temporal order of task execution. For example, we cannot price orders if we have not received orders. Similarly, we cannot proceed to checkout if no pricing has been handled on the orders. We can model temporal order of task execution in Z3 where task $t$ is executed before $t\ensuremath{'}$ as:
 \begin{itemize}
 \item \texttt{(declare-fun before (Task Task) Bool)}
 \item \texttt{(assert (before t t\ensuremath{'}))}
@@ -909,36 +953,60 @@ So either users Alice or Bob can be allocated the task of receiving the order to
 \chapter{Implementation}
 \section{Project Focus}
 The main aim of this project is to design a simple language in which constraints on execution of tasks within can be specified. The result that should be returned is whether the workflow is satisfiable. Also, the model returned should be easy to read and understandable to the user. The project should implement an application which would decide whether a workflow is satisfiable or not, subject to all the constraints. We also need to verify that the model returned to the user is complete and consistent to the user input.\\
+
 The first discussion was whether to implement an algorithm that would solve these constraints or to use a back-end constraint solver. The benefit of using a back-end constraint solver like Z3 is that these algorithms are very efficient, perhaps more efficient than if it was implemented from scratch in this project. The application is built using Python\cite{python} and the Z3 python module\cite{Z3Python}. \\
+
 The language is a simple command line language, where a domain of tasks and users are defined. There are also predefined tokens which define certain constraints on a workflow as well as predefined axioms and rules. The application the interprets the workflow described in the language and checks if the workflow is satisfiable and gives back a suitable model.
+
+\section{Application Outline}
+The basic outline of this application is given in Figure~\ref{fig:Application outline}.
+\begin{itemize}
+\item Firstly the user inputs in the command line either a file containing syntax for a workflow or command line input of a workflow.
+\item Then the application, which is written in Python interoperates the input.
+\item The lexer tokenises the input and the parser parses the input.
+\item After parsing, the Z3 SMT code is generated.
+\item The result is handled to check whether the workflow is satisfiable given the constraints.
+\item The resulting model is verified and certified to make sure that the resulting model is consistent with the user input.
+\item Depending on whether the workflow was satisfiable and whether it was verified determines if a model will be returned to the user.
+\end{itemize}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.5]{ApplicationDiagram.png}
+\caption{Application outline}
+\label{fig:Application outline}
+\end{figure}
 
 \section{Lexer and Parser} 
 \subsection{PLY}
 The interpreter is designed using PLY\cite{ply} (Python Lex-Yacc) which is a python module which is a parsing tool written in Python. It is made up of two compiler construction tools: lex and yacc\cite{plylexyacc}. Yacc is say{Yet another compiler compiler} and lex is the lexical analyser generator. The type of parsing used in PLY is LALR(1)\cite{lalr} Look-Ahead Left-Right parser.\\
+
 We chose to use PLY rather than any other resources for tokenising, lexing and parsing because the library we are using for Z3 is a module for Python. This meant we had to choose a lexer and parser that is written in Python. PLY is a pure Python implementation of lex and yacc and uses a lot of python features that make it easy to use. \\
-Other lexers and parsers were considered but was not what we needed for this project:
+
+We considered other lexers and parsers, but unfortunately, their specifications did not match with what we needed for this project:
 \begin{itemize}
-\item Antlr\cite{antlr} - it has a good lexer and parser. It generates a parsing tree visitor which is useful for code generation. However, the language that we have developed in this project is quite basic and does not need such complicated tools.
-\item Pyparsing\cite{pyparsing} - it has an alternative approach to creating and executing simple grammars. It is different to traditional lex and yacc approach and does not use regular expressions. Therefore it may have been too heavy weight for this project. The main aim of this project is to focus on simple grammars with regular expressions.
+\item Antlr\cite{antlr} - It has a good lexer and parser with regular expressions. It generates a parsing tree visitor which is useful for code generation. However, the language that we have developed in this project is quite basic and does not need such complicated tools.
+\item Pyparsing\cite{pyparsing} - It has an alternative approach to creating and executing simple grammars. It is different to traditional lex and yacc approach and does not use regular expressions. Therefore it may have been too heavy weight for this project. The main aim of this project is to focus on simple grammars with regular expressions.
 \end{itemize}
+
 \subsection{Lexer}
 The lexer uses the PLY lexer module. It takes in a list of tokens and reserved words that are exclusive to the language which the user is not allowed to use. We will later use these tokens and reserved words to apply parsing rules to them. Reserved words are keywords that are used in the syntax and the tokens are symbols. It can also detect illegal syntax.\\
 We have a list of reserved words for the language:
 \begin{itemize}
-\item \texttt{Tasks} - keyword to start the list of tasks
-\item \texttt{Users} - keyword to start the list of users
-\item \texttt{Before} - keyword to start the list of pairs of tasks temporal execution
-\item \texttt{SoD} - keyword to start the list of pairs of tasks that are bound to separation of duty
-\item \texttt{Seniority} - keyword to start the list of pairs of users that are senior to each other
-\item \texttt{BoD} - keyword to start the list of pairs of tasks that are bound to binding of duty
-\item \texttt{users} - keyword option for all users
-\item \texttt{allocate} - keyword to request of an allocation
-\item \texttt{min\_sec\_lv} - keyword option for giving a minimum security level seniority for a task
-\item \texttt{Or} - keyword that decides the execution of a task by using an or-fork
-\item \texttt{Xor} - keyword that decided the execution of a task by using a xor-fork
-\item \texttt{Execution} - keyword option for the execution of tasks
-\item \texttt{Authorised} - keyword option for the list of users who are authorised to be allocated to a task
-\item \texttt{duration} - keyword option to state the duration of a task
+\item \texttt{Tasks} - Keyword to start the list of tasks
+\item \texttt{Users} - Keyword to start the list of users
+\item \texttt{Before} - Keyword to start the list of pairs of tasks temporal execution
+\item \texttt{SoD} - Keyword to start the list of pairs of tasks that are bound to separation of duty
+\item \texttt{Seniority} - Keyword to start the list of pairs of users that are senior to each other
+\item \texttt{BoD} - Keyword to start the list of pairs of tasks that are bound to binding of duty
+\item \texttt{users} - Keyword option for all users
+\item \texttt{allocate} - Keyword to request of an allocation
+\item \texttt{min\_sec\_lv} - Keyword option for giving a minimum security level seniority for a task
+\item \texttt{Or} - Keyword that decides the execution of a task by using an or-fork
+\item \texttt{Xor} - Keyword that decided the execution of a task by using a xor-fork
+\item \texttt{Execution} - Keyword option for the execution of tasks
+\item \texttt{Authorised} - Keyword option for the list of users who are authorised to be allocated to a task
+\item \texttt{duration} - Keyword option to state the duration of a task
 \end{itemize}
 We also have a list of tokens:
 \begin{itemize}
@@ -956,11 +1024,53 @@ We also have a list of tokens:
 \item \texttt{RSqParen} - ]
 \item \texttt{Number} - (decimal)  [0-9]+[\textbackslash.[0.9]+]?
 \item \texttt{Node} - \say{(\textbackslash\textbackslash\ ``$|$[$\mathchar"5E$''])*}
-%"(\\"|[^"])*"
 \end{itemize}
+
 \subsection{Parser}
+As we have mentioned in this section earlier, PLY uses LALR(1) parsing. LALR(1) parsing is where a text is parsed according to a set of rules specified by a formal grammar.\\
+We give an example of LALR(1) parsing:
+\lstset{numbers=none, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex,
+}
+\begin{lstlisting}[frame=single]
+begin : TASKS COLON task_node USERS COLON user_node
+| TASKS COLON task_node USERS COLON user_node rules
+\end{lstlisting}
+
+The grammar symbols (terminals) are represented using capital letters such as TASKS COLON, USERS etc. The grammar rules or identifiers (non-terminals) are expressed in lower case such as task\_node, user\_node, rules. They are made up of other grammar rules and terminals.\\	
+The semantic behaviour of a language is defined by syntax directed translation, where there is a rule and action for each grammar symbol. 
+%Given the example above we can show how it would work by giving a set of rules:\\
+%The input expression is \texttt{Tasks: `t1', Users: `t2'}\\
+%\begin{tabular}{ |l|l|l|l| }
+%\hline
+%Step & Symbol Stack & Input Tokens & Action \\ \hline
+%1 & Receive order from customer &  Tasks: `t1', Users: `t2'\\ \hline
+%2 & Give total of large sale \\ \hline
+%3 & Give total of small sale \\ \hline
+%$t_4$ & Approve and authorise checkout \\ \hline
+%$t_5$ & Give 10\% discount \\ \hline
+%$t_6$ & Give 20\% discount \\ \hline
+%$t_7$ & Give new total of sale \\ \hline
+%$t_8$ & Give new total of sale \\ \hline
+%$t_9$ & Approve and return new total \\ 
+%\hline
+%\end{tabular}
 
 \section{Code Generation}
+\subsection{Z3 Workflow Axioms}
+\subsection{Executed Axioms}
+\subsection{Seniority Axioms}
+\subsection{Worst Time Completion}
+
+\section{Z3 Python Library}
+
+\section{Handling The Result}
+\subsection{Making It Human Readable}
+
+\section{Validation and Completness of Z3 Model}
+
+\section{The Language}
 
 \chapter{Evaluation}
 
