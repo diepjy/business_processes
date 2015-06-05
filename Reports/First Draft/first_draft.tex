@@ -6,7 +6,6 @@
 \usepackage{tikz}
 \usepackage{tocbibind}
 \usepackage{subcaption}
-%\usepackage{subfig}
 \usepackage{caption}
 \usepackage{listings}
 \usepackage{lipsum}
@@ -14,6 +13,8 @@
 \usepackage{url}
 \usepackage{cite}
 \usepackage{dirtytalk}
+\usepackage{fixltx2e}
+\usetikzlibrary{calc}
 
 \title{Business Management Processes: Verifying their Compliance with Security and Business Rules}
 \author{Joanna Diep}
@@ -151,19 +152,47 @@ An example of a business workflow is given in Figure~\ref{fig:Business workflow 
 
 However, the order of of execution in Figure~\ref{fig:Business workflow with nine tasks} is affected by how to graph is forked. These forks are represented as constraints or rules within a business which may prevent tasks being executed such as a government restriction on business logic. The fork at task $t_{1}$ is an OR-fork showing that either task $t_{2}$ or task $t_{3}$ can be executed. Depending on whether $t_{2}$ or $t_{3}$ can be executed, determines whether task $t_{4}$ can then be executed afterwards and affects the whole execution of the workflow.  \\
 
-\section{Tasks}
+\subsection{Tasks}
 In business management processes, users have to be allocated tasks for an execution to occur. These tasks are represented as vertices in the graph as $t_{n}$. The tasks in the example workflow given in Figure~\ref{fig:Business workflow with nine tasks} are listed in Table~\ref{fig:Table of tasks}.\\
 
 If users cannot be allocated to these tasks, then there is no way in which the task can be executed. Therefore it is not executed and the workflow may become unsatisfiable.\\
 
-\section{Users}
-A user $u$ belongs to the set of users who can be allocated to tasks in order to execute them. However, there are possible allocation constraints which refrain particular users from executing these tasks. In the example given below, Alice, Bob and Carol are users specified in the domain of the workflow, but David is not.\\
+\subsection{Users}
+A user $u$ belongs to the set of users who can be allocated to tasks in order to execute them. However, there are possible allocation constraints which refrain particular users from executing these tasks. If we have a universe of users, then we can consider two cases where $S$ is a set:\\
+Either the users in the set can be allocated in the universe of the workflow or not. In the example in Figure~\ref{fig:Set of definite users}, we can interoperate that in the set if users, Alice, Bob and Carol have been allocated, but Fred has not.
 \begin{center}
+$ S \triangleq f : Universe \longrightarrow \{0, 1\}$
+\end{center}
+Or that was have an extra case where we are unsure whether they can be allocated, which is represented by the $?$. Looking at Figure~\ref{fig:Set of users with unknown allocation}, we can see that Alice, Bob and Carol have been allocated in the universe of the workflow, but Fred could be allocated into the workflow. 
+\begin{center}
+$ S \triangleq f : Universe \longrightarrow \{0, 1, ?\}$
+\end{center}
+
+\begin{figure}[!h]
+\centering
+\begin{subfigure}[b]{\textwidth}
+\centering
 \begin{tikzpicture}
 \draw (0,0) -- (4,0) -- (4,4) -- (0,4) -- cycle node[right=0.5cm, below=0.5] {David};
 \draw (2,2) circle(1.5cm) node {Alice, Bob, Carol};
 \end{tikzpicture}
-\end{center}
+\caption{Set of definite users}
+\label{fig:Set of definite users}
+\end{subfigure} \\
+\begin{subfigure}[b]{\textwidth}
+\centering
+\begin{tikzpicture}
+\draw (0,0) -- (4,0) -- (4,4) -- (0,4) -- cycle node[right=0.1cm, below=0.5] {Fred David};
+\draw (2,2) circle(1.5cm) node {Alice, Bob, Carol};
+\end{tikzpicture}
+\caption{Set of users with unknown allocation}
+\label{fig:Set of users with unknown allocation}
+\end{subfigure}
+\caption{Set of users}
+\label{fig:Set of Users}
+\end{figure}
+
+\newpage
 
 \section{Business and Security Rules}
 Business and security rules are used to prevent fraud and follow business compliance rules. For example, in some cases, different users are needed to execute a certain set of tasks to perhaps prevent fraud or erroneous activities in a workflow. In Figure~\ref{fig:Business management process workflow} some constraints about which users in the business can execute these tasks are added below:
@@ -174,10 +203,14 @@ Business and security rules are used to prevent fraud and follow business compli
 
 With the additional constraints to the workflow it may be satisfiable given that there are enough users. But there may be other constraints that can make this workflow unsatisfiable. For example, if there are not enough users to be allocated to ensure that some of the tasks do not have the same user. So a valid workflow is a satisfied workflow if there can be users allocated tasks in the workflow that do not break the constraints within the given model.\\
 
+\newpage
+
 \section{Satisfiability Modulo Theories (SMT)}
 Satisfiability Modulo Theories (SMT)\cite{smt_appetizer} check the satisfiability of logical formulas over given theories. It helps to determine whether there is a solution in a formula which expresses a constraint. It is one of the fundamental problems in the area of computer science to check boolean satisfiability over logical domains and the completeness and incompleteness of logical theories and complexity theory. \\
 
 SMT is similar to Boolean or Propositional Satisfiability Problem (SAT)\cite{sat} , where the problem is to determine if there exists a determination that satisfies the boolean formula. But SAT ranges only over binary predicates which are predicates that only take in two arguments. Whereas SMT covers non-binary predicates with types and sorts. This project will focus on SMT rather than SAT as we can use non-binary predicates provided by SMT to define and solve some of these constraints. \\
+
+\newpage
 
 \section{Z3}
 Z3\cite{smt} is a SMT solver developed by Microsoft Research. It is used to integrate several decision procedures and verify the satisfiability of logical formulas over given theories. The theories our case, is the workflow model. There are many features of Z3 which will come in useful including:
@@ -222,15 +255,8 @@ $y \times 10 \geq x$
     showstringspaces=false, tabsize=2, breaklines=true,
     xleftmargin=5.0ex,
 }
+\lstset{basicstyle=\ttfamily}
 \centering
-%\begin{figure}[!htb]
-%  \lstset{numbers=left, showspaces=false,
-%    showstringspaces=false, tabsize=2, breaklines=true,
-%    xleftmargin=5.0ex,
-    %numberstyle=\scriptsize,numbersep=0pt
-%}
-%$x > 10$ \\
-%$y \times 10 \geq x$
 \begin{lstlisting}[frame=single]
 (declare-const x Int)
 (declare-const y Int)
@@ -293,6 +319,7 @@ $f(y) > f(x)$
     showstringspaces=false, tabsize=2, breaklines=true,
     xleftmargin=5.0ex,
 }
+\lstset{basicstyle=\ttfamily}
 \centering
 \begin{lstlisting}[frame=single]
 (declare-const x Int)
@@ -309,6 +336,7 @@ $f(y) > f(x)$
 \label{fig:Z3 with functions}
 \end{subfigure}\\
 \begin{subfigure}[b]{\textwidth}
+\lstset{basicstyle=\ttfamily}
 \begin{lstlisting}[frame=single]
 sat
 (model 
@@ -340,6 +368,7 @@ In Figure~\ref{fig:Predicate Logic with stack}, the theory is satisfied before t
     showstringspaces=false, tabsize=2, breaklines=true,
     xleftmargin=5.0ex,
 }
+\lstset{basicstyle=\ttfamily}
 \centering
 \begin{lstlisting}[frame=single]
 (declare-const x Int)
@@ -361,6 +390,7 @@ In Figure~\ref{fig:Predicate Logic with stack}, the theory is satisfied before t
 \label{fig:Z3 with stack}
 \end{subfigure}\\
 \begin{subfigure}[b]{\textwidth}
+\lstset{basicstyle=\ttfamily}
 \begin{lstlisting}[frame=single]
 sat
 (model 
@@ -415,7 +445,7 @@ As we mentioned previously, Z3 SMT Solver gives back the satisfiability of the i
 \begin{itemize}
 \item \texttt{sat} - Satisfied model, a model can be returned. We give an example of a satisfied formula in Figure~\ref{fig:Z3 with satisfied core}.
 \item \texttt{unsat} - Unsatisfied model - a model cannot be returned. We give an example of an unsatisfied formula in Figure~\ref{fig:Z3 with unsatisfied core}.
-\item \texttt{unknown} - When Z3 does not know whether a formula is satisfiable or not. %We give an example of an unknown result in Figure~\ref{fig:Z3 with unknown}.
+\item \texttt{unknown} - When Z3 does not know whether a formula is satisfiable or not. Z3 cannot evaluate the theory.
 \end{itemize}
 
 What is good about whether a formula is satisfiable is that it is about finding a solution under a set of constraints. 
@@ -426,6 +456,7 @@ What is good about whether a formula is satisfiable is that it is about finding 
     showstringspaces=false, tabsize=2, breaklines=true,
     xleftmargin=5.0ex,
 }
+\lstset{basicstyle=\ttfamily}
 \centering
 \begin{lstlisting}[frame=single]
 (declare-const x Int)
@@ -442,6 +473,7 @@ What is good about whether a formula is satisfiable is that it is about finding 
     showstringspaces=false, tabsize=2, breaklines=true,
     xleftmargin=5.0ex,
 }
+\lstset{basicstyle=\ttfamily}
 \begin{lstlisting}[frame=single]
 (declare-const a Int)
 (assert (> a 10))
@@ -452,21 +484,6 @@ What is good about whether a formula is satisfiable is that it is about finding 
 \caption{Z3 with unsatisfied core}
 \label{fig:Z3 with unsatisfied core}
 \end{subfigure}
-%\begin{subfigure}[b]{\textwidth}
-%\lstset{numbers=left, showspaces=false,
-%    showstringspaces=false, tabsize=2, breaklines=true,
-%    xleftmargin=5.0ex,
-%}
-%\begin{lstlisting}[frame=single]
-%(declare-const a Int)
-%(assert (> a 10))
-%(assert (< a 10))
-%(check-sat)
-%(get-model)
-%\end{lstlisting}
-%\caption{Z3 with unknown}
-%\label{fig:Z3 with unknown}
-%\end{subfigure}
 \caption{Predicate Logic with stack}
 \label{fig:Predicate Logic with stack}
 \end{figure} 
@@ -482,11 +499,12 @@ Firstly, tasks and users need to be defined in the application in order to defin
 \item \texttt{(declare-sort User)}
 \end{itemize}
 
-Then each task and user in the domain are able to be defined after the sort has been defined: \\
+Then each task and user in the domain are able to be defined after the sort has been defined: 
 \lstset{numbers=left, showspaces=false,
     showstringspaces=false, tabsize=2, breaklines=true,
     xleftmargin=5.0ex,
 }
+\lstset{basicstyle=\ttfamily}
 \begin{lstlisting}[frame=single]
 (declare-sort Task)
 (declare-sort User)
@@ -497,6 +515,8 @@ Then each task and user in the domain are able to be defined after the sort has 
 \end{lstlisting}
 We have now declared a user called \say{alice} and another user \say{bob} in the user domain, as well as defining two tasks in the task domain \say{receive\_large\_order} and \say{recieve\_small\_order}. 
 
+\newpage
+
 \section{User Allocation}
 The most basic constraint in a workflow is that the tasks can only be executed if they have been allocated a user. Obviously, if there was not a user in the domain able to be allocated to a task, no one is able to execute and complete the task for the workflow to progress.
 \begin{center}
@@ -506,6 +526,8 @@ In Z3, we define user allocation as a function, which takes in a task, and retur
 \begin{itemize}
 \item \texttt{(declare-fun alloc\_user (Task) User)}
 \end{itemize}
+
+\newpage
 
 \section{Separation of Duty}
 Separation of duties\cite{sod} is where users need to be different in order to complete a set of tasks. This is implemented usually implemented in order to avoid conflicts of interests that may cause fraud by an individual or break some rules within a business. This restricts and reduces powers of individuals within a business where there could be a chance of collusion happening. \\
@@ -635,6 +657,8 @@ sat
 \label{fig:Part of the example workflow}
 \end{figure}
 
+\newpage
+
 \section{Binding of Duty}
 Binding of duties\cite{bod} is where a user who is allocated a task $t$, must also be the same user who is allocated task $t’$ if these tasks are bound as knowledge from task $t$ must be used in order to execute task $t’$. It may be that binding of duties is needed as the user who is allocated these tasks have the required knowledge in order to execute both.\\
 \begin{center}
@@ -742,6 +766,8 @@ sat
 \label{fig:Z3 result for binding of duty}
 \end{subfigure}
 \end{figure}
+
+\newpage
 
 \section{Seniority}
 In most businesses and corporations, there are different levels of seniority based on their positions in the company. Different seniority levels allow users to execute different tasks. For example, a confidential task maybe worked on by a less senior member of a department, but have to be authorised by a more senior member as they may have more experience or the appropriate training\cite{seniority}.\\
@@ -913,6 +939,8 @@ $<$ & $t_x < t_y$ User who takes on $t_x$ is less senior than $t_y$ \\
 \label{fig:Seniority Relationships with tasks}
 \end{figure}
 
+\newpage
+
 \section{Worst Time Completion}
 In business, it is useful to find the worst time completion in a workflow as some task executions are not helping to optimise the total workflow duration. The aim is to then find the worst time to completion after setting rules and constraints. Users usually have finite time to execute a task and in business, there are deadline to be met. This can be established if tasks have an estimate worst time duration, the longest time it could take to execute this task. 
 \begin{center}
@@ -925,6 +953,8 @@ We will define a function for the duration of a task and each task will have a d
 \end{itemize}
 Task t has a worst time duration of sixty minutes to execute. Since in Z3, they do not have a time unit, the user can decide what the real value can be, i.e. minutes, hours.
 
+\newpage
+
 \section{Temporal Order of Task Execution}
 Temporal order of task execution is when tasks need to be executed in a certain order. We can easily represent this in the workflow as a directed graph, where the edges are directed to tasks (vertices) which is to be executed next. This rule is important to model in business management processes because some tasks cannot be executed before another and some tasks may be dependant on another to be executed. \\
 
@@ -934,6 +964,8 @@ In Figure~\ref{fig:Part of the example workflow}, it has directional arrows betw
 \item \texttt{(assert (before t t\ensuremath{'}))}
 \end{itemize}
 
+\newpage
+
 \section{Task Execution (and, or, exclusive-or)}
 Another constraint we are going to explore is which tasks are actually executed. In some workflows some tasks are not necessarily needed to be executed. Given in Figure~\ref{fig:Part of the example workflow} we can create a fork at task receive\_order and determine which pricing task is next to be executed. We can have three different types of forking:
 \begin{itemize}
@@ -941,6 +973,91 @@ Another constraint we are going to explore is which tasks are actually executed.
 \item Or - One or more tasks in the forking have to be executed, we cannot choose to execute none.
 \item Exclusive or - One and only one tasks can be executed.
 \end{itemize}
+
+We can define a function \texttt{executed} to express which tasks are actually being executed. The function takes a task as a parameter and returns a boolean, whether the task has been executed or not.
+\begin{center}
+$executed : Task \longrightarrow Bool$
+\end{center}
+\begin{lstlisting}[frame=single]
+(declare-fun executed (Task) Bool)
+\end{lstlisting}
+
+We assume that if the input has not explicitly stated that there is an or fork or an exclusive-or fork, that they are all and-forks. All tasks must be allocated and executed. So in the example workflow below, all tasks $t_1, t_2, t_3, t_4$ must be allocated and executed.\\
+To express all executed tasks:
+\begin{lstlisting}[frame=single]
+(assert (executed t))
+\end{lstlisting}
+\begin{center}
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex}} 
+%\draw (0,0) circle [radius=0.5];
+\node[vertex] (a) at  (0,0) {$t_{1}$};
+\node[vertex] (b) at  (2,1) {$t_{2}$};
+\node[vertex] (c) at (2,-1) {$t_{3}$};
+\node[vertex] (d) at (4,0) {$t_{4}$};
+\draw[edge] (b) to (d);
+\draw[edge] (c) to (d);
+\draw[edge] (a) to (b);
+\draw[edge] (a) to (c);
+\end{tikzpicture}
+\end{center}
+
+To express an or fork, one or more tasks can be allocated and executed. In the example bewlow, at task $t_1$ either $t_2$ or $t_3$ or both can be executed and therefore allocated:
+\begin{lstlisting}[frame=single]
+(assert (or (and (executed t1) (executed t2))(and (executed t1) (executed t3))))
+\end{lstlisting}
+\begin{figure}[!htb]
+\centering
+\begin{tikzpicture}[cloud/.style={
+      draw=black,
+      thick,
+      ellipse,
+      fill=red!20,
+      minimum height=2em
+    }]
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex}} 
+%\draw (0,0) circle [radius=0.5];
+\node[vertex] (a) at  (0,0) {$t_{1}$};
+\node[vertex] (b) at  (2,1) {$t_{2}$};
+\node[vertex] (c) at (2,-1) {$t_{3}$};
+\node[vertex] (d) at (4,0) {$t_{4}$};
+\draw[edge] (b) to (d);
+\draw[edge] (c) to (d);
+\path[-latex]
+(a) edge node[above] {$OR$} (b)
+(a) edge node[below] {$OR$} (c);
+\end{tikzpicture}
+\caption{Over constrained workflow}
+\label{fig:Over constrained workflow}
+\end{figure}
+
+To express an exclusive-or fork, similar to the or fork, but only $t_2$ or $t_3$ can be executed, but not both.
+\begin{lstlisting}[frame=single]
+(assert (xor (and (executed t1) (executed t2))(and (executed t1) (executed t3))))
+\end{lstlisting}
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex}} 
+%\draw (0,0) circle [radius=0.5];
+\node[vertex] (a) at  (0,0) {$t_{1}$};
+\node[vertex] (b) at  (2,1) {$t_{2}$};
+\node[vertex] (c) at (2,-1) {$t_{3}$};
+\node[vertex] (d) at (4,0) {$t_{4}$};
+\draw[edge] (b) to (d);
+\draw[edge] (c) to (d);
+\path[-latex]
+(a) edge node[above] {$XOR$} (b)
+(a) edge node[below] {$XOR$} (c);
+\end{tikzpicture}
+\caption{Over constrained workflow}
+\label{fig:Over constrained workflow}
+\end{figure}
+
+\clearpage
 
 \section{Authorised User Allocation}
 In a business process, we can choose the authorise particular users to execute a task explicitly. This is similar to RBAC\cite{rbac} where a system restricts access to authorised users in a domain. Authorisation is usually assigned to them by their roles. We have not implemented roles in the set of workflow constraints, but rather just users who are only allowed by input. If there are more than one users authorised to execute a task, then we can use Z3 to choose which user to execute the task:
@@ -957,6 +1074,8 @@ The main aim of this project is to design a simple language in which constraints
 The first discussion was whether to implement an algorithm that would solve these constraints or to use a back-end constraint solver. The benefit of using a back-end constraint solver like Z3 is that these algorithms are very efficient, perhaps more efficient than if it was implemented from scratch in this project. The application is built using Python\cite{python} and the Z3 python module\cite{Z3Python}. \\
 
 The language is a simple command line language, where a domain of tasks and users are defined. There are also predefined tokens which define certain constraints on a workflow as well as predefined axioms and rules. The application the interprets the workflow described in the language and checks if the workflow is satisfiable and gives back a suitable model.
+
+\newpage
 
 \section{Application Outline}
 The basic outline of this application is given in Figure~\ref{fig:Application outline}.
@@ -976,6 +1095,120 @@ The basic outline of this application is given in Figure~\ref{fig:Application ou
 \caption{Application outline}
 \label{fig:Application outline}
 \end{figure}
+
+\newpage
+
+\section{The Language}
+Our requirements given was to design a language in which important constraints on the execution of tasks within a business process can be specified. It should be:
+\begin{itemize}
+\item easy to express workflows.
+\item include temporal execution of tasks.
+\item include separation of duty.
+\item include binding of duty.
+\item include constraints on allocation of tasks to users in the workflow.
+\item include seniority.
+\item include which users are authorised to execute which tasks.
+\item include constraints to control the execution of the workflow.
+\end{itemize} 
+
+\subsection{Tasks and Users}
+We have defined a basic language to fulfil these requirements. At first, the user must declare tasks and users within the domain of the workflow. In this example, the user has defined a list of tasks and users that are declared using \texttt{Tasks:} and \texttt{Users:} respectively. Following their declarations, is the list of tasks and users which are expressed using quotation marks and separated by commas. 
+\lstset{numbers=none, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex,
+}
+\lstset{basicstyle=\ttfamily}
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; 
+Users: `alice', `bob', `carol';
+\end{lstlisting}
+
+\subsection{Separation of Duty}
+We can then express different constraints on the workflow. To express separation of duty, we can use a keyword \texttt{SoD:} as the separation of duty declaration for all pairs of tasks. Each task expressed in each pair has to have different user. For the given example, whomever is allocated \texttt{receive\_order} must be different to the user who is allocated \texttt{checkout}.
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; 
+Users: `alice', `bob', `carol';
+SoD: ('receive_order', 'checkout');
+\end{lstlisting}
+
+\subsection{Binding of Duty}
+The constraint on binding of duty can be similarly expressed like separation of duty. The keyword for binding of duty is \texttt{BoD:} which delcares the list of pairs of tasks which must have the same user. In this example, whomever is allocated \texttt{price\_large\_order} must be the same user as the user who is allocated \texttt{price\_small\_order}.
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; 
+Users: `alice', `bob', `carol';
+BoD: ('price_large_order', 'price_small_order');
+\end{lstlisting}
+
+\subsection{Seniority}
+There are many rules expressed using seniority. To express levels of seniority, we can again, give a list of pairs of users in this binary relation. The first user of their pair is more senior than the second user. We can use the keyword \texttt{Seniority:} to declare pairs of users who are senior to each other. In this example, we can see that Alice is more senior than Bob and Carol, and Bob is more senior than Carol.
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; 
+Users: `alice', `bob', `carol';
+Seniority: (`alice', `bob'), (`alice', `carol'), (`bob', `carol');
+\end{lstlisting} 
+
+To use the seniority rules we have just specified, we can now set tasks to have relative seniority to other tasks within the workflow. These are given as single task options with \texttt{-min\_sec\_lv:} as an option flag, followed by a list of tasks.
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order' -min_sec_lv:<[`price_large_order', `price_small_order', `checkout'], `price_large_order' -min_sec_lv:>[`receive_order'] -min_sec_lv:=[`price_small_order'], `price_small_order' -min_sec_lv:>[`receive_order'] -min_sec_lv:=[`price_large_order'], `checkout' -min_sec_lv:>[`receive_order']; 
+Users: `alice', `bob', `carol'; 
+Seniority: (`alice', `bob'), (`alice', `carol'), (`bob', `carol');
+\end{lstlisting} 
+We can specify that tasks can be:
+\begin{itemize}
+\item equal seniority to another task. \\
+\texttt{`price\_large\_order' -min\_sec\_lv:=[`price\_small\_order']}, so the task \texttt{price\_large\_order} has to have a user that is equal seniority to whoever is allocated task \texttt{price\_small\_order}. In our case, this means that they are the same user. If we specified a constraint that they have to be different users, in our case, this would be a contradiction and the workflow would not be satisfied.
+\item greater seniority to another task.\\ 
+\texttt{`checkout' -min\_sec\_lv:>[`receive\_order'];}, so the task \texttt{checkout} has a minimum security level that it must be allocated a user that has a greater seniority than the user who is allocated the task \texttt{receive\_order}.
+\item less seniority to another task.\\
+\texttt{`receive\_order' -min\_sec\_lv:<[`price\_large\_order', `price\_small\_order', `checkout']}, the task \texttt{receive\_order} has to be allocated a user that is less senior than the user who is allocated the task \texttt{price\_small\_order}.
+\item not equal seniority to another task.\\
+\texttt{`receive\_order' -min\_sec\_lv:!=[`price\_large\_order', `price\_small\_order', `checkout']}, the task \texttt{receive\_order} must not be the same seniority as the user allocated the task \texttt{price\_small\_order}. In our case, they would have to be separate users, so having a binding of duty rule specifying that \texttt{receive\_order} must be the same user as \texttt{price\_small\_order} produces a contradiction similarly to equal seniority.
+\end{itemize}
+
+\subsection{Worst Time to Completion}
+We can express worst time completion by giving each task a duration time. This again is given as an option flag \texttt{-duration:} followed by the duration of the task. We can see in the example below that the task \texttt{receive\_order} has a duration of 50. This could be any unit of time and the user must account for this by making all their duration times the same unit.
+\begin{center}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order' -duration:(50), , `price_large_order' -duration:(60), `price_small_order' -duration:(100), `checkout' -duration:(10); 
+Users: `alice', `bob', `carol'; 
+Seniority: (`alice', `bob'), (`alice', `carol'), (`bob', `carol');
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\subsection{Temporal Order of Execution}
+For expressing temporal order of execution, we can give a rule \texttt{Before:} which declares a list of pairs of tasks that have a before relationship. The first task of this pair is before the second task. In this example, the task \texttt{price\_large\_order} is executed before task \texttt{checkout}.
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; 
+Users: `alice', `bob', `carol';
+Before: ('price_large_order', 'checkout');
+\end{lstlisting}
+
+\subsection{Task Execution}
+There are three different task executions: and, or and exclusive-or. We can specify each task execution rule with a rule \texttt{Execution:} with the following task executions. Each task execution is followed by a pair \texttt{(t, [t\textsubscript{1},.., t\textsubscript{n}])}. In this example, we have specified an \texttt{Or} execution at the task \texttt{receive\_order}. Then, depending on any other constraints on the workflow, it can either execute \texttt{price\_large\_order} or \texttt{price\_small\_order} or both.
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; 
+Users: `alice', `bob', `carol';
+Execution: Or(`receive_order', [`price_large_order', `price_small_order']);
+\end{lstlisting}
+
+\subsection{Authorised Users}
+We can give a list of users that are authorised to execute certain tasks and only those users. To declare authorised users to a task we can use the keyword \texttt{Authorised:}, followed by a pair, where the first of the pair is the task that is to be allocated, and the second is a list of users that are authorised to be allocated to that specific task. In this example, the only users that can be allocated the task \texttt{price\_large\_order} is \texttt{alice} and \texttt{bob}, but not \texttt{carol} as she has not been listed as an authorised user.
+\begin{lstlisting} [frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; 
+Users: `alice', `bob', `carol';
+Authorised: (`price_large_order', [`alice', `bob'])
+\end{lstlisting}
+
+\newpage
 
 \section{Lexer and Parser} 
 \subsection{PLY}
@@ -1035,48 +1268,310 @@ We give an example of LALR(1) parsing:
 }
 \begin{lstlisting}[frame=single]
 begin : TASKS COLON task_node USERS COLON user_node
-| TASKS COLON task_node USERS COLON user_node rules
+      | TASKS COLON task_node USERS COLON user_node rules
 \end{lstlisting}
 
-The grammar symbols (terminals) are represented using capital letters such as TASKS COLON, USERS etc. The grammar rules or identifiers (non-terminals) are expressed in lower case such as task\_node, user\_node, rules. They are made up of other grammar rules and terminals.\\	
-The semantic behaviour of a language is defined by syntax directed translation, where there is a rule and action for each grammar symbol. 
-%Given the example above we can show how it would work by giving a set of rules:\\
-%The input expression is \texttt{Tasks: `t1', Users: `t2'}\\
-%\begin{tabular}{ |l|l|l|l| }
-%\hline
-%Step & Symbol Stack & Input Tokens & Action \\ \hline
-%1 & Receive order from customer &  Tasks: `t1', Users: `t2'\\ \hline
-%2 & Give total of large sale \\ \hline
-%3 & Give total of small sale \\ \hline
-%$t_4$ & Approve and authorise checkout \\ \hline
-%$t_5$ & Give 10\% discount \\ \hline
-%$t_6$ & Give 20\% discount \\ \hline
-%$t_7$ & Give new total of sale \\ \hline
-%$t_8$ & Give new total of sale \\ \hline
-%$t_9$ & Approve and return new total \\ 
-%\hline
-%\end{tabular}
+The grammar symbols (terminals) are represented using capital letters such as TASKS COLON, USERS etc. The grammar rules or identifiers (non-terminals) are expressed in lower case such as task\_node, user\_node, rules. They are made up of other non-terminals and terminals.\\	
+
+The semantic behaviour of a language is defined by syntax directed translation, where there is a rule and action for each grammar symbol. We can give an example of the language:
+\lstset{numbers=none, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex,
+}
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', 
+`checkout'; Users: `alice', `bob', `carol';
+\end{lstlisting}
+
+The keywords \texttt{Tasks}, \texttt{Users}, \texttt{:}, \texttt{;} and \texttt{,} are all terminals and are shifted when parsing as they do not have any grammar rules. However, the non-terminals such as \texttt{`receive\_order'} and \texttt{`alice'} have grammar rules associated to them and are reduced to the rules \texttt{task\_node} and \texttt{user\_node} respectively. In the example, we have given a list of tasks, which are separated by a comma, \texttt{`receive\_order'} is reduced to a \texttt{NODE} terminal, the comma \texttt{,} is then reduced to the comma, which matched the second rule in \texttt{task\_node}. The next part of the rule is \texttt{task\_node} which recurses the \texttt{task\_node} rule and again, reduces the next task node \texttt{`price\_large\_order'} and so on. When we reach the last task node \texttt{`checkout'}, we reach the first rule \texttt{`end'}.The parser then goes to the end rule and reduces the \texttt{END} terminal as \texttt{;}. We can see that we have reached the end of the \texttt{task\_node} rule and is finally reduced to a \texttt{task\_node} non-terminal. A similar process is done when we reach the non-terminal \texttt{user\_node}. When the list of users is reduced to a \texttt{user\_node}, the rule is then reduced to the non-terminal \texttt{begin}. The whole input has been parsed as the first rule in \texttt{begin}.
+\begin{lstlisting}[frame=single]
+task_node : NODE end
+          | NODE COMMA task_node
+          | NODE variable_task_option
+user_node : NODE end
+          | NODE COMMA user_node
+          | NODE user_option
+          | NODE end_rule
+end : END
+    | END begin
+\end{lstlisting}
+
+PLY does some error handling for the lexer and parser\\
+%TODO
+
+As the input is being parsed, reduced and shifted, these are being added to a symbol table ready to generate the correct code. The symbol table is made up of dictionaries, where each entry has a key and value.
+
+\newpage
 
 \section{Code Generation}
-\subsection{Z3 Workflow Axioms}
-\subsection{Executed Axioms}
-\subsection{Seniority Axioms}
-\subsection{Worst Time Completion}
+We need to be able to generate the correct code so that we can parse it to Z3 correctly to get the satisfiability of the workflow as well as the model if applicable. Not only must we generate the correct code, but we have to have to correct axioms for each of the rules we have specified in the language that we do not need the user to know about or explicitly input.\\
 
-\section{Z3 Python Library}
+The code is generated in such a way to make sure the ordering complies with Z3. We must declare all sorts before using them to define functions and constants in the theory. So in this implementation, it is best to declare all the sorts first, \texttt{Tasks} and \texttt{Users}. This gets rid of any unexpected sorts that Z3 might not recognise and return an error. We can then safely declare functions and constants with the correct types and finally any rules and axioms that are in that push-pop frame.
+
+\subsection{Before Axioms}
+%transitivity, cyclic
+Since a workflow is an acyclic and directed graph, tasks cannot have any cycles. This is an applicable axiom as a task that has been executed cannot be executed again in our case. This makes defining workflows a lot easier. 
+\begin{center}
+$\forall t : Tasks (\neg before(t, t))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (forall ((t Task))
+(not (before t t))))
+\end{lstlisting}
+
+The \texttt{before} function is also transitive. 
+
+\begin{center}
+$\forall t, t\ensuremath{'}, t\ensuremath{''}  : Task (before(t, t\ensuremath{'}) \wedge before(t\ensuremath{'}, t\ensuremath{''})) \longrightarrow before(t, t\ensuremath{''})$
+\end{center}
+
+\begin{lstlisting}[frame=single]
+(assert (forall ((t1 Task) (t2 Task) (t3 Task))
+(=> (and (before t1 t2) (before t2 t3))
+(before t1 t3))))
+\end{lstlisting}
+
+\subsection{Seniority Axioms}
+The \texttt{seniority} function is transitive as it is a hierarchy.\\
+\begin{center}
+$\forall u, u\ensuremath{'}, u\ensuremath{''}  : User (seniority(u, u\ensuremath{'}) \wedge seniority(u\ensuremath{'}, u\ensuremath{''})) \longrightarrow seniority(u, u\ensuremath{''})$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (forall ((u1 User) (u2 User) (u3 User)) 
+(=> (and (seniority u1 u2) (seniority u2 u3)) 
+(seniority u1 u3))))
+\end{lstlisting} 
+
+This function is also acyclic because in a business, there cannot be a user who is both senior and junior to another user in the domain, so therefore they cannot be senior to themselves.
+\begin{center}
+$\forall u : User (\neg seniority(u, u))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (forall ((u User))
+(not (seniority u u))))
+\end{lstlisting}
+
+\subsection{Execution of Tasks in Worflows}
+In the workflow, the user can define different forms of forking: and, or and exclusive-or. This means that there are different possibilities of tasks which are actually allocated and therefore executed in the workflow. For example, if we have a separation of duty within a workflow and there is an or fork before this constraint, we might not need to actually execute those tasks under that constraint. An example of this workflow is given in Figure~\ref{fig:Over constrained workflow}. The dotted lines show the tasks that are constrained under separation of duty, so $SoD(t_2, t_3)$ and $SoD(t_2, t_4)$. So if task $t_3$ is chosen to execute as task $t_2$ cannot be allocated or would be unsatisfied, then we do not need to worry about the separation of duty constraints in place as those tasks under it are never executed. This means that we do not need to over constrain the workflow, making task allocation easier.
+\begin{figure}[!htb]
+\centering
+\begin{tikzpicture}[cloud/.style={
+      draw=black,
+      thick,
+      ellipse,
+      fill=red!20,
+      minimum height=2em
+    }]
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex}} 
+%\draw (0,0) circle [radius=0.5];
+\node[vertex] (a) at  (0,0) {$t_{1}$};
+\node[vertex] (b) at  (2,1) {$t_{2}$};
+\node[vertex] (c) at (2,-1) {$t_{3}$};
+\node[vertex] (d) at (4,0) {$t_{4}$};
+\draw[edge] (b) to (d);
+\draw[edge] (c) to (d);
+\path[-latex]
+(a) edge node[above] {$OR$} (b)
+(a) edge node[below] {$OR$} (c);
+\draw[dotted] (1.5,2) rectangle (2.5,-2);
+\draw[dotted, rotate around={60:(0.5,3)}] (0,1) rectangle (-1,-2);
+\end{tikzpicture}
+\caption{Over constrained workflow}
+\label{fig:Over constrained workflow}
+\end{figure}
+
+We introduce an auxiliary user ``bottom'' who a user and is allocated tasks which cannot be executed. This is an in-system user who has been predeclared without the user explicitly listing it.
+\begin{lstlisting}[frame=single]
+(declare-const bottom User)
+\end{lstlisting}
+We must ensure that all the input users are different to bottom, otherwise bottom could be allocated to tasks which actual users in the domain could be allocated to. We need to keep this separate. So we make sure that all users in the domain must be more senior than bottom:
+\begin{center}
+$\forall u : User ((u \neq bottom) \longrightarrow ((\neg seniority(bottom, u) \wedge (\neg seniority(u, bottom))))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (forall ((u User))
+=>(not(= u bottom))
+(and (not(seniority bottom u)) (not(seniority u bottom))))))
+\end{lstlisting}
+But \texttt{bottom} must be able to be allocated to other tasks in the case that the task is not executable:
+\begin{center}
+$alloc\_user(t) = bottom$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert(=(alloc_user t) bottom))
+\end{lstlisting}
+
+Firstly, we have to make sure that if a task is executed, the it is not allocated to the bottom user since the bottom user is there as a user who is allocated all the unallocated tasks with the user domain.
+\begin{center}
+$\forall t : Task (executed(t) \longrightarrow ( alloc\_user(t) \neq bottom))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (forall ((t Task))
+(=> (executed t)
+(not(=(alloc_user t) bottom)))))
+\end{lstlisting}
+
+We have to also make sure that all the not executed tasks are allocated to the bottom user. 
+\begin{center}
+$\forall t : Task (\neg executed(t) \longrightarrow (alloc\_user(t) = bottom))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (forall ((t Task))
+(=> (not(executed t))
+(=(alloc_user t) bottom)))
+\end{lstlisting}
+
+With these axioms in place, we can make sure that only the executed tasks are allocated to the domain of given users and the unexecuted tasks are allocated to the bottom user. So now, we wrap all our previous axioms and rules with the executed axiom.\\
+
+For the seniority rules and axioms, we must wrap them with the execution rule so that we know which tasks are allocatable to the domain of users, and which tasks are not. \\
+For two tasks to be executed by users of the same seniority (the same user):
+\begin{center}
+$(executed(t) \wedge executed(t\ensuremath{'})) \longrightarrow (alloc\_user(t) = alloc\_user(t\ensuremath{'}))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert 
+(=>(and (executed t) (executed t'))
+(=(alloc_user t) (alloc_user t'))))
+\end{lstlisting}
+Similarly to two tasks having to have the same level of seniority. When two tasks have different seniority, they have to have different users:
+\begin{center}
+$(executed(t) \wedge executed(t\ensuremath{'}) \longrightarrow (alloc\_user(t) \neq alloc\_user(t\ensuremath{'})))$
+\end{center}
+
+\begin{lstlisting}[frame=single]
+(assert 
+(=>(and (executed t) (executed t'))
+(not(=(alloc_user t) (alloc_user t')))))
+\end{lstlisting}
+Greater and less than seniority are shown below respectively where \texttt{(assert (seniority t t'))}
+\begin{center}
+$(executed(t) \wedge executed(t\ensuremath{'})) \longrightarrow seniority(alloc\_user(t), alloc\_user(t\ensuremath{'})$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert 
+(=> (and (executed t) (executed t'))
+(seniority (alloc_user t) (alloc_user t'))))
+\end{lstlisting}
+\begin{center}
+$(executed(t) \wedge executed(t\ensuremath{'})) \longrightarrow seniority(alloc\_user(t\ensuremath{'}), alloc\_user(t)$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert 
+(=>(and (executed t') (executed t))
+(seniority (alloc_user t') (alloc_user t))))
+\end{lstlisting}
+
+We also need to wrap separation of duty and binding of duty around an executed rule which are shown below respectively. 
+\begin{center}
+$(executed(t) \wedge executed(t\ensuremath{'})) \longrightarrow (alloc\_user(t) \neq alloc\_user(t\ensuremath{'}))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert 
+(=> (and (executed t) (executed t'))
+(not (=(alloc_user t) (alloc_user t')))))
+\end{lstlisting}
+\begin{center}
+$(executed(t) \wedge executed(t\ensuremath{'})) \longrightarrow (alloc\_user(t) = alloc\_user(t\ensuremath{'}))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert 
+(=> (and (executed t) (executed t'))
+(=(alloc_user t) (alloc_user t'))))
+\end{lstlisting}
+
+\subsection{Unique Users}
+%neq bottom, unique users axiom, 
+We have to ensure that all users are unique from each other. Z3 may not be able to execute some of the axioms and it may not be able to tell users apart and therefore not be able to allocate users to tasks. We have provided two axioms to solve this issue: to explicitly declare that each user is unique to each other and that they are the only users in the set, and therefore the only users in the universe.\\
+
+To declare that all users are unique to each other, where $u, u\ensuremath{'} \in Users$:
+\begin{center}
+$u \neq u\ensuremath{'}$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (not(= u u')))
+\end{lstlisting}
+
+To declare that the users listed are the only users in the universe including the \texttt{bottom} user, where $u, u\ensuremath{'}, u\ensuremath{''} \in Users$: 
+\begin{center}
+$\forall u, u\ensuremath{'} : User ((u = u\ensuremath{'}) \vee (u = u\ensuremath{''}))$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (forall ((u User)) 
+(or (= u u') (= u u''))))
+\end{lstlisting}
+
+\subsection{Worst Time Completion}
+Another feature we included in this tool is to generate the worst time completion of a workflow. We need to generate this at the end after we check if the workflow is satisfiable. If it's unsatisfiable, then there is no need to check the worst time to completion as the workflow is not completed.\\
+
+At first, we need to declare a constant that can represent the worst time in the workflow. The constant is a \texttt{Real} as the duration could possibly be an integer or a decimal. 
+\begin{lstlisting}[frame=single]
+(declare-const completion_time Real)
+\end{lstlisting}
+
+To obtain the completion time, we need to only sum the duration of all the tasks that have been executed in the workflow. To do this in Z3, we need to check each of the tasks in the workflow to see if they have been executed. If they have been executed, then they should be summed, otherwise, they should not be in the sum. To achieve this, we need to use an ``if-then-else'' (\texttt{ite}). If they are executed, then sum up the tasks' duration time, otherwise it's duration time should be zero as a task that has not been executed has no duration time in the satisfied workflow.
+\begin{center}
+$completion\ time = \sum\nolimits_{executed(t) = true} duration(t)$
+\end{center}
+\begin{lstlisting}[frame=single]
+(assert (= completion_time
+(+ (ite (executed t) (duration t) 0)...
+   (ite (executed tn (duration tn) 0)))))"
+\end{lstlisting}
+
+Now that we have a completion time, we can write an algorithm that will do an unbounded search on the worst time completion. We pass the completion time through as a parameter in Z3 with \texttt{delta} which is the limit where the algorithm will stop the bisection. To find the upper bound time, we keep checking that the completion time can be greater than double the models completion time. When we reach this point, we know that there is no longer a time where it could be worse and therefore we have reached the upper bound completion time. \\
+
+Once we have the upper bound and the lower bound completion times we can begin the bisection. If the completion time is greater than the bisection of the upper and lower bounds, then the lower bound completion time should be set as the value of the bisection. However, if it's unsatisfiable, it means there is no completion time greater than the value of the bisection, so we must search the lower half of the bisection, setting the upper bound to the value of the bisection. We recurse though this bisection until we reach the bijection limit \texttt{delta}. We have then found the worst time completion as $\frac{upperbound + lowerbound}{2}$
+
+\begin{lstlisting}[frame=single]
+def worst_time_completion(x, delta, s):
+        res = s.check()
+        if res == unsat:
+            return unsat
+        else:
+            m = s.model()
+        # Finding the upper bound time
+        x_s = Real(x)
+        # Unbounded search
+        while res == sat:
+            s.push()
+            s.add(x_s > 2*m[x_s])
+            res = s.check()
+            if res == sat:
+                m = s.model()
+            s.pop()
+        # Bisection
+        v = m[x_s]
+        v = float(v.as_decimal(10)[:])
+        max_time = 2*v
+        min_time = v
+        while (max_time-min_time) > delta:
+            s.push()
+            s.add((((max_time - min_time)/2)+min_time) <= x_s)
+            res = s.check()
+            if res == sat:
+                min_time = (((max_time-min_time)/2)+min_time)
+            else:
+                max_time = (((max_time-min_time)/2)+min_time)
+            s.pop()
+        y = (max_time+min_time)/2
+        return y 
+\end{lstlisting}
+
+\newpage
 
 \section{Handling The Result}
 \subsection{Making It Human Readable}
 
-\section{Validation and Completness of Z3 Model}
+\newpage
 
-\section{The Language}
+\section{Validation and Completness of Z3 Model}
 
 \chapter{Evaluation}
 
 \chapter{Conclusion}
 
-\chapter{Appendix A: How to Use}
+\chapter{Appendix A: How to Use and Result Returned}
 
 \bibliography{Master}
 

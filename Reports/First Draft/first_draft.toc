@@ -2,48 +2,56 @@
 \contentsline {chapter}{\numberline {1}Introduction}{3}
 \contentsline {chapter}{\numberline {2}Background}{4}
 \contentsline {section}{\numberline {2.1}Workflows}{4}
-\contentsline {section}{\numberline {2.2}Tasks}{4}
-\contentsline {section}{\numberline {2.3}Users}{5}
-\contentsline {section}{\numberline {2.4}Business and Security Rules}{5}
-\contentsline {section}{\numberline {2.5}Satisfiability Modulo Theories (SMT)}{6}
-\contentsline {section}{\numberline {2.6}Z3}{6}
-\contentsline {subsection}{\numberline {2.6.1}Basics}{6}
-\contentsline {subsection}{\numberline {2.6.2}Functions}{7}
-\contentsline {subsection}{\numberline {2.6.3}Stack}{8}
-\contentsline {subsection}{\numberline {2.6.4}Sorts}{10}
-\contentsline {subsection}{\numberline {2.6.5}Quantifiers}{10}
-\contentsline {subsection}{\numberline {2.6.6}Satisfiability and Validity}{10}
-\contentsline {subsubsection}{Validity}{10}
-\contentsline {subsubsection}{Satisfiability}{10}
-\contentsline {chapter}{\numberline {3}Theory of Business Rules}{11}
-\contentsline {section}{\numberline {3.1}Business Management Workflows}{11}
-\contentsline {section}{\numberline {3.2}Tasks and Users}{11}
-\contentsline {section}{\numberline {3.3}User Allocation}{11}
-\contentsline {section}{\numberline {3.4}Separation of Duty}{12}
-\contentsline {section}{\numberline {3.5}Binding of Duty}{15}
-\contentsline {section}{\numberline {3.6}Seniority}{16}
-\contentsline {section}{\numberline {3.7}Worst Time Completion}{20}
-\contentsline {section}{\numberline {3.8}Temporal Order of Task Execution}{20}
-\contentsline {section}{\numberline {3.9}Task Execution (and, or, exclusive-or)}{20}
-\contentsline {section}{\numberline {3.10}Authorised User Allocation}{20}
-\contentsline {chapter}{\numberline {4}Implementation}{21}
-\contentsline {section}{\numberline {4.1}Project Focus}{21}
-\contentsline {section}{\numberline {4.2}Application Outline}{21}
-\contentsline {section}{\numberline {4.3}Lexer and Parser}{22}
-\contentsline {subsection}{\numberline {4.3.1}PLY}{22}
-\contentsline {subsection}{\numberline {4.3.2}Lexer}{23}
-\contentsline {subsection}{\numberline {4.3.3}Parser}{24}
-\contentsline {section}{\numberline {4.4}Code Generation}{24}
-\contentsline {subsection}{\numberline {4.4.1}Z3 Workflow Axioms}{24}
-\contentsline {subsection}{\numberline {4.4.2}Executed Axioms}{24}
-\contentsline {subsection}{\numberline {4.4.3}Seniority Axioms}{24}
-\contentsline {subsection}{\numberline {4.4.4}Worst Time Completion}{24}
-\contentsline {section}{\numberline {4.5}Z3 Python Library}{24}
-\contentsline {section}{\numberline {4.6}Handling The Result}{24}
-\contentsline {subsection}{\numberline {4.6.1}Making It Human Readable}{24}
-\contentsline {section}{\numberline {4.7}Validation and Completness of Z3 Model}{24}
-\contentsline {section}{\numberline {4.8}The Language}{24}
-\contentsline {chapter}{\numberline {5}Evaluation}{25}
-\contentsline {chapter}{\numberline {6}Conclusion}{26}
-\contentsline {chapter}{\numberline {7}Appendix A: How to Use}{27}
-\contentsline {chapter}{Bibliography}{28}
+\contentsline {subsection}{\numberline {2.1.1}Tasks}{4}
+\contentsline {subsection}{\numberline {2.1.2}Users}{5}
+\contentsline {section}{\numberline {2.2}Business and Security Rules}{6}
+\contentsline {section}{\numberline {2.3}Satisfiability Modulo Theories (SMT)}{7}
+\contentsline {section}{\numberline {2.4}Z3}{8}
+\contentsline {subsection}{\numberline {2.4.1}Basics}{8}
+\contentsline {subsection}{\numberline {2.4.2}Functions}{8}
+\contentsline {subsection}{\numberline {2.4.3}Stack}{9}
+\contentsline {subsection}{\numberline {2.4.4}Sorts}{10}
+\contentsline {subsection}{\numberline {2.4.5}Quantifiers}{10}
+\contentsline {subsection}{\numberline {2.4.6}Satisfiability and Validity}{11}
+\contentsline {subsubsection}{Validity}{11}
+\contentsline {subsubsection}{Satisfiability}{12}
+\contentsline {chapter}{\numberline {3}Theory of Business Rules}{13}
+\contentsline {section}{\numberline {3.1}Business Management Workflows}{13}
+\contentsline {section}{\numberline {3.2}Tasks and Users}{13}
+\contentsline {section}{\numberline {3.3}User Allocation}{14}
+\contentsline {section}{\numberline {3.4}Separation of Duty}{15}
+\contentsline {section}{\numberline {3.5}Binding of Duty}{18}
+\contentsline {section}{\numberline {3.6}Seniority}{20}
+\contentsline {section}{\numberline {3.7}Worst Time Completion}{23}
+\contentsline {section}{\numberline {3.8}Temporal Order of Task Execution}{24}
+\contentsline {section}{\numberline {3.9}Task Execution (and, or, exclusive-or)}{25}
+\contentsline {section}{\numberline {3.10}Authorised User Allocation}{27}
+\contentsline {chapter}{\numberline {4}Implementation}{28}
+\contentsline {section}{\numberline {4.1}Project Focus}{28}
+\contentsline {section}{\numberline {4.2}Application Outline}{29}
+\contentsline {section}{\numberline {4.3}The Language}{30}
+\contentsline {subsection}{\numberline {4.3.1}Tasks and Users}{30}
+\contentsline {subsection}{\numberline {4.3.2}Separation of Duty}{30}
+\contentsline {subsection}{\numberline {4.3.3}Binding of Duty}{30}
+\contentsline {subsection}{\numberline {4.3.4}Seniority}{31}
+\contentsline {subsection}{\numberline {4.3.5}Worst Time to Completion}{31}
+\contentsline {subsection}{\numberline {4.3.6}Temporal Order of Execution}{32}
+\contentsline {subsection}{\numberline {4.3.7}Task Execution}{32}
+\contentsline {subsection}{\numberline {4.3.8}Authorised Users}{32}
+\contentsline {section}{\numberline {4.4}Lexer and Parser}{33}
+\contentsline {subsection}{\numberline {4.4.1}PLY}{33}
+\contentsline {subsection}{\numberline {4.4.2}Lexer}{33}
+\contentsline {subsection}{\numberline {4.4.3}Parser}{34}
+\contentsline {section}{\numberline {4.5}Code Generation}{36}
+\contentsline {subsection}{\numberline {4.5.1}Before Axioms}{36}
+\contentsline {subsection}{\numberline {4.5.2}Seniority Axioms}{36}
+\contentsline {subsection}{\numberline {4.5.3}Execution of Tasks in Worflows}{37}
+\contentsline {subsection}{\numberline {4.5.4}Unique Users}{39}
+\contentsline {subsection}{\numberline {4.5.5}Worst Time Completion}{39}
+\contentsline {section}{\numberline {4.6}Handling The Result}{41}
+\contentsline {subsection}{\numberline {4.6.1}Making It Human Readable}{41}
+\contentsline {section}{\numberline {4.7}Validation and Completness of Z3 Model}{42}
+\contentsline {chapter}{\numberline {5}Evaluation}{43}
+\contentsline {chapter}{\numberline {6}Conclusion}{44}
+\contentsline {chapter}{\numberline {7}Appendix A: How to Use and Result Returned}{45}
+\contentsline {chapter}{Bibliography}{46}
