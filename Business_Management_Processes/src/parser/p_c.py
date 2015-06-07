@@ -42,11 +42,11 @@ class p_c(object):
                            ")" \
                            "))\n"
 
-    smt_non_cyclic_seniority = "(assert (forall ((u User))" \
+    smt_ayclic_seniority = "(assert (forall ((u User))" \
                                "(not (seniority u u))" \
                                "))\n"
 
-    smt_non_cyclic_before = "(assert (forall ((t Task))" \
+    smt_acyclic_before = "(assert (forall ((t Task))" \
                             "(not (before t t))" \
                             "))\n"
     bottom_user_execution_axiom = "(assert (forall ((t Task))" \
@@ -569,8 +569,8 @@ class p_c(object):
             p_c.smt_before_transitivity + \
             p_c.smt_fun_seniority_transitivity +\
             p_c.smt_users_neq_bottom + \
-            p_c.smt_non_cyclic_before + \
-            p_c.smt_non_cyclic_seniority
+            p_c.smt_acyclic_before + \
+            p_c.smt_ayclic_seniority
 
         # Collect results to SMT solver
         original = smt_output
@@ -748,8 +748,8 @@ class p_c(object):
             for u in itertools.product(verify_userlist, verify_userlist):
                 verify_sod = self.verify_result_sod(original, s, u)
                 verify_bod = self.verify_result_bod(original, s, u)
-                verify_seniroity = self.verify_result_seniroity(original, s, u)
-                verified_ = verify_sod and verify_bod and verify_seniroity
+                verify_seniority = self.verify_result_seniority(original, s, u)
+                verified_ = verify_sod and verify_bod and verify_seniority
                 # print "this user pair has verification:", verified_
                 verified = verified and verified_
 
@@ -863,14 +863,12 @@ class p_c(object):
                     # print "FAIL - unverified in unequal"
                     s.pop()
                     # Check why it's being unverified by checking seniority constraints
-                    verify = self.verify_result_seniroity(original, s, u)
+                    verify = self.verify_result_seniority(original, s, u)
                     # verify = False
                     verify_original += "(pop)\n"
         return verify
 
     def verify_result_bod(self, original, s, u):
-        verify_user_list = users[:]
-        verify_user_list.remove("bottom")
         verify_original = original[:]
         verify = True
         s.push()
@@ -896,33 +894,30 @@ class p_c(object):
                     # It should be unsat
                     # print "FAIL - unverified"
                     # Check why it's being unverified by checking seniority constraints
-                    verify = self.verify_result_seniroity(original, s, u)
+                    verify = self.verify_result_seniority(original, s, u)
             s.pop()
             verify_original += "(pop)\n"
         return verify
 
-    def verify_result_seniroity(self, original, s, u):
-        verify_user_list = users[:]
-        verify_user_list.remove("bottom")
+    def verify_result_seniority(self, original, s, u):
         verify = True
         if dict_seniority:
-            for t_key, t_value in dict_eq_tasks.iteritems():
-                verify_original = original[:]
-                s.push()
-                # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
-                verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
-                v = z3.parse_smt2_string(verify_original)
-                s.add(v)
-                if s.check() == unsat:
-                    # They should be the same user - but it's not - so unsat
-                    if u[0] == u[1]:
-                        # If they are the same user but unsat - then false
-                        verify = False
-                else:
-                    if u[0] != u[1]:
-                        # If it is sat and they are different users - then false
-                        verify = False
-                s.pop()
+            verify_original = original[:]
+            s.push()
+            # If they are listed as SoD then it shouldn't work as equality is BoD - they should be the same user
+            verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            if s.check() == unsat:
+                # They should be the same user - but it's not - so unsat
+                if u[0] == u[1]:
+                    # If they are the same user but unsat - then false
+                    verify = False
+            else:
+                if u[0] != u[1]:
+                    # If it is sat and they are different users - then false
+                    verify = False
+            s.pop()
             for t_key, t_value in dict_gt_tasks.iteritems():
                 verify_original = original[:]
                 for v in t_value:
