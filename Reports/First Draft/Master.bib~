@@ -1,3 +1,15 @@
+@manual{Compliance,
+      title  = "Breaking the law: study shows that big business is failing to stay compliant over social media",
+      author = "Chloe Green",
+      note    = "\url{http://www.information-age.com/it-management/risk-and-compliance/123459478/breaking-law-study-shows-big-business-failing-stay-compliant-over-social-media}",
+      year   = "May 2015, (accessed June, 2015)"
+    }
+@manual{ChineseWall,
+      title  = "The Chinese Wall Protects Against Conflicts Of Interest",
+      author = "Lisa Smith",
+      note    = "\url{http://www.investopedia.com/articles/analyst/090501.asp#axzz1mIc41gWQ}",
+      year   = "(accessed February, 2015)"
+    }
 @manual{AcyclicDigraph,
       title  = "Acyclic Digraph",
       author = "Mark Senn",
@@ -112,3 +124,11 @@ Ashish Sabharwal, and Bart Selmanr}",
 	note = "\url{https://pyparsing.wikispaces.com/}, (accessed March, 2014)",
 	year = "2015",
     }
+@article{seniority,
+    author    = "{Jason Crampton, Michael Huth, Jim Huan-Pu Kuo}",
+    title     = "Authorized workflow schemas: deciding realizability
+through LTL(F) model checking",
+    pages    = "1-3",
+    year      = "2013",
+    note     = "(accessed November, 2015)",
+}

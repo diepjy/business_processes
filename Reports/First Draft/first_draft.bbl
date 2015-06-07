@@ -1,5 +1,26 @@
 \begin{thebibliography}{10}
 
+\bibitem{ChineseWall}
+Lisa Smith.
+\newblock {\em The Chinese Wall Protects Against Conflicts Of Interest},
+  (accessed February, 2015).
+\newblock
+  \url{http://www.investopedia.com/articles/analyst/090501.asp#axzz1mIc41gWQ}.
+
+\bibitem{Compliance}
+Chloe Green.
+\newblock {\em Breaking the law: study shows that big business is failing to
+  stay compliant over social media}, May 2015, (accessed June, 2015).
+\newblock
+  \url{http://www.information-age.com/it-management/risk-and-compliance/123459478/breaking-law-study-shows-big-business-failing-stay-compliant-over-social-media}.
+
+\bibitem{analysis}
+Intel Inspector.
+\newblock {\em Dynamic Analysis vs. Static Analysis}, 2013, (accessed June,
+  2015).
+\newblock
+  \url{https://software.intel.com/sites/products/documentation/doclib/iss/2013/inspector/lin/ug_docs/GUID-E901AB30-1590-4706-94B1-9CD4736D8D2D.htm}.
+
 \bibitem{AcyclicDigraph}
 Mark Senn.
 \newblock {\em Acyclic Digraph}, (accessed February, 2015).

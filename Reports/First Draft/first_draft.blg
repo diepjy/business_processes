@@ -7,45 +7,45 @@ Warning--empty journal in smt_appetizer
 Warning--empty journal in bod
 Warning--empty journal in seniority
 Warning--empty journal in rbac
-You've used 18 entries,
+You've used 21 entries,
             1791 wiz_defined-function locations,
-            533 strings with 6054 characters,
-and the built_in function-call counts, 3057 in all, are:
-= -- 269
-> -- 95
+            549 strings with 6762 characters,
+and the built_in function-call counts, 3423 in all, are:
+= -- 299
+> -- 107
 < -- 6
-+ -- 42
-- -- 24
-* -- 114
-:= -- 473
-add.period$ -- 60
-call.type$ -- 18
++ -- 48
+- -- 27
+* -- 123
+:= -- 533
+add.period$ -- 69
+call.type$ -- 21
 change.case$ -- 6
 chr.to.int$ -- 0
-cite$ -- 22
-duplicate$ -- 172
-empty$ -- 331
-format.name$ -- 24
-if$ -- 711
+cite$ -- 25
+duplicate$ -- 193
+empty$ -- 376
+format.name$ -- 27
+if$ -- 792
 int.to.chr$ -- 0
-int.to.str$ -- 18
+int.to.str$ -- 21
 missing$ -- 6
-newline$ -- 98
-num.names$ -- 19
-pop$ -- 60
+newline$ -- 113
+num.names$ -- 22
+pop$ -- 69
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 95
+skip$ -- 104
 stack$ -- 0
 substring$ -- 84
-swap$ -- 59
+swap$ -- 65
 text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 4
-while$ -- 28
-width$ -- 20
-write$ -- 192
+while$ -- 31
+width$ -- 23
+write$ -- 222
 (There were 4 warnings)

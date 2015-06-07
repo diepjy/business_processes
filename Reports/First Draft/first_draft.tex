@@ -19,6 +19,7 @@
 \title{Business Management Processes: Verifying their Compliance with Security and Business Rules}
 \author{Joanna Diep}
 \begin{document}
+\large
 \bibliographystyle{unsrt}
 \begin{titlepage}
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
@@ -57,19 +58,70 @@ Dr. Anandha \textsc{Gopalan}
 \end{titlepage}
 
 \begin{abstract}
-TODO\\
+Trying to verify if a workflow is satisfiable given that there are constraints and restrictions that are placed on tasks that can be executed is a hard problem. As businesses and companies expand, an interesting problem needs to be solved: can all the relevant tasks be executed without breaking these constraints? Otherwise there might be a financial loss. \\
+
+We will try and solve this problem using rules written in first order predicate logic to generalise the workflow and generate the relevant rules and axioms to test the satisfiability.\\
+
+The project will implement a tool which can handle a user input workflow with constraints and check whether the workflow is still satisfiable with the given constraints.
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
 \begin{abstract}
 I would like to whole heartedly thank my supervisor Professor. Michael Huth for his continuous and invaluable advice, feedback and support throughout the course of this project. As well as giving time for meetings to discuss ideas. \\
+
 I would like to thank Dr. Anandha Gopalan, the second marker for their feedback and suggestions to greatly improve my report. \\
+
 Finally, I would like to thank my family and friends for their love, support and who have had to put up with me throughout this project and throughout my time at Imperial College.  
 \end{abstract}
 
 \tableofcontents
 
 \chapter{Introduction}
+\section{Project Aims}
+Over the years, enterprise systems have been growing as businesses expand. This means there is an increased need to support business processes, information flows and reporting. Companies are looking to make sure that their systems are protected from fraud i.e. cybersecurity and compliance rules and regulations because they could potentially loose a lot of money through theft or breaching the law. \\
+
+Most companies today need to monitor these processes and log them to make sure that they are being compliant. There are many companies that already handle enterprise systems (SAP, IBM) cyber security. \\
+
+There are many opportunities and threats within a business process if it has inconsistencies within their business processes. There are many stories in the news where businesses are constantly being attacked, where data and money can be stolen, or that businesses or individuals are charged huge sums of money for breaking compliance rules set in a particular country. A well known example of a compliance rule is the "Chinese Wall"\cite{ChineseWall} which is an information barrier that a business may have in order to prevent communication and exchanges of information which may lead to a conflict of interest within an organisation, and therefore conflict with a governing body.\\
+
+For this reason, this project will focus on modelling these business processes as this is very important that companies comply with rules and regulation to avoid financial penalties. An example of this is companies failing to to obey the compliance rules over social media\cite{Compliance}. Being online, it is hard to be compliant with rules from different countries without possibly breaking one. \\   
+
+There are two types of analysis that businesses use to assess: dynamic and static analysis\cite{analysis}. In this project we will be developing a tool which will implement static analysis. Static analysis is where we examine the workflow without actually executing the workflow first. However, with dynamic analysis, we would be testing and running the workflow during run time. What is useful with this technique is that we would potentially take log files of previous workflows and do audits on them to check for compliance and to make sure there are no defects or vulnerabilities which cannot be found during static analysis. These log files can become very large; over 50GB, but they need to be kept as some check may need to be done to test their compliance to rules and regulations. We will mainly focus on static analysis because we want to explore all the possible execution paths, not just the execution path during run time to make sure that there are no possible vulnerabilities to break the constraints. \\
+
+The aim of the project will focus on how business processes coordinate the workflow of tasks whose execution relies on a business objective. The user should be able to input a workflow with some constraints. The application should then generate an output to say whether the workflow does not break any of the constraints and return the task executions. The user should specify these particular constraints as there are too many compliance rules. \\
+
+In this application, we have chosen to only cover a subset of compliance rules as there are so many and would be unrealistic to cover all the different types of rules. The description of the workflow is a command line input using a basic language. 
+
+\section{Approach}
+At first, we decided that the application should be a command line based language what should be able to describe a workflow along with its constraints rather than focusing on a user interface. We needed to make sure that the language would be easy to use and can efficiently express a workflow. \\
+
+For the backend we could have implemented our own algorithm to solve these constraints over a workflow. But there are many solvers that are used for general constraint solving where the user inputs their own constraints on a theory. Constraint solvers are easy to use to validate rules and constraints subject to a workflow. We need to be able to take the input and generate the correct code for the constraint solver to be able to solve a particular workflow. A reason why we have decided not to implement our own algorithm is that thses constraint solvers are generally very efficient, and some scale very well. This is what we need for this project so we cna focus on some of the rules and axioms that we need to produce for each workflow. \\
+
+There are two stages to this application: To generate the code for the constraint solver to be able to to check if the workflow satisfies all the constraints given, and to verify that these results are correct and complete with the user input. If it is not complete, there must be something wrong with either the code that was generated as passed to the constraint solver, or that there is perhaps something wrong with the constraint solver itself that cannot solve the problem. \\
+
+The result that we receive back from the constraint solver must be easy to read as the workflows get larger and there are more constraints, the user must need to know what was executed in the workflow and under which constraints. \\
+
+This can become a very large problem especially for businesses with a lot of compliance rules and regulations that we hit the ``P vs. NP'' problem. The larger the workflow and the more rules in place, the harder it is to test if all the rules are obeyed as well as be able to certify that the workflow is consistent with the result returned from the constraint solver. \\
+
+\section{Accomplishments}
+The main accomplishments that we have achieved are:
+\begin{enumerate}
+\item A basic language to represent a workflow as well as the user constraints which can be translated into a language readable by our constraint solver of choice.
+\item Create the relevant rules and axioms for each different constraint in the workflow.
+\item Return to the user whether all the constraints in the workflow has been satisfied. Also, we must return to the user the results of these constraints and what has been executed within the workflow.
+\item A method to generate the corresponding code from the user input to the constraint solver language with all the correct and corresponding rules and axioms in place. 
+\item We need to verify the results returned by the constraint solver to make sure the it is correct and complete in respect to the user input. This ensures that the rules and axioms generated are the correct ones. 
+\end{enumerate}
+
+\section{Report Structure}
+\begin{itemize}
+\item[Chapter 2:] This section describes the background knowledge and insight into what is needed to understand this report. We will explain what workflows are and how we express them. We will also show some main concepts of the Z3 language that we will be using throughout this report.  
+\item[Chapter 3:] This section describes and explains some of the business rules we have implemented in this project. We also show how these can be expressed in teh Z3 language. 
+\item[Chapter 4:] In this section we discuss the implementation of the application. This includes creating the lexer, parser and code generator. We will also discuss how we can take the users description of a workflow using the implemented language and how we give a useful output back to the user.
+\item[Chapter 5:] In the evaluation chapter, we discuss whether the constraint solver of choice is useful in real world applications and if it can scale well since theses workflows can become huge. We will also be reviewing if we have achieved all our original objectives.
+\item[Chapter 6:] Finally, the conclusion will analyse what we have actually achieved in this project as well as any interesting future work that can be accomplished on this project. 
+\end{itemize}
+
 
 \chapter{Background}
 \section{Workflows}
@@ -192,8 +244,6 @@ $ S \triangleq f : Universe \longrightarrow \{0, 1, ?\}$
 \label{fig:Set of Users}
 \end{figure}
 
-\newpage
-
 \section{Business and Security Rules}
 Business and security rules are used to prevent fraud and follow business compliance rules. For example, in some cases, different users are needed to execute a certain set of tasks to perhaps prevent fraud or erroneous activities in a workflow. In Figure~\ref{fig:Business management process workflow} some constraints about which users in the business can execute these tasks are added below:
 \begin{itemize}
@@ -203,14 +253,10 @@ Business and security rules are used to prevent fraud and follow business compli
 
 With the additional constraints to the workflow it may be satisfiable given that there are enough users. But there may be other constraints that can make this workflow unsatisfiable. For example, if there are not enough users to be allocated to ensure that some of the tasks do not have the same user. So a valid workflow is a satisfied workflow if there can be users allocated tasks in the workflow that do not break the constraints within the given model.\\
 
-\newpage
-
 \section{Satisfiability Modulo Theories (SMT)}
 Satisfiability Modulo Theories (SMT)\cite{smt_appetizer} check the satisfiability of logical formulas over given theories. It helps to determine whether there is a solution in a formula which expresses a constraint. It is one of the fundamental problems in the area of computer science to check boolean satisfiability over logical domains and the completeness and incompleteness of logical theories and complexity theory. \\
 
 SMT is similar to Boolean or Propositional Satisfiability Problem (SAT)\cite{sat} , where the problem is to determine if there exists a determination that satisfies the boolean formula. But SAT ranges only over binary predicates which are predicates that only take in two arguments. Whereas SMT covers non-binary predicates with types and sorts. This project will focus on SMT rather than SAT as we can use non-binary predicates provided by SMT to define and solve some of these constraints. \\
-
-\newpage
 
 \section{Z3}
 Z3\cite{smt} is a SMT solver developed by Microsoft Research. It is used to integrate several decision procedures and verify the satisfiability of logical formulas over given theories. The theories our case, is the workflow model. There are many features of Z3 which will come in useful including:
@@ -515,19 +561,20 @@ Then each task and user in the domain are able to be defined after the sort has 
 \end{lstlisting}
 We have now declared a user called \say{alice} and another user \say{bob} in the user domain, as well as defining two tasks in the task domain \say{receive\_large\_order} and \say{recieve\_small\_order}. 
 
-\newpage
-
 \section{User Allocation}
 The most basic constraint in a workflow is that the tasks can only be executed if they have been allocated a user. Obviously, if there was not a user in the domain able to be allocated to a task, no one is able to execute and complete the task for the workflow to progress.
 \begin{center}
 $alloc\_user : Task \rightarrow User$
 \end{center}
 In Z3, we define user allocation as a function, which takes in a task, and returns a user:
-\begin{itemize}
-\item \texttt{(declare-fun alloc\_user (Task) User)}
-\end{itemize}
+\begin{lstlisting}[frame=single]
+(declare-fun alloc_user (Task) User)
+\end{lstlisting}
 
-\newpage
+Now we can allocate users to tasks. For example Alice is allocated the the checkout task:
+\begin{lstlisting}[frame=single]
+(assert (= (alloc_user checkout) alice))
+\end{lstlisting}
 
 \section{Separation of Duty}
 Separation of duties\cite{sod} is where users need to be different in order to complete a set of tasks. This is implemented usually implemented in order to avoid conflicts of interests that may cause fraud by an individual or break some rules within a business. This restricts and reduces powers of individuals within a business where there could be a chance of collusion happening. \\
@@ -657,8 +704,6 @@ sat
 \label{fig:Part of the example workflow}
 \end{figure}
 
-\newpage
-
 \section{Binding of Duty}
 Binding of duties\cite{bod} is where a user who is allocated a task $t$, must also be the same user who is allocated task $t’$ if these tasks are bound as knowledge from task $t$ must be used in order to execute task $t’$. It may be that binding of duties is needed as the user who is allocated these tasks have the required knowledge in order to execute both.\\
 \begin{center}
@@ -766,8 +811,6 @@ sat
 \label{fig:Z3 result for binding of duty}
 \end{subfigure}
 \end{figure}
-
-\newpage
 
 \section{Seniority}
 In most businesses and corporations, there are different levels of seniority based on their positions in the company. Different seniority levels allow users to execute different tasks. For example, a confidential task maybe worked on by a less senior member of a department, but have to be authorised by a more senior member as they may have more experience or the appropriate training\cite{seniority}.\\
@@ -939,8 +982,6 @@ $<$ & $t_x < t_y$ User who takes on $t_x$ is less senior than $t_y$ \\
 \label{fig:Seniority Relationships with tasks}
 \end{figure}
 
-\newpage
-
 \section{Worst Time Completion}
 In business, it is useful to find the worst time completion in a workflow as some task executions are not helping to optimise the total workflow duration. The aim is to then find the worst time to completion after setting rules and constraints. Users usually have finite time to execute a task and in business, there are deadline to be met. This can be established if tasks have an estimate worst time duration, the longest time it could take to execute this task. 
 \begin{center}
@@ -953,8 +994,6 @@ We will define a function for the duration of a task and each task will have a d
 \end{itemize}
 Task t has a worst time duration of sixty minutes to execute. Since in Z3, they do not have a time unit, the user can decide what the real value can be, i.e. minutes, hours.
 
-\newpage
-
 \section{Temporal Order of Task Execution}
 Temporal order of task execution is when tasks need to be executed in a certain order. We can easily represent this in the workflow as a directed graph, where the edges are directed to tasks (vertices) which is to be executed next. This rule is important to model in business management processes because some tasks cannot be executed before another and some tasks may be dependant on another to be executed. \\
 
@@ -963,8 +1002,6 @@ In Figure~\ref{fig:Part of the example workflow}, it has directional arrows betw
 \item \texttt{(declare-fun before (Task Task) Bool)}
 \item \texttt{(assert (before t t\ensuremath{'}))}
 \end{itemize}
-
-\newpage
 
 \section{Task Execution (and, or, exclusive-or)}
 Another constraint we are going to explore is which tasks are actually executed. In some workflows some tasks are not necessarily needed to be executed. Given in Figure~\ref{fig:Part of the example workflow} we can create a fork at task receive\_order and determine which pricing task is next to be executed. We can have three different types of forking:
@@ -1037,7 +1074,8 @@ To express an exclusive-or fork, similar to the or fork, but only $t_2$ or $t_3$
 \begin{lstlisting}[frame=single]
 (assert (xor (and (executed t1) (executed t2))(and (executed t1) (executed t3))))
 \end{lstlisting}
-\begin{figure}[!t]
+
+\begin{figure}[!h]
 \centering
 \begin{tikzpicture}
 \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
@@ -1057,8 +1095,6 @@ To express an exclusive-or fork, similar to the or fork, but only $t_2$ or $t_3$
 \label{fig:Over constrained workflow}
 \end{figure}
 
-\clearpage
-
 \section{Authorised User Allocation}
 In a business process, we can choose the authorise particular users to execute a task explicitly. This is similar to RBAC\cite{rbac} where a system restricts access to authorised users in a domain. Authorisation is usually assigned to them by their roles. We have not implemented roles in the set of workflow constraints, but rather just users who are only allowed by input. If there are more than one users authorised to execute a task, then we can use Z3 to choose which user to execute the task:
 \begin{itemize}
@@ -1074,8 +1110,6 @@ The main aim of this project is to design a simple language in which constraints
 The first discussion was whether to implement an algorithm that would solve these constraints or to use a back-end constraint solver. The benefit of using a back-end constraint solver like Z3 is that these algorithms are very efficient, perhaps more efficient than if it was implemented from scratch in this project. The application is built using Python\cite{python} and the Z3 python module\cite{Z3Python}. \\
 
 The language is a simple command line language, where a domain of tasks and users are defined. There are also predefined tokens which define certain constraints on a workflow as well as predefined axioms and rules. The application the interprets the workflow described in the language and checks if the workflow is satisfiable and gives back a suitable model.
-
-\newpage
 
 \section{Application Outline}
 The basic outline of this application is given in Figure~\ref{fig:Application outline}.
@@ -1095,8 +1129,6 @@ The basic outline of this application is given in Figure~\ref{fig:Application ou
 \caption{Application outline}
 \label{fig:Application outline}
 \end{figure}
-
-\newpage
 
 \section{The Language}
 Our requirements given was to design a language in which important constraints on the execution of tasks within a business process can be specified. It should be:
@@ -1208,8 +1240,6 @@ Users: `alice', `bob', `carol';
 Authorised: (`price_large_order', [`alice', `bob'])
 \end{lstlisting}
 
-\newpage
-
 \section{Lexer and Parser} 
 \subsection{PLY}
 The interpreter is designed using PLY\cite{ply} (Python Lex-Yacc) which is a python module which is a parsing tool written in Python. It is made up of two compiler construction tools: lex and yacc\cite{plylexyacc}. Yacc is say{Yet another compiler compiler} and lex is the lexical analyser generator. The type of parsing used in PLY is LALR(1)\cite{lalr} Look-Ahead Left-Right parser.\\
@@ -1301,8 +1331,6 @@ PLY does some error handling for the lexer and parser\\
 
 As the input is being parsed, reduced and shifted, these are being added to a symbol table ready to generate the correct code. The symbol table is made up of dictionaries, where each entry has a key and value.
 
-\newpage
-
 \section{Code Generation}
 We need to be able to generate the correct code so that we can parse it to Z3 correctly to get the satisfiability of the workflow as well as the model if applicable. Not only must we generate the correct code, but we have to have to correct axioms for each of the rules we have specified in the language that we do not need the user to know about or explicitly input.\\
 
@@ -1350,6 +1378,31 @@ $\forall u : User (\neg seniority(u, u))$
 (assert (forall ((u User))
 (not (seniority u u))))
 \end{lstlisting}
+
+We take note that the \texttt{seniority} function is not relational. For example, if we have:
+\begin{itemize}
+\item $seniority(alice, bob)$
+\item $seniority(bob, david)$
+\item $seniority(carol, david)$
+\end{itemize}
+We have the seniority diagram as:
+\begin{figure}[!h]
+\center
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+\tikzset{edge/.style = {->,> = latex}} 
+%\draw (0,0) circle [radius=0.5];
+\node[vertex] (a) at  (0,0) {Carol};
+\node[vertex] (b) at  (4,2) {Alice};
+\node[vertex] (c) at (2,-1) {David};
+\node[vertex] (d) at (4,0) {Bob};
+\draw[edge] (c) to (a);
+\draw[edge] (c) to (d);
+\draw[edge] (d) to (b);
+\end{tikzpicture}
+\end{figure}
+
+By not being relational, we cannot deduce that Bob and Carol are on the same level of seniority as each other since Alice is only senior to Bob and not senior to Carol. Therefore in our model, we express having the same seniority means that the user has to be the same user. Similarly to having different levels of seniority, it must just be the case that they are different users since \texttt{seniority} is not relational.
 
 \subsection{Execution of Tasks in Worflows}
 In the workflow, the user can define different forms of forking: and, or and exclusive-or. This means that there are different possibilities of tasks which are actually allocated and therefore executed in the workflow. For example, if we have a separation of duty within a workflow and there is an or fork before this constraint, we might not need to actually execute those tasks under that constraint. An example of this workflow is given in Figure~\ref{fig:Over constrained workflow}. The dotted lines show the tasks that are constrained under separation of duty, so $SoD(t_2, t_3)$ and $SoD(t_2, t_4)$. So if task $t_3$ is chosen to execute as task $t_2$ cannot be allocated or would be unsatisfied, then we do not need to worry about the separation of duty constraints in place as those tasks under it are never executed. This means that we do not need to over constrain the workflow, making task allocation easier.
@@ -1519,9 +1572,16 @@ $completion\ time = \sum\nolimits_{executed(t) = true} duration(t)$
    (ite (executed tn (duration tn) 0)))))"
 \end{lstlisting}
 
-Now that we have a completion time, we can write an algorithm that will do an unbounded search on the worst time completion. We pass the completion time through as a parameter in Z3 with \texttt{delta} which is the limit where the algorithm will stop the bisection. To find the upper bound time, we keep checking that the completion time can be greater than double the models completion time. When we reach this point, we know that there is no longer a time where it could be worse and therefore we have reached the upper bound completion time. \\
+Now that we have a completion time, we can write an algorithm that will do an unbounded search on the worst time completion, which is shown in Figure~\ref{fig:Unbound search}. We pass the completion time through as a parameter in Z3 with \texttt{delta} which is the limit where the algorithm will stop the bisection. To find the upper bound time, we keep checking that the completion time can be greater than double the models completion time. When we reach this point, we know that there is no longer a time where it could be worse and therefore we have reached the upper bound completion time. \\
 
-Once we have the upper bound and the lower bound completion times we can begin the bisection. If the completion time is greater than the bisection of the upper and lower bounds, then the lower bound completion time should be set as the value of the bisection. However, if it's unsatisfiable, it means there is no completion time greater than the value of the bisection, so we must search the lower half of the bisection, setting the upper bound to the value of the bisection. We recurse though this bisection until we reach the bijection limit \texttt{delta}. We have then found the worst time completion as $\frac{upperbound + lowerbound}{2}$
+\begin{figure}[h]
+\center
+\includegraphics[scale=0.35]{UnboundSearch.png}
+\caption{Unbound search}
+\label{fig:Unbound search}
+\end{figure}
+
+Once we have the upper bound and the lower bound completion times we can begin the bisection. If the completion time is greater than the bisection of the upper and lower bounds, then the lower bound completion time should be set as the value of the bisection. However, if it's unsatisfiable, it means there is no completion time greater than the value of the bisection, so we must search the lower half of the bisection, setting the upper bound to the value of the bisection. We recurse though this bisection until we reach the bijection limit \texttt{delta}. We have then found the worst time completion as $\frac{upperbound + lowerbound}{2}$.
 
 \begin{lstlisting}[frame=single]
 def worst_time_completion(x, delta, s):
@@ -1558,18 +1618,361 @@ def worst_time_completion(x, delta, s):
         return y 
 \end{lstlisting}
 
-\newpage
+\section{Validation and Completeness of Z3 Model}
+We need to be able to verify the completeness of the model with the actual input from the user. There could be the case the model returned from Z3 my be inconsistent even though the allocation returned back to the user may be correct. The application verifies four different aspects: separation of duty, binding of duty, seniority and lower bound worst time completion. We must check all combinations of user allocations, not including the bottom user as it is able to be allocated to all tasks, to check whether they are supposed to return satisfiable or unsatisfiable within the workflow.
+
+\subsection{Separation of Duty}
+To verify separation of duty of all tasks, we need to check that each pair of users that are allocated to the tasks that are under the constraint of separation of duty are not the same. We use the push-pop frame to test each allocation by pushing the stack and popping the stack when we have received the result so we can continue to test other users. 
+
+\begin{lstlisting}[frame=single]
+def verify_result_sod(original, s, u):
+        verify_original = original[:]
+        verify = True
+        s.push()
+        res = s.check()
+        if res == unsat:
+            verify = False
+            return verify
+        for sod in dict_sod:
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            s.push()
+            verify_original += "(push)\n"
+            verify_original += "(assert (and (executed " + sod[0] +") (= (alloc_user " + sod[0] +")" + u[0] + ")))\n"
+            verify_original += "(assert (and (executed " + sod[1] +") (= (alloc_user " + sod[1] +")" + u[1] + ")))\n"
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            if u[0] == u[1]:
+                if s.check() == sat:
+                    verify = False
+                    s.pop()
+                    verify_original += "(pop)\n"
+                else:
+                    s.pop()
+                    verify_original += "(pop)\n"
+            elif u[0] != u[1]:
+                if s.check() == sat:
+                    s.pop()
+                    verify_original += "(pop)\n"
+                else:
+                    s.pop()
+                    verify = self.verify_result_seniority(original, s, u)
+                    verify_original += "(pop)\n"
+        return verify
+\end{lstlisting}
+
+If the model itself is unsatisfied, the the verification fails and should return \texttt{false} as we cannot verify anything with an unsatisfied model. If it is satisfied, we can carry on the verification. We take each of the tasks in the separation of duty dictionary and we verify that each one is executed and that the users can be allocated the tasks. The result determines whether the model is consistent with the input. If the users are both the same and the result from \texttt{s.check()} is \texttt{sat} the verification should fail as the users who are allocated to the tasks should be different. Similarly, if the users are different and the result from the check is \texttt{unsat}, there must be some other constraint that is making this pair of users fail the verification. So we examine rules of seniority as a possibility of the failure to satisfy the allocation to the workflow. 
+
+\subsection{Binding of Duty}
+Similarly to separation of duty, we must check the equality of the users that are allocated to the tasks that are listed in the binding of duty constraints. 
+
+\begin{lstlisting}[frame=single]
+def verify_result_bod(original, s, u):
+        verify_original = original[:]
+        verify = True
+        s.push()
+        for bod in dict_bod:
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            s.push()
+            verify_original += "(push)\n"
+            verify_original += "(assert (and (executed " + bod[0] +") (= (alloc_user " + bod[0] +")" + u[0] + ")))\n"
+            verify_original += "(assert (and (executed " + bod[1] +") (= (alloc_user " + bod[1] +")" + u[1] + ")))\n"
+            v = z3.parse_smt2_string(verify_original)
+            s.add(v)
+            if u[0] != u[1]:
+                if s.check() == sat:
+                    verify = False
+            elif u[0] == u[1]:
+                if s.check() == unsat:
+                    s.pop()
+                    verify = self.verify_result_seniority(original, s, u)
+            s.pop()
+            verify_original += "(pop)\n"
+        return verify
+\end{lstlisting}
+
+If the users are not the same and \texttt{s.check()} returns \texttt{unsat}, then it is breaking the binding of duty constraint and the verification should fail. However, if they are both the same user, then it should be \texttt{sat}. But if it is \texttt{unsat}, there may be another constraint on that pair of users being allocated those particular tasks. We check any seniority constraints to check the validity of the pair of users being allocated to the tasks.
+
+\subsection{Seniority}
+To check that all the users are valid with the seniority constraints, we need to check the different levels of security for each task with respect to other tasks. 
+
+\begin{lstlisting}[frame=single]
+def verify_result_seniority(original, s, u):
+        verify = True
+        if dict_seniority:
+            for t_key, t_value in dict_eq_tasks.iteritems():
+                verify_original = original[:]
+                s.push()
+                verify_original += "(assert (= " + u[0] + " " + u[1] + "))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                if s.check() == unsat:
+                    if u[0] == u[1]:
+                        verify = False
+                else:
+                    if u[0] != u[1]:
+                        verify = False
+                s.pop()
+            for t_key, t_value in dict_gt_tasks.iteritems():
+                verify_original = original[:]
+                for v in t_value:
+                    s.push()
+                    verify_original += "(assert " \
+                                       "(and " \
+                                       "(executed " + t_key + ") " \
+                                       "(executed " + v + ") " \
+                                       "(= (alloc_user " + t_key +")" + u[0] + ")" \
+                                       "(= (alloc_user " + v + ")" + u[1] + ")))"
+                    v = z3.parse_smt2_string(verify_original)
+                    s.add(v)
+                    if s.check() == unsat:
+                        for u_key, u_value in dict_seniority.iteritems():
+                            if u[0] == u_key and u[1] in u_value:
+                                verify = False
+                    else:
+                        for u_key, u_value in dict_seniority.iteritems():
+                            if u[0] == u_key and u[1] not in u_value:
+                                verify = False
+                    s.pop()
+            for t_key, t_value in dict_lt_tasks.iteritems():
+                for v in t_value:
+                    verify_original = original[:]
+                    s.push()
+                    verify_original += "(assert " \
+                                       "(and" \
+                                       "(executed " + t_key + ")" \
+                                       "(executed " + v + ") " \
+                                       "(= (alloc_user " + t_key +")" + u[1] + ")" \
+                                       "(= (alloc_user " + v + ")" + u[0] + ")))"
+                    v = z3.parse_smt2_string(verify_original)
+                    s.add(v)
+                    if s.check() == unsat:
+                        for u_key, u_value in dict_seniority.iteritems():
+                            if u[0] == u_key and u[1] in u_value:
+                                verify = False
+                    else:
+                        for u_key, u_value in dict_seniority.iteritems():
+                            if u[0] == u_key and u[1] not in u_value:
+                                verify = False
+                    s.pop()
+            if dict_neq_tasks:
+                verify_original = original[:]
+                verify_original += "(assert (not(= " + u[0] + " " + u[1] + ")))"
+                v = z3.parse_smt2_string(verify_original)
+                s.add(v)
+                if s.check() == unsat:
+                    if u[0] != u[1]:
+                        verify = False
+                else:
+                    if u[0] == u[1]:
+                        verify = False
+                s.pop()
+        return verify
+\end{lstlisting}
+
+We check every different constraint on the tasks as we have stored in our symbol table. For seniority constraints, we have a different dictionary for each type of security level. We test each level to make sure it complies with the user input and that it is not breaking any other constraints in the rule.\\
+
+For two tasks to have equal levels of seniority they have to have the same user. So we do a similar check that we have done in separation of duty. Similarly with checking if two tasks having different levels of seniority, it is similar to the binding of duty verification. \\
+
+When a task has to be allocated a user with greater seniority than another, we test if both tasks are executed with that particular allocation. If the result is \texttt{unsat} but the first user in the user pair is more senior which is compared to the seniority dictionary in the symbol table, then verification fails as it should be true. However, if the result from \texttt{s.check()} returns \texttt{sat} when the first user is less senior to the second in the user pair, verification should also fail. When a task has to be allocated to a user with less seniority than another, we check that the task which needs to be allocated the less senior user is allocated the second user of the pair. If \texttt{s.check()} returns \texttt{unsat}, we check that the seniority is correct with the seniority input in the symbol table. If the less senior user has been allocated the task that required a less senior user but the result was \texttt{unsat} then verification should fail. If the result was \texttt{sat}, then we need to test to make sure that the user allocated to the less senior task is in face less senior to the other user. If it is not, the verification should fail again.
+
+\subsection{Lower Bound Worst Time Completion}
+When computing the worst time completion, we need to make sure that the lower bound of the worst time completion cannot get any lower otherwise the average we take between the upper and lower bound could be worse.
+
+\begin{lstlisting}[frame=single]
+s.push()
+        duration_total = 0
+        dur_tot = Real('duration_total')
+        Task = DeclareSort('Task')
+        for ms in m:
+            if "executed" in str(ms) and "!" not in str(ms):
+                for ts in tasks:
+                    t = Const(ts, Task)
+                    for mss in m:
+                        if "duration" in str(mss):
+                            duration_total = duration_total + m.eval(mss(t))
+        s.add(dur_tot >= duration_total)
+        if s.check() == unsat:
+            return unsat
+        s.pop()
+\end{lstlisting}
+
+To verify that there are no executions of tasks which fall below the lower bound and that the lower bound calculated is truly the lower bound we check the model returned using \texttt{s.model()}. We check that if the task is executed, the sum of the duration time must be above the lower bound. If the total durations of all the executed tasks are less than the lower bound, then the lower bound we have calculated may not be correct and we should return \texttt{unsat},otherwise we should return the worst time completion. 
 
 \section{Handling The Result}
+Z3 has a API method call \texttt{model()} which returns a model back to the user. However, this model can be quite hard to read. With a huge workflow with many tasks and users, the universe it reports back will include all the constants and function mappings. In Figure~\ref{fig:Command line worflow input} we can see the user input of a workflow and in Figure~\ref{fig:Z3 API model output} the original Z3 model output. 
+
+\begin{figure}[!h]
+\centering
+\begin{subfigure}[b]{\textwidth}
+\begin{lstlisting}[frame=single]
+Tasks: 'receive_order' -min_sec_lv:<['price_large_order', 'price_small_order', 'checkout'] -duration:(50), 'price_large_order' -min_sec_lv:>['receive_order'] -min_sec_lv:=['price_small_order'] -duration:(10), 'price_small_order' -min_sec_lv:>['receive_order'] -min_sec_lv:=['price_large_order'] -duration:(100), 'checkout' -min_sec_lv:>['receive_order'] -duration:(10); Users: 'alice', 'bob', 'carol'; Seniority: ('alice', 'bob'), ('alice', 'carol'), ('bob', 'carol');
+\end{lstlisting}
+\caption{Command line workflow input}
+\label{fig:Command line worflow input}
+\end{subfigure} \\
+\begin{subfigure}[b]{\textwidth}
+\begin{lstlisting}[frame=single]
+[receive_order = Task!val!2,
+ completion_time = 170,
+ price_large_order = Task!val!3,
+ alice = User!val!3,
+ elem!60 = Task!val!4,
+ price_small_order = Task!val!0,
+ bottom = User!val!0,
+ checkout = Task!val!1,
+ bob = User!val!1,
+ carol = User!val!2,
+ elem!908 = Task!val!2,
+ before = [else -> False],
+ executed = [else -> True],
+ alloc_user = [else -> alloc_user!913(k!911(Var(0)))],
+ seniority = [else ->
+              seniority!914(k!910(Var(0)), k!910(Var(1)))],
+ k!911 = [Task!val!1 -> Task!val!1,
+          Task!val!2 -> Task!val!2,
+          Task!val!3 -> Task!val!3,
+          Task!val!4 -> Task!val!4,
+          else -> Task!val!0],
+ duration = [Task!val!0 -> 100,
+             Task!val!2 -> 50,
+             else -> 10],
+ k!910 = [User!val!3 -> User!val!3,
+          User!val!0 -> User!val!0,
+          User!val!1 -> User!val!1,
+          else -> User!val!2],
+ alloc_user!913 = [Task!val!2 -> User!val!2,
+                   else -> User!val!3],
+ seniority!914 = [(User!val!1, User!val!2) -> True,
+                  (User!val!3, User!val!1) -> True,
+                  (User!val!3, User!val!2) -> True,
+                  else -> False]]
+\end{lstlisting}
+\caption{Z3 API model output}
+\label{fig:Z3 API model output}
+\end{subfigure}
+\caption{Z3 model result}
+\label{fig:Z3 model result}
+\end{figure}
+
 \subsection{Making It Human Readable}
+We need to make this output more human readable as it is difficult to map constants to functions, especially if the universe is much larger than the example given in Figure~\ref{fig:Z3 model result}. We can automate this mapping as we finish the verification and give the output to the user. 
 
-\newpage
+\begin{lstlisting}[frame=single]
+def evaluate_final_model(self, model, total_worst_duration):
+        model_user_map = { }
+        model_task_map = { }
+        model_list = []
+        model_result_map = { }
+        Task = DeclareSort('Task')
+        User = DeclareSort('User')
+        for ms in model:
+            if str(ms) in users:
+                model_user_map[ms] = model[ms]
+            if str(ms) in tasks:
+                model_task_map[ms] = model[ms]
+            if "before" in str(ms):
+                before_task_list = []
+                for t in itertools.product(tasks, tasks):
+                    t1 = Const(str(t[0]), Task)
+                    t2 = Const(str(t[1]), Task)
+                    before_tasks = model.eval(ms(t1, t2))
+                    if str(before_tasks) == "True":
+                        before_task_list.append(t)
+                model_result_map["before"] = before_task_list
+            if "alloc_user" in str(ms):
+                model_list_list = []
+                for t_key, t_value in model_task_map.iteritems():
+                    t = Const(str(t_key), Task)
+                    user_solution = model.eval(ms(t))
+                    for u_key, u_value in model_user_map.iteritems():
+                        if str(u_value) == str(user_solution):
+                            model_list_list.append((u_key, t_key))
+                if model_list_list not in model_list:
+                    model_list.append(model_list_list)
+                    model_result_map["alloc_user"] = model_list
+            if "executed" in str(ms):
+                executed_task_list = []
+                for t_key, t_value in model_task_map.iteritems():
+                    t = Const(str(t_key), Task)
+                    executed_task = model.eval(ms(t))
+                    if executed_task:
+                        executed_task_list.append(t_key)
+                    model_result_map["executed_tasks"] = executed_task_list
+            if "seniority" in str(ms) and "!" not in str(ms):
+                senior_users_list = []
+                for u in itertools.product(users, users):
+                    u1 = Const(str(u[0]), User)
+                    u2 = Const(str(u[1]), User)
+                    senior_users = model.eval(ms(u1, u2))
+                    if str(senior_users) == "True":
+                        senior_users_list.append(u)
+                model_result_map["seniority"] = senior_users_list
+        model_result_map["worst time completion"] = round(total_worst_duration)
+        return model_result_map
+\end{lstlisting}
 
-\section{Validation and Completness of Z3 Model}
+We map the users and tasks to the corresponding Z3 declarations so it is easier to translate the model as Z3 uses their own declarations rather than the actual user and task names. We then loop through the model looking for each function and passing tasks or users to the relavent parameters of the function and use them to evaluate the function. If the function returns \texttt{True}, then we can append it to the final result dictionary. Finally after going through the entire model, we piece together the final result with all the functions. Each function has their result translated back into the appropriate task and user names and combined to return one final output. As seen, we have a list of seniority pairs from \texttt{seniority} which is consistent with the user input. We also have the list of allocated users to tasks \texttt{alloc\_user} of which those are executed. The list of executed tasks is also returned back to the user \texttt{executed\_tasks}, as well as the worst time completion and the list of tasks which where given by the user in \texttt{before}.
+
+\begin{lstlisting}[frame=single]
+{'seniority': [('bob', 'carol'), ('alice', 'carol'), ('alice', 'bob')], 'alloc_user': [[(carol, receive_order), (alice, price_small_order), (alice, checkout), (alice, price_large_order)]], 'executed_tasks': [receive_order, price_small_order, checkout, price_large_order], 'worst time completion': 170.0, 'before': []}
+\end{lstlisting}
 
 \chapter{Evaluation}
+\section{Results From Z3}
+As mentioned before, the reason why we chose Z3 SMT solver over other SMT solvers is that it is more scalable. However, we need to check whether the back end of this application is scalable with Z3 as our constraint solver. \\
+
+Would it work in industry?
+
+\section{Verification}
+
+\section{Testing}
+It has been difficult to test this application on real industry case studies as businesses are not willing to share their secretive workflows with others. So for this project, we have only done unit testing on some example workflows. This has enabled us to test the correctness of the logic rules and axioms within the code generated. It would be nice perhaps in the future to have some sample workflows or to do some hall way testing with some industry experts to see if this is application is what they want and is correct with much larger workflows.
 
 \chapter{Conclusion}
+The main aim of this project was to design a simple language in which important constraints on the execution of tasks within a business process can be specified, where our application would decide whether such a workflow is satisfiable subject to all constraints.
+
+\section{Achievements}
+As stated in the introduction, we will revisit our original accomplishments for this project.
+\begin{enumerate}
+\item A basic language to represent a workflow as well as the user constraints which can be translated into a language readable by our constraint solver of choice.
+\item Create the relevant rules and axioms for each different constraint in the workflow.
+\item Return to the user whether all the constraints in the workflow has been satisfied. Also, we must return to the user the results of these constraints and what has been executed within the workflow.
+\item A method to generate the corresponding code from the user input to the constraint solver language with all the correct and corresponding rules and axioms in place. 
+\item We need to verify the results returned by the constraint solver to make sure the it is correct and complete in respect to the user input. This ensures that the rules and axioms generated are the correct ones. 
+\end{enumerate}
+
+We have created a language to describe  a workflow and its constraints. However, we have not been able to do any user testing with industry experts who work in the field of business processes, so we are not sure if this language is descriptive enough but basic and easy to use as we have not gotten any feedback. \\
+
+For the second point, we believe that we have generated relevant rules and axioms in Z3. Using unit testing, we have ensured that the result are what we expect them to be. As well as unit testing, we have looked at verifying the correctness of the resulting model that is returned from Z3 with the actual user input. This makes sure that even though what the model returns is correct, that all other possible allocations under the workflow constraints also hold. \\
+
+We believe we have achieved point three as we are able to return whether the workflow is satisfiable under its constraints using Z3's \texttt{solver.check()} which returns the satisfiability of the model. Since Z3 also has a method to return the mode \texttt{solver.model()}, we are able to access the model to extract the universe and make it more human readable. Again, due to not being able to test it with industry experts, we are not too sure if this is can be easily understandable to those working in business who design these workflows.  
+
+For the fourth point, we are able to generate relevant axioms for each workflow correctly and again, we can check that the model we build from code generation is consistent with the user input workflow and its constraints though verification.\\
+
+Finally, we have implemented verification steps to check that the model is consistent with the user workflow. However it could probably be more efficient. Instead of looping through all possible combinations of users, some users might not need to be checked for some cases. For example, if two users are the same, there may not be a point in checking if they are able to be allocated to two tasks the are under the separation of duty constraint, but they must be checked with binding of duty and separation of duty due to the axiom that all users are unique. If we had more time, we would have implemented verification for checking the upper bound when computing the worst time completion as the worst time completion is calculated by taking the midpoint of the upper and lower bound. If the upper bound is incorrect, the worst time could also be incorrect. 
+
+\section{Future Work}
+%Nice to have UI, more constraints, dynamic.
+If this project were to be carried on, the most obvious implementation would be to extend the types of constraints on the workflow. It would have been nice to include some automated constraints such as a ``Chinese wall'' configuration where the user would only need to specify which tasks and users are behind the wall and which are not. \\
+
+Another constraint that would have been implemented if we had more time would be the number of times a task may be executed in a business. \\
+
+Finally, we would have liked to have implemented concurrent or parallel tasks in the workflow to compute worst time completion. Currently, the implementation is done for sequential tasks for the forking. However, in business, if more than one path is executed, they would usually be done concurrently unless they are dependent on each other. It would have been interesting to see the worst time completion of parallel task execution. \\
+
+Since this project represented workflows as acyclic directed graphs or flowcharts, an UI interface would have been helpful to the user as well as supplying a command line input and reading files. Below, we have designed a prototype for the UI. If we had more time, we would have implemented this as a web interface shown in Figure~\ref{fig:Application UI}. The user would be able to create and drag task nodes and specify certain rules for each task, similar to the command line. The directional arrows represent the \texttt{before} function. The two circles represent \texttt{binding of duty (BoD)} and \texttt{separation of duty (SoD)}. They would also be able to specify users in the workflow domain, and also their seniority relationships to one another in the seniority section. An example is given \texttt{Alice, Bob} so Alice is more senior than Bob.
+
+\begin{figure}
+\includegraphics[scale=0.35, angle=90,origin=c]{ui.png}
+\caption{Application UI}
+\label{fig:Application UI}
+\end{figure}
+
+\section{Future Work for a Product}
+As the project stands, it is not ready to be used in industry as there are many other constraints that we have not explored that are currently conveyed in business processes. This application may have been aimed at organisations with moderately sized workflows. For example, we have defined a seniority rule where the user must input all the different users and who is senior from each other. Instead, what we could have done is have roles express levels of seniority such as ``associate'' and ``manager'' implemented as \texttt{associate(User)} and \texttt{manager(User)} receptively and then have underlying rules which roles and therefore users are senior to each other. This would save a lot of time for the user when using this application.\\
+
+Hopefully in a few years time and if work continued on this application to build more constraints, it could be used as a workflow constraint solver. 
 
 \chapter{Appendix A: How to Use and Result Returned}
 
