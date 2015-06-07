@@ -7,6 +7,7 @@ from ply.yacc import yacc
 import itertools
 import ast
 import sys
+import datetime
 
 class p_c(object):
     tokens = lexer_class.tokens
@@ -236,8 +237,8 @@ class p_c(object):
     def p_user_node(self, p):
         '''user_node : NODE end
                 | NODE COMMA user_node
-                | NODE user_option
                 | NODE end_rule'''
+        #                | NODE user_option
         p[0] = p[1]
         if p[0] not in self.users:
             self.users.append(p[0].replace("'", ""))
@@ -314,19 +315,19 @@ class p_c(object):
         if len(p) > 2:
             p[0] = p[1] + p[2] + p[3]
 
-    def p_user_option(self, p):
-        '''user_option : OPTION USERS_OPTION user_option
-              | OPTION USERS_OPTION COMMA
-              | OPTION USERS_OPTION COLON users_global_option
-              | OPTION USERS_OPTION end
-              '''
-        p[0] = p[1]
+    # def p_user_option(self, p):
+    #     '''user_option : OPTION USERS_OPTION user_option
+    #           | OPTION USERS_OPTION COMMA
+    #           | OPTION USERS_OPTION COLON users_global_option
+    #           | OPTION USERS_OPTION end
+    #           '''
+    #     p[0] = p[1]
 
-    def p_users_global_option(self, p):
-        '''users_global_option : ALLOCATE end_rule'''
-        p[0] = p[1]
-        if p[0] == 'allocate':
-            self.allocate_users = True
+    # def p_users_global_option(self, p):
+    #     '''users_global_option : ALLOCATE end_rule'''
+    #     p[0] = p[1]
+    #     if p[0] == 'allocate':
+    #         self.allocate_users = True
 
     def p_end(self, p):
         '''end : END
@@ -542,6 +543,8 @@ class p_c(object):
         return duration
 
     def main(self, prompt_input):
+        start_time = datetime.datetime.now()
+
         lexer = lex(module=lexer_class(), optimize=1)
         parser = yacc(module=p_c(), start='prog', optimize=1)
 
@@ -668,67 +671,55 @@ class p_c(object):
                                         # print "after adding executed tasks in xor", s.check()
                                 except Z3Exception as e:
                                     print "fail at executed or tasks", e
+                                    print s.unsat_core()
 
                             except Z3Exception as e:
                                 print "Z3 error: model not avalible after adding executed tasks in and", e
+                                print s.unsat_core()
 
                         except Z3Exception as e:
                             print "not all input users are unique", e
+                            print s.unsat_core()
 
                     except Z3Exception as e:
                         print "executable SOD fail", e
+                        print s.unsat_core()
 
                 except Z3Exception as e:
                     print "failed to add only_users axiom", e
+                    print s.unsat_core()
 
             except Z3Exception as e:
-                print "failed to sat with options"
+                print "failed to sat with options", e
+                print s.unsat_core()
 
         except Z3Exception as e:
             print "z3 error", e
-
-        # Do the allocation of users and tasks if not specified
-        alloc_user_task = ""
-        if allocate_users:
-            # Loop through all users and allocate them to a task
-            # Use BOTTOM user to verify
-            c = []
-            for i in itertools.product(users, tasks):
-                c.append(i)
-            original_extra = original
-            for cs in c:
-                s.push()
-                original_extra += "(push)\n"
-                alloc_user_task = "(assert (= (alloc_user " + cs[1] + ") " + cs[0] + "))\n"
-                original_extra += alloc_user_task
-                e = z3.parse_smt2_string(original_extra)
-                s.add(e)
-                check = s.check()
-                # print 'result of push', check
-                if check == sat:
-                    m = s.model()
-                elif check == unsat:
-                    original_extra += "(pop)\n"
-                    e = z3.parse_smt2_string(original_extra)
-                    s.pop()
-                    s.add(e)
-                    # print s.check()
+            print s.unsat_core()
 
         s.check()
-        # print "UNSAT CORE", s.unsat_core()
 
-        completion_time = "(declare-const completion_time Real)"
-        original += completion_time
-        total_executed_task_duration = "(assert (= completion_time " \
-                                       "(+"
-        original += total_executed_task_duration
-        for t in tasks:
-            original += "(ite (executed " + t + ") (duration " + t + ") 0)"
-        original += ")))"
-        c = z3.parse_smt2_string(original)
-        s.add(c)
+        if dict_duration:
+            completion_time = "(declare-const completion_time Real)"
+            original += completion_time
+            total_executed_task_duration = "(assert (= completion_time " \
+                                           "(+"
+            original += total_executed_task_duration
+            for t in tasks:
+                original += "(ite (executed " + t + ") (duration " + t + ") 0)"
+            original += ")))"
+            c = z3.parse_smt2_string(original)
+            s.add(c)
 
-        worst_total_duration = self.worst_time_completion("completion_time", 0.001, s)
+            worst_total_duration = self.worst_time_completion("completion_time", 0.001, s)
+        else:
+            worst_total_duration = 0
+
+        end_time = datetime.datetime.now()
+        c = end_time - start_time
+        print "TIME TAKEN:", c
+
+        print "COMPLETION TIME"
 
         #Assignment and verification of the model
         model_map_task = []
@@ -750,38 +741,18 @@ class p_c(object):
                         if str(model_user[1]) == str(user_solution):
                             solution_map.append((t, model_user[0]))
 
-        # print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-        # print s.check()
         if s.check() == sat:
             verified = True
             verify_userlist = users[:]
             verify_userlist.remove("bottom")
             for u in itertools.product(verify_userlist, verify_userlist):
-                # if dict_sod:
                 verify_sod = self.verify_result_sod(original, s, u)
-                # if verify_sod:
-                    # Don't need to do anything
-                    # print "VERIFIED SOD"
-                # else:
-                    # Need to check other cases to see why it doesn't satisfy
-                    # print "UNVERIFIED SOD"
                 verify_bod = self.verify_result_bod(original, s, u)
-                # if verify_bod:
-                #     # Don't need to do anything
-                #     print "VERFIFIED BOD"
-                # else:
-                #     # Need to check other cases to see why it doesn't satisfy
-                #     print "UNVERIFIED BOD"
                 verify_seniroity = self.verify_result_seniroity(original, s, u)
-                # if verify_seniroity:
-                #     print "VERIFIED SENIORITY"
-                # else:
-                #     print "UNVERIFIED SENIORITY"
                 verified_ = verify_sod and verify_bod and verify_seniroity
                 # print "this user pair has verification:", verified_
                 verified = verified and verified_
-                # print verified
-                # print "================================================================"
+
         else:
             verified = False
         if verified:
@@ -791,6 +762,8 @@ class p_c(object):
             final_solver.check()
             final_user_model = self.evaluate_final_model(final_solver.model(), worst_total_duration)
             print "VERIFIED!!!!!"
+            s.check()
+            print s.model()
             return final_user_model
         else:
             print "UNVERIFIED!!!"
@@ -848,8 +821,6 @@ class p_c(object):
     # Pass the model and check that it is consistent with the input
     # Sod verification: if it's the same user, should return unsat
     def verify_result_sod(self, original, s, u):
-        verify_user_list = users[:]
-        verify_user_list.remove("bottom")
         verify_original = original[:]
         verify = True
         s.push()
@@ -1022,7 +993,6 @@ class p_c(object):
     def evaluate_final_model(self, model, total_worst_duration):
         model_user_map = { }
         model_task_map = { }
-        model_function_map = { }
         model_list = []
         model_result_map = { }
         Task = DeclareSort('Task')
@@ -1033,7 +1003,6 @@ class p_c(object):
             if str(ms) in tasks:
                 model_task_map[ms] = model[ms]
             if "before" in str(ms):
-                model_function_map["before"] = model[ms]
                 before_task_list = []
                 for t in itertools.product(tasks, tasks):
                     t1 = Const(str(t[0]), Task)
@@ -1043,7 +1012,6 @@ class p_c(object):
                         before_task_list.append(t)
                 model_result_map["before"] = before_task_list
             if "alloc_user" in str(ms):
-                model_function_map["alloc_user"] = model[ms]
                 model_list_list = []
                 for t_key, t_value in model_task_map.iteritems():
                     t = Const(str(t_key), Task)
@@ -1055,7 +1023,6 @@ class p_c(object):
                     model_list.append(model_list_list)
                     model_result_map["alloc_user"] = model_list
             if "executed" in str(ms):
-                model_function_map["executed"] = model[ms]
                 executed_task_list = []
                 for t_key, t_value in model_task_map.iteritems():
                     t = Const(str(t_key), Task)
@@ -1064,7 +1031,6 @@ class p_c(object):
                         executed_task_list.append(t_key)
                     model_result_map["executed_tasks"] = executed_task_list
             if "seniority" in str(ms) and "!" not in str(ms):
-                model_function_map["seniority"] = model[ms]
                 senior_users_list = []
                 for u in itertools.product(users, users):
                     u1 = Const(str(u[0]), User)
@@ -1073,7 +1039,6 @@ class p_c(object):
                     if str(senior_users) == "True":
                         senior_users_list.append(u)
                 model_result_map["seniority"] = senior_users_list
-        completion_time = Real('completion_time')
         model_result_map["worst time completion"] = round(total_worst_duration)
         return model_result_map
 

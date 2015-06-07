@@ -1,6 +1,6 @@
 # lextab.py. This file automatically created by PLY (version 3.4). Don't edit!
 _tabversion   = '3.4'
-_lextokens    = {'OPTION': 1, 'AUTHORISED': 1, 'NUMBER': 1, 'LSQPAREN': 1, 'USERS_OPTION': 1, 'DURATION': 1, 'END': 1, 'BOD': 1, 'NEQ': 1, 'GEQ': 1, 'RPAREN': 1, 'SOD': 1, 'COMMA': 1, 'ALLOCATE': 1, 'COLON': 1, 'BEFORE': 1, 'NODE': 1, 'XOR': 1, 'LPAREN': 1, 'MIN_SEC_LV': 1, 'EQ': 1, 'RSQPAREN': 1, 'USERS': 1, 'TASKS': 1, 'LEQ': 1, 'SENIORITY': 1, 'EXECUTION': 1, 'OR': 1}
+_lextokens    = {'OPTION': 1, 'AUTHORISED': 1, 'NUMBER': 1, 'LSQPAREN': 1, 'DURATION': 1, 'END': 1, 'BOD': 1, 'NEQ': 1, 'GEQ': 1, 'RPAREN': 1, 'SOD': 1, 'COMMA': 1, 'COLON': 1, 'BEFORE': 1, 'NODE': 1, 'XOR': 1, 'LPAREN': 1, 'MIN_SEC_LV': 1, 'EQ': 1, 'RSQPAREN': 1, 'USERS': 1, 'TASKS': 1, 'LEQ': 1, 'SENIORITY': 1, 'EXECUTION': 1, 'OR': 1}
 _lexreflags   = 0
 _lexliterals  = ''
 _lexstateinfo = {'INITIAL': 'inclusive'}
