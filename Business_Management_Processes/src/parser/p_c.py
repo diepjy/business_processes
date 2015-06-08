@@ -42,7 +42,7 @@ class p_c(object):
                            ")" \
                            "))\n"
 
-    smt_ayclic_seniority = "(assert (forall ((u User))" \
+    smt_acyclic_seniority = "(assert (forall ((u User))" \
                                "(not (seniority u u))" \
                                "))\n"
 
@@ -598,6 +598,20 @@ class p_c(object):
         # print c
 
         # smt_output = "(set-option :produce-unsat-cores true)" + \
+        #     p_c.smt_sort_task + \
+        #     p_c.smt_sort_user + \
+        #     p_c.smt_fun_executed + \
+        #     p_c.smt_fun_before + \
+        #     p_c.smt_fun_seniority + \
+        #     p_c.smt_const_bottom + \
+        #     p_c.smt_fun_alloc_user + \
+        #     p_c.smt_fun_duration + \
+        #     p_c.smt_before_transitivity + \
+        #     p_c.smt_fun_seniority_transitivity +\
+        #     p_c.smt_users_neq_bottom + \
+        #     p_c.smt_acyclic_before + \
+        #     p_c.smt_acyclic_seniority
+
         smt_output = \
             p_c.smt_sort_task + \
             p_c.smt_sort_user + \
@@ -611,7 +625,7 @@ class p_c(object):
             p_c.smt_fun_seniority_transitivity +\
             p_c.smt_users_neq_bottom + \
             p_c.smt_acyclic_before + \
-            p_c.smt_ayclic_seniority
+            p_c.smt_acyclic_seniority
 
         # Collect results to SMT solver
         original = smt_output
@@ -722,22 +736,35 @@ class p_c(object):
                                     print "fail at executed or tasks", e
                                     original += "(check-sat)"
                                     original += "(get-unsat-core)"
+                                    smt_str = z3.parse_smt2_string(original)
+                                    s.add(smt_str)
+                                    print s.check()
+                                    print s.unsat_core()
                                     # print s.unsat_core()
                                     # print len(s.unsat_core())
 
                             except Z3Exception as e:
-                                print "Z3 error: model not avalible after adding executed tasks in and", e
+                                print "Z3 error: model not avalible after adding executed tasks in and: error:", e
+                                # original += "(check-sat)"
+                                # original += "(get-unsat-core)"
+                                smt_str = z3.parse_smt2_string(original)
+                                s.add(smt_str)
                                 print s.check()
                                 print s.unsat_core()
                                 print original
 
                         except Z3Exception as e:
                             print "not all input users are unique", e
+                            smt_str = z3.parse_smt2_string(original)
+                            s.add(smt_str)
+                            print s.check()
                             print s.unsat_core()
+                            print original
 
                     except Z3Exception as e:
                         print "executable SOD fail", e
                         print s.unsat_core()
+                        print original
 
                 except Z3Exception as e:
                     print "failed to add only_users axiom", e
