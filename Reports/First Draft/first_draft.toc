@@ -59,6 +59,7 @@
 \contentsline {subsection}{\numberline {4.6.4}Lower Bound Worst Time Completion}{47}
 \contentsline {section}{\numberline {4.7}Handling The Result}{48}
 \contentsline {subsection}{\numberline {4.7.1}Making It Human Readable}{48}
+\contentsline {section}{\numberline {4.8}Unsatisfiable Core}{51}
 \contentsline {chapter}{\numberline {5}Evaluation}{52}
 \contentsline {section}{\numberline {5.1}Results From Z3}{52}
 \contentsline {section}{\numberline {5.2}Verification}{52}

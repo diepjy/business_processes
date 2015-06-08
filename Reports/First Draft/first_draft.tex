@@ -58,11 +58,11 @@ Dr. Anandha \textsc{Gopalan}
 \end{titlepage}
 
 \begin{abstract}
-Trying to verify if a workflow is satisfiable given that there are constraints and restrictions that are placed on tasks that can be executed is a hard problem. As businesses and companies expand, an interesting problem needs to be solved: can all the relevant tasks be executed without breaking these constraints? Otherwise there might be a financial loss. \\
+Trying to verify if a workflow is satisfiable given that there are constraints and restrictions that are placed on how and if a task can be executed is a hard problem. As businesses and companies expand, an interesting problem needs to be solved: can all the relevant tasks be executed without breaking these constraints? Otherwise there might be a financial loss. \\
 
-We will try and solve this problem using rules written in first order predicate logic to generalise the workflow and generate the relevant rules and axioms to test the satisfiability.\\
+We will try and solve this problem using rules written in first order predicate logic to generalise the workflow and generate the relevant rules and axioms to test the satisfiability. We will then see if a set of users can be allocated to and execute the relevant tasks. \\
 
-The project will implement a tool which can handle a user input workflow with constraints and check whether the workflow is still satisfiable with the given constraints.
+We developed an application which can handle a user input workflow with constraints and check whether the workflow is still satisfiable with the given constraints.
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
@@ -1919,6 +1919,11 @@ We map the users and tasks to the corresponding Z3 declarations so it is easier 
 {'seniority': [('bob', 'carol'), ('alice', 'carol'), ('alice', 'bob')], 'alloc_user': [[(carol, receive_order), (alice, price_small_order), (alice, checkout), (alice, price_large_order)]], 'executed_tasks': [receive_order, price_small_order, checkout, price_large_order], 'worst time completion': 170.0, 'before': []}
 \end{lstlisting}
 
+\section{Unsatisfiable Core}
+In this report, we have talked about the satisfied core as we are interested in whether the workflow is satisfied or unsatisfied. However, it is interesting to see which assertions do fail if the workflow is unsatisfied. In Z3 we call the method \texttt{get-unsat-core}. \\
+
+The unsatisfied core reports which assertions are False within the given model. In order to state which assertions are being broken, we must label each one using \texttt{solver.assert\_and\_track(constraint, label)}. The label is the name we give to each assertion, so when we call \texttt{(solver.unsat\_core())} we should get back an empty array \texttt{[]} if the theory is satisfied, or a list of labels of assertions that are false.
+
 \chapter{Evaluation}
 \section{Results From Z3}
 As mentioned before, the reason why we chose Z3 SMT solver over other SMT solvers is that it is more scalable. However, we need to check whether the back end of this application is scalable with Z3 as our constraint solver. \\
@@ -1926,6 +1931,7 @@ As mentioned before, the reason why we chose Z3 SMT solver over other SMT solver
 Would it work in industry?
 
 \section{Verification}
+Currently, the method of verification is quite slow as we have to check every combination of pairs of users 
 
 \section{Testing}
 It has been difficult to test this application on real industry case studies as businesses are not willing to share their secretive workflows with others. So for this project, we have only done unit testing on some example workflows. This has enabled us to test the correctness of the logic rules and axioms within the code generated. It would be nice perhaps in the future to have some sample workflows or to do some hall way testing with some industry experts to see if this is application is what they want and is correct with much larger workflows.

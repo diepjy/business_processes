@@ -13,8 +13,11 @@ class p_c(object):
     tokens = lexer_class.tokens
 
     smt_sort_task = "(declare-sort Task) \n"
+    # Task = DeclareSort('Task')
     smt_sort_user = "(declare-sort User) \n"
+    # User = DeclareSort('User')
     smt_fun_before = "(declare-fun before (Task Task) Bool) \n"
+    # before = Function('before', Task, Task, BoolSort())
     smt_fun_seniority = "(declare-fun seniority (User User) Bool) \n"
     smt_fun_executed = "(declare-fun executed (Task) Bool)\n"
     smt_fun_duration = "(declare-fun duration (Task) Real)\n"
@@ -42,7 +45,7 @@ class p_c(object):
                            ")" \
                            "))\n"
 
-    smt_ayclic_seniority = "(assert (forall ((u User))" \
+    smt_acyclic_seniority = "(assert (forall ((u User))" \
                                "(not (seniority u u))" \
                                "))\n"
 
@@ -370,6 +373,21 @@ class p_c(object):
                     count += 1
         return smt_options
 
+    def get_eq_task_options_solver(self, d, task_list, solver, executed, alloc_user, Task):
+        smt_options = ""
+        count = 0
+        for key, value in d.iteritems():
+            # BOD
+            for t in task_list:
+                if t in value:
+                    key_smt = Const(key, Task)
+                    t_smt = Const(t, Task)
+                    name = "eq_task" + str(count)
+                    eq_task = Implies(And(executed(key_smt), executed(t_smt)), alloc_user(key_smt) == alloc_user(t_smt))
+                    solver.assert_and_track(eq_task, name)
+                    count += 1
+        return smt_options
+
     def get_lt_task_options(self, d, task_list):
         smt_options = ""
         count = 0
@@ -390,6 +408,20 @@ class p_c(object):
                                    "))" \
                                    ") :named lttask" + str(count) + ")" \
                                    ")\n"
+                    count += 1
+        return smt_options
+
+    def get_lt_task_options_solver(self, d, task_list, solver, executed, alloc_user, Task, seniority):
+        smt_options = ""
+        count = 0
+        for key, value in d.iteritems():
+            for t in task_list:
+                if t in value:
+                    t_smt = Const(t, Task)
+                    key_smt = Const(key, Task)
+                    name = "lttask" + str(count)
+                    lt_task = Implies(And(executed(t_smt), executed(key_smt)), seniority(alloc_user(t_smt), alloc_user(key_smt)))
+                    solver.assert_and_track(lt_task, name)
                     count += 1
         return smt_options
 
@@ -416,6 +448,20 @@ class p_c(object):
                     count += 1
         return smt_options
 
+    def get_gt_task_options_solver(self, d, task_list, solver, executed, alloc_user, Task, seniority):
+        smt_options = ""
+        count = 0
+        for key, value in d.iteritems():
+            for t in task_list:
+                if t in value:
+                    t_smt = Const(t, Task)
+                    key_smt = Const(key, Task)
+                    name = "gttask" + str(count)
+                    gt_task = Implies(And(executed(key_smt), executed(t_smt)), seniority(alloc_user(key_smt), alloc_user(t_smt)))
+                    solver.assert_and_track(gt_task, name)
+                    count += 1
+        return smt_options
+
     def get_neq_task_options(self, d, task_list):
         smt_options = ""
         count = 0
@@ -436,6 +482,34 @@ class p_c(object):
                                    ")))" \
                                    ") :named neqtask" + str(count) + ")" \
                                    ")\n"
+                    count += 1
+        return smt_options
+
+    def get_neq_task_options_solver(self, d, task_list, solver, executed, alloc_user, Task):
+        smt_options = ""
+        count = 0
+        for key, value in d.iteritems():
+            for t in task_list:
+                if t in value:
+                    smt_options += "(assert " \
+                                   "(! (=>" \
+                                   "(and (executed " \
+                                   + key + \
+                                   ") (executed " \
+                                   + t + \
+                                   "))" \
+                                   "(not(=(alloc_user " \
+                                   + key + \
+                                   ") (alloc_user " \
+                                   + t + \
+                                   ")))" \
+                                   ") :named neqtask" + str(count) + ")" \
+                                   ")\n"
+                    t_smt = Const(t, Task)
+                    key_smt = Const(key, Task)
+                    name = "neqtask" + str(count)
+                    neq_task = Implies(And(executed(key_smt), executed(t_key)), Not(alloc_user(key_smt) == alloc_user(t_smt)))
+                    solver.assert_and_track(neq_task, name)
                     count += 1
         return smt_options
 
@@ -504,6 +578,16 @@ class p_c(object):
             # s.add(z3_str, "authorised_task_to_users_axiom")
         return auth
 
+    def authorised_task_to_users_axiom_solver(self, auth_list):
+        auth = ""
+        for key, value in auth_list.iteritems():
+            auth += "(assert (! (or "
+            for u in value:
+                auth += "(=(alloc_user " + key + ")" + u +")"
+            auth += "(=(alloc_user " + key +") bottom)"
+            auth += ") :named authorised_task_to_users_axiom))\n"
+        return auth
+
     def executable_sod(self, sod_list):
         sod = ""
         count = 0
@@ -531,6 +615,19 @@ class p_c(object):
         only_users += ")))\n"
         return only_users
 
+    def only_users_solver(self, user_list, solver):
+        only_users = "(declare-sort User)\n"
+        for u in user_list:
+            only_users += "(declare-const " + u + " User)\n"
+        only_users += "(assert (forall ((u User)) (or"
+        for u in user_list:
+            only_users += "(= u " + u + ")"
+        only_users += ")))\n"
+        print only_users
+        t = z3.parse_smt2_string(only_users)
+        solver.assert_and_track(t, "only users")
+        return only_users
+
     def add_users(self, user_list):
         users = ""
         for u in user_list:
@@ -538,10 +635,26 @@ class p_c(object):
                 users += "(declare-const " + u + " User) \n"
         return users
 
+    def add_users_solver(self, user_list, User, solver):
+        for u in user_list:
+            if "bottom" != u:
+                # users += "(declare-const " + u + " User) \n"
+                print u
+                Const(str(u), User)
+                print solver.check()
+                print solver.model()
+        return users
+
     def add_tasks(self, task_list):
         tasks = ""
         for t in task_list:
             tasks += "(declare-const " + t + " Task)\n"
+        return tasks
+
+    def add_tasks_solver(self, task_list, Task):
+        for t in task_list:
+            # tasks += "(declare-const " + t + " Task)\n"
+            Const(str(t), Task)
         return tasks
 
     def add_before_tasks(self, before_tasks):
@@ -553,6 +666,20 @@ class p_c(object):
                 count += 1
         return before
 
+    def add_before_tasks_solver(self, before_tasks, solver, before):
+        print "before"
+        # before = ""
+        count = 0
+        for t_key, t_value in before_tasks.iteritems():
+            for t in t_value:
+                # before += "(assert (! (before " + t_key + " " + t + ") :named before" + str(count) + "))\n"
+                name = "before" + str(count)
+                t_key_smt = Const(t_key, Task)
+                t_smt = Const(t, Task)
+                solver.assert_and_track(before(t_key_smt, t_smt), name)
+                count += 1
+        return before
+
     def add_seniority(self, seniority_list):
         seniority = ""
         count = 0
@@ -561,6 +688,19 @@ class p_c(object):
                 seniority += "(assert (! (seniority " + u_key + " " + u + ") :named seniority" + str(count) + ")) \n"
                 count += 1
         return seniority
+
+
+    def add_seniority_solver(self, seniority_list, solver, seniority):
+        print seniority
+        # seniority = ""
+        count = 0
+        for u_key, u_value in seniority_list.iteritems():
+            for u in u_value:
+                # seniority += "(assert (! (seniority " + u_key + " " + u + ") :named seniority" + str(count) + ")) \n"
+                name = "seniority" + str(count)
+                solver.assert_and_track(seniority(u_key, u), name)
+                print solver.check()
+                count += 1
 
     def add_duration(self, duration_list):
         duration = ""
@@ -586,16 +726,58 @@ class p_c(object):
         t = parser.parse(s, lexer=lexer)
         print t
 
-        # x = Int('x')
-        # p3 = Bool('p3')
+        x = Int('x')
+        p3 = Bool('p3')
         s = Solver()
         s.set(unsat_core=True)
-        # s.assert_and_track(x > 0,  'p1')
-        # s.assert_and_track(x != 1, 'p2')
-        # s.assert_and_track(x < 0,  p3)
-        # print(s.check())
-        # c = s.unsat_core()
-        # print c
+        s.assert_and_track(x > 0,  'p1')
+        s.assert_and_track(x != 1, 'p2')
+        s.assert_and_track(x < 0,  p3)
+        print(s.check())
+        c = s.unsat_core()
+        print c
+
+        solver = Solver()
+        solver.set(unsat_core=True)
+
+        Task = DeclareSort('Task')
+        User = DeclareSort('User')
+
+        before = Function('before', Task, Task, BoolSort())
+        seniority = Function('seniority', User, User, BoolSort())
+        executed = Function('executed', Task, BoolSort())
+        duration = Function('duration', Task, RealSort())
+        alloc_user = Function('alloc_user', Task, User)
+
+        bottom = Const('bottom', User)
+        u1 = Const('u1', User)
+        u2 = Const('u2', User)
+        u3 = Const('u3', User)
+
+        seniority_transitivity = ForAll([u1, u2, u3], Implies(And(seniority(u1, u2), seniority(u2, u3)), seniority(u1, u3)))
+        solver.assert_and_track(seniority_transitivity, "seniority_transitivity")
+
+        t1 = Const('t1', Task)
+        t2 = Const('t2', Task)
+        t3 = Const('t3', Task)
+
+        before_transitivity = ForAll([t1, t2, t3], Implies(And(before(t1, t2), before(t2, t3)), before(t1, t3)))
+        solver.assert_and_track(before_transitivity, "before_transitivity")
+
+        users_neq_bottom = ForAll([u1], Implies(Not(u1 == bottom), And(Not(seniority(bottom, u1)), (Not(seniority(u1, bottom))))))
+        solver.assert_and_track(users_neq_bottom, "users_neq_bottom")
+
+        acyclic_seniority = ForAll([u1], Not(seniority(u1, u1)))
+        solver.assert_and_track(acyclic_seniority, "acyclic_seniority")
+
+        acyclic_before = ForAll([t1], Not(before(t1, t1)))
+        solver.assert_and_track(acyclic_before, "acyclic_before")
+
+        user_execution_axiom = ForAll([t1], Implies(executed(t1), Not(alloc_user(t1) == bottom)))
+        solver.assert_and_track(user_execution_axiom, "user_execution_axiom")
+
+        not_bottom_user_execution_axiom = ForAll([t1], Implies(Not(executed(t1)), alloc_user(t1) == bottom))
+        solver.assert_and_track(not_bottom_user_execution_axiom, "not_bottom_user_execution_axiom")
 
         # smt_output = "(set-option :produce-unsat-cores true)" + \
         smt_output = \
@@ -611,73 +793,130 @@ class p_c(object):
             p_c.smt_fun_seniority_transitivity +\
             p_c.smt_users_neq_bottom + \
             p_c.smt_acyclic_before + \
-            p_c.smt_ayclic_seniority
+            p_c.smt_acyclic_seniority
 
         # Collect results to SMT solver
         original = smt_output
         original += self.add_users(users)
+        # self.add_users_solver(users, User, solver)
+        for u in users:
+            if "bottom" != u:
+                # users += "(declare-const " + u + " User) \n"
+                print str(u)
+                Const(str(u), User)
+                print solver.check()
+                print solver.model()
         original += self.add_tasks(tasks)
+        # self.add_tasks_solver(tasks, Task)
+        for t in tasks:
+            # tasks += "(declare-const " + t + " Task)\n"
+            Const(str(t), Task)
         f = z3.parse_smt2_string(original)
 
-        s.add(f)
-        # print 'Result of first check', s.check()
-        s.check()
-        s.model()
+        print solver.check()
+        print "after adding alice", solver.model()
 
+        # s.add(f)
+        # # print 'Result of first check', s.check()
+        # s.check()
+        # s.model()
+
+        # TODO
         auth = self.authorised_task_to_users_axiom(dict_task_user_auth)
         original += auth
         a = z3.parse_smt2_string(original)
         s.add(a)
         # print "Result of authorised_task_to_users_axiom",
-        s.check()
-        s.model()
+        # s.check()
+        # s.model()
 
         original += self.bottom_user_execution_axiom
         original += self.not_bottom_user_execution_axiom
         bottom_user_axiom = z3.parse_smt2_string(original)
         s.add(bottom_user_axiom)
         # print "after adding execution bottom axiom",
-        s.check()
-        s.model
+        # s.check()
+        # s.model
 
         try:
             # Get all the before rules of the workflow
             original += self.add_before_tasks(dict_before)
+            # self.add_before_tasks_solver(dict_before, solver, before)
+            print "before"
+            # before = ""
+            count = 0
+            for t_key, t_value in dict_before.iteritems():
+                for t in t_value:
+                    # before += "(assert (! (before " + t_key + " " + t + ") :named before" + str(count) + "))\n"
+                    name = "before" + str(count)
+                    t_key_smt = Const(t_key, Task)
+                    t_smt = Const(t, Task)
+                    print t_key_smt
+                    print t_smt
+                    solver.assert_and_track(before(t_key_smt, t_smt), name)
+                    count += 1
+                    solver.check()
             original += self.add_seniority(dict_seniority)
+            # self.add_seniority_solver(dict_seniority, solver, seniority)
+            count = 0
+            for u_key, u_value in dict_seniority.iteritems():
+                for u in u_value:
+                    print u
+                    name = "seniority" + str(count)
+                    u_key_smt = Const(u_key, User)
+                    u_smt = Const(u, User)
+                    sen = seniority(u_key_smt, u_smt)
+                    solver.assert_and_track(sen, name)
+                    print solver.check()
+                    count += 1
             original += self.add_duration(dict_duration)
             a = z3.parse_smt2_string(original)
             s.add(a)
             # print "Result of before and seniority",
-            s.check()
-            s.model()
+            # s.check()
+            # s.model()
+
+            print solver.check()
+            print "add before tasks", solver.model()
 
             try:
                 # go through the options and check if they are possible given the basic model
                 if dict_eq_tasks:
                     smt_options = self.get_eq_task_options(dict_eq_tasks, tasks)
                     original += smt_options
+                    self.get_eq_task_options_solver(dict_eq_tasks, tasks, solver, executed, alloc_user, Task)
                 if dict_lt_tasks:
                     smt_options = self.get_lt_task_options(dict_lt_tasks, tasks)
                     original += smt_options
+                    self.get_lt_task_options_solver(dict_eq_tasks, tasks, solver, executed, alloc_user, Task, seniority)
                 if dict_gt_tasks:
                     smt_options = self.get_gt_task_options(dict_gt_tasks, tasks)
                     original += smt_options
+                    self.get_gt_task_options_solver(dict_eq_tasks, tasks, solver, executed, alloc_user, Task, seniority)
                 if dict_neq_tasks:
                     smt_options = self.get_neq_task_options(dict_neq_tasks, tasks)
                     original += smt_options
+                    self.get_neq_task_options_solver(dict_eq_tasks, tasks, solver, executed, alloc_user, Task)
 
-                o = z3.parse_smt2_string(original)
-                s.add(o)
+                # o = z3.parse_smt2_string(original)
+                # s.add(o)
                 # print "after options added check", s.check()
-                s.model()
+                # s.model()
+
+                print solver.check()
+                print solver.model()
 
                 try:
                     original += self.only_users(users)
                     o = z3.parse_smt2_string(original)
                     s.add(o)
                     # print "after adding only_users axiom", s.check()
-                    s.check()
-                    s.model()
+                    # s.check()
+                    # s.model()
+                    self.only_users_solver(users, solver)
+
+                    print "only users", solver.check()
+                    print solver.model()
 
                     try:
                         original += self.executable_sod(dict_sod)
@@ -779,7 +1018,8 @@ class p_c(object):
         model_map_task = []
         model_map_user = []
         solution_map = []
-        m = s.model()
+        # m = s.model()
+        m = solver.model()
         Task = DeclareSort('Task')
         for ms in m:
             if str(ms) in tasks:
