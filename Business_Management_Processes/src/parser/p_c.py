@@ -132,6 +132,7 @@ class p_c(object):
         print "dict_duration", dict_duration
         print "dict or", dict_or_task
         print "dict xor", dict_xor_task
+        print "user auth", dict_task_user_auth
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -196,11 +197,18 @@ class p_c(object):
                            | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END
         '''
         p[0] = [p[2]] + [p[5]]
+        print list(ast.literal_eval(p[5]))
+        # t = ast.literal_eval(p[5])
+        # l = []
+        # for i in t:
+        #     l.append(t)
+        # print l
         if not p[2].replace("'", "") in self.dict_seniority:
-            self.dict_task_user_auth[p[2].replace("'", "")] = []
-            self.dict_task_user_auth[p[2].replace("'", "")].append(p[4].replace("'", ""))
+            # self.dict_task_user_auth[p[2].replace("'", "")] = []
+            self.dict_task_user_auth[p[2].replace("'", "")] = list(ast.literal_eval(p[5]))
         else:
-            self.dict_task_user_auth[p[2].replace("'", "")].append(p[4].replace("'", ""))
+            self.dict_task_user_auth[p[2].replace("'", "")].append(p[5].replace("'", "")).split(",")
+            #self.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(","
 
     def p_user_list(self, p):
         '''user_list : NODE COMMA user_list
@@ -348,13 +356,12 @@ class p_c(object):
 
     def get_eq_task_options(self, d, task_list):
         smt_options = ""
-        count = 0
         for key, value in d.iteritems():
             # BOD
             for t in task_list:
                 if t in value:
                     smt_options += "(assert " \
-                                   "(! (=>" \
+                                   "(=>" \
                                    "(and (executed " \
                                    + key + \
                                    ") (executed " \
@@ -365,19 +372,17 @@ class p_c(object):
                                    ") (alloc_user " \
                                    + t + \
                                    "))" \
-                                   ") :named eqtask" + str(count) + ")" \
+                                   ")" \
                                    ")\n"
-                    count += 1
         return smt_options
 
     def get_lt_task_options(self, d, task_list):
         smt_options = ""
-        count = 0
         for key, value in d.iteritems():
             for t in task_list:
                 if t in value:
                     smt_options += "(assert " \
-                                   "(! (=>" \
+                                   "(=>" \
                                    "(and (executed " \
                                    + t + \
                                    ") (executed " \
@@ -388,19 +393,17 @@ class p_c(object):
                                    ") (alloc_user " \
                                    + key + \
                                    "))" \
-                                   ") :named lttask" + str(count) + ")" \
+                                   ")" \
                                    ")\n"
-                    count += 1
         return smt_options
 
     def get_gt_task_options(self, d, task_list):
         smt_options = ""
-        count = 0
         for key, value in d.iteritems():
             for t in task_list:
                 if t in value:
                     smt_options += "(assert " \
-                                   "(! (=>" \
+                                   "(=>" \
                                    "(and (executed " \
                                    + key + \
                                    ") (executed " \
@@ -411,19 +414,17 @@ class p_c(object):
                                    ") (alloc_user " \
                                    + t + \
                                    "))" \
-                                   ") :named gttask" + str(count) + ")" \
+                                   ")" \
                                    ")\n"
-                    count += 1
         return smt_options
 
     def get_neq_task_options(self, d, task_list):
         smt_options = ""
-        count = 0
         for key, value in d.iteritems():
             for t in task_list:
                 if t in value:
                     smt_options += "(assert " \
-                                   "(! (=>" \
+                                   "(=>" \
                                    "(and (executed " \
                                    + key + \
                                    ") (executed " \
@@ -434,15 +435,13 @@ class p_c(object):
                                    ") (alloc_user " \
                                    + t + \
                                    ")))" \
-                                   ") :named neqtask" + str(count) + ")" \
+                                    ")" \
                                    ")\n"
-                    count += 1
         return smt_options
 
     def executed_and_tasks(self, xor_task_list, or_task_list, task_list):
         executed_tasks = ""
         or_xor_tasks = []
-        count = 0
         for key, value in xor_task_list.iteritems():
             or_xor_tasks += value
         for key, value in or_task_list.iteritems():
@@ -450,78 +449,69 @@ class p_c(object):
         for p in task_list:
             if p not in or_xor_tasks:
                 # executed_tasks += "(assert (executed " + p + "))\n"
-                executed_tasks += "(assert (! (executed " + p + ") :named a" + str(count) + "))\n"
-                # ["(assert (! (executed " + p + ") :named a" + str(count) + "))\n" for i in rang]
-                count += 1
-                # ["string"+str(i) for i in range(11)]
+                executed_tasks += "(assert (executed " + p + "))\n"
         return executed_tasks
 
     def executed_or_tasks(self, or_task_list):
         or_execution = ""
-        count = 0
         for key, value in or_task_list.iteritems():
             key_list = [key]
-            or_execution += "(assert (! (or "
+            or_execution += "(assert (or "
             for elem in itertools.product(key_list, value):
                 or_execution += "(and (executed " + elem[0] + ") "
                 or_execution += "(executed " + elem[1] + "))"
-        or_execution += ") :named executed_or_tasks))"
+        or_execution += "))"
         return or_execution
 
     def executed_xor_tasks(self, xor_task_list):
         xor_execution = ""
         for key, value in xor_task_list.iteritems():
             key_list = [key]
-            xor_execution += "(assert (! (xor "
+            xor_execution += "(assert (xor "
             for elem in itertools.product(key_list, value):
                 xor_execution += "(and (executed " + elem[0] + ") "
                 xor_execution += "(executed " + elem[1] + "))"
-        xor_execution += ") :named executed_xor_tasks))\n"
+        xor_execution += "))\n"
         return xor_execution
 
     def unique_users_axiom(self, user_list):
         c = []
         unique_users = ""
-        count = 0
         for i in itertools.product(user_list, user_list):
             c.append(i)
         for cs in c:
             if cs[0] != cs[1]:
                 # s.push()
-                unique_users += "(assert (! (not(= " + cs[0] + " " + cs[1] + ")) :named unique_users" + str(count) + "))\n"
-                count += 1
+                unique_users += "(assert (not(= " + cs[0] + " " + cs[1] + ")))\n"
         return unique_users
 
     def authorised_task_to_users_axiom(self, auth_list):
         auth = ""
         for key, value in auth_list.iteritems():
-            auth += "(assert (! (or "
+            auth += "(assert (or "
             for u in value:
+                print value
                 auth += "(=(alloc_user " + key + ")" + u +")"
             auth += "(=(alloc_user " + key +") bottom)"
-            auth += ") :named authorised_task_to_users_axiom))\n"
+            auth += "))\n"
             # z3_str = z3.parse_smt2_string(original)
             # s.add(z3_str, "authorised_task_to_users_axiom")
         return auth
 
     def executable_sod(self, sod_list):
         sod = ""
-        count = 0
         for p in sod_list:
-            sod += "(assert (! (=> "
+            sod += "(assert (=> "
             sod += "(and (executed " + p[0] + ") (executed " + p[1] + "))"
-            sod += "(not (=(alloc_user " + p[0] + ") (alloc_user " + p[1] + ")))) :named exe_sod" + str(count) + "))\n"
-            count += 1
+            sod += "(not (=(alloc_user " + p[0] + ") (alloc_user " + p[1] + ")))))\n"
         return sod
 
     def executable_bod(self, bod_list):
         bod = ""
-        count = 0
         for p in bod_list:
-            bod += "(assert (! (=> "
+            bod += "(assert (=> "
             bod += "(and (executed " + p[0] + ") (executed " + p[1] + "))"
-            bod += "(=(alloc_user " + p[0] + ") (alloc_user " + p[1] + "))) :named exe_bod" + str(count) + ")\n"
-            count += 1
+            bod += "(=(alloc_user " + p[0] + ") (alloc_user " + p[1] + "))))\n"
         return bod
 
     def only_users(self, user_list):
@@ -546,28 +536,22 @@ class p_c(object):
 
     def add_before_tasks(self, before_tasks):
         before = ""
-        count = 0
         for t_key, t_value in before_tasks.iteritems():
             for t in t_value:
-                before += "(assert (! (before " + t_key + " " + t + ") :named before" + str(count) + "))\n"
-                count += 1
+                before += "(assert (before " + t_key + " " + t + "))\n"
         return before
 
     def add_seniority(self, seniority_list):
         seniority = ""
-        count = 0
         for u_key, u_value in seniority_list.iteritems():
             for u in u_value:
-                seniority += "(assert (! (seniority " + u_key + " " + u + ") :named seniority" + str(count) + ")) \n"
-                count += 1
+                seniority += "(assert (seniority " + u_key + " " + u + ")) \n"
         return seniority
 
     def add_duration(self, duration_list):
         duration = ""
-        count = 0
         for task, dur in duration_list.iteritems():
-            duration += "(assert (! (= (duration " + task + ")" + dur + ") :named duration" + str(count) + "))\n"
-            count += 1
+            duration += "(assert (= (duration " + task + ")" + dur + "))\n"
         return duration
 
     def main(self, prompt_input):
@@ -640,6 +624,7 @@ class p_c(object):
 
         auth = self.authorised_task_to_users_axiom(dict_task_user_auth)
         original += auth
+        print original
         a = z3.parse_smt2_string(original)
         s.add(a)
         # print "Result of authorised_task_to_users_axiom",
@@ -695,6 +680,7 @@ class p_c(object):
 
                     try:
                         original += self.executable_sod(dict_sod)
+                        original += self.executable_bod(dict_bod)
                         sod = z3.parse_smt2_string(original)
                         s.add(sod)
                         # print "after execution sod added check",
@@ -778,8 +764,6 @@ class p_c(object):
             print "z3 error", e
             print s.unsat_core()
 
-        s.check()
-
         if dict_duration:
             completion_time = "(declare-const completion_time Real)"
             original += completion_time
@@ -800,27 +784,30 @@ class p_c(object):
         c = end_time - start_time
         print "TIME TAKEN:", c
 
-        print "COMPLETION TIME"
+        print s.check()
+        print s.model()
+        # print original
+
 
         #Assignment and verification of the model
-        model_map_task = []
-        model_map_user = []
-        solution_map = []
-        m = s.model()
-        Task = DeclareSort('Task')
-        for ms in m:
-            if str(ms) in tasks:
-                model_map_task.append((ms, m[ms]))
-            if str(ms) in users:
-                model_map_user.append((ms, m[ms]))
-            str_ms = str(ms)
-            if str_ms == "alloc_user":
-                for model_task in model_map_task:
-                    t = Const(str(model_task[0]), Task)
-                    user_solution = m.eval(ms(t))
-                    for model_user in model_map_user:
-                        if str(model_user[1]) == str(user_solution):
-                            solution_map.append((t, model_user[0]))
+        # model_map_task = []
+        # model_map_user = []
+        # solution_map = []
+        # m = s.model()
+        # Task = DeclareSort('Task')
+        # for ms in m:
+        #     if str(ms) in tasks:
+        #         model_map_task.append((ms, m[ms]))
+        #     if str(ms) in users:
+        #         model_map_user.append((ms, m[ms]))
+        #     str_ms = str(ms)
+        #     if str_ms == "alloc_user":
+        #         for model_task in model_map_task:
+        #             t = Const(str(model_task[0]), Task)
+        #             user_solution = m.eval(ms(t))
+        #             for model_user in model_map_user:
+        #                 if str(model_user[1]) == str(user_solution):
+        #                     solution_map.append((t, model_user[0]))
 
         if s.check() == sat:
             verified = True
@@ -828,14 +815,23 @@ class p_c(object):
             verify_userlist.remove("bottom")
             for u in itertools.product(verify_userlist, verify_userlist):
                 verify_sod = self.verify_result_sod(original, s, u)
-                verify_bod = self.verify_result_bod(original, s, u)
-                verify_seniority = self.verify_result_seniority(original, s, u)
-                verified_ = verify_sod and verify_bod and verify_seniority
+                if not verify_sod:
+                    print "verify sod", verify_sod, u
+                # verify_bod = self.verify_result_bod(original, s, u, False)
+                # verify_bod = self.verify_result_bod(original, s, u)
+                # if not verify_bod:
+                #     print "verify bod", verify_bod, u
+                # verify_seniority = self.verify_result_seniority(original, s, u)
+                # if not verify_seniority:
+                #     print "verify seniority", verify_seniority, u
+                # verified_ = verify_sod and verify_bod #and verify_seniority
                 # print "this user pair has verification:", verified_
-                verified = verified and verified_
+                # verified = verified and verified_
+                verify = verify_sod
 
         else:
-            verified = False
+            return unsat
+
         if verified:
             final_solver = z3.Solver()
             final = z3.parse_smt2_string(original)
@@ -845,10 +841,9 @@ class p_c(object):
             print "VERIFIED!!!!!"
             s.check()
             print s.model()
+            final_time = datetime.datetime.now()
+            print "After verification", final_time - start_time
             return final_user_model
-        else:
-            print "UNVERIFIED!!!"
-            return str(unsat)
 
     def worst_time_completion(self, x, delta, s):
         res = s.check()
@@ -899,8 +894,6 @@ class p_c(object):
         s.pop()
         return y
 
-    # Pass the model and check that it is consistent with the input
-    # Sod verification: if it's the same user, should return unsat
     def verify_result_sod(self, original, s, u):
         verify_original = original[:]
         verify = True
@@ -944,7 +937,8 @@ class p_c(object):
                     # print "FAIL - unverified in unequal"
                     s.pop()
                     # Check why it's being unverified by checking seniority constraints
-                    verify = self.verify_result_seniority(original, s, u)
+                    # verify = self.verify_result_seniority(original, s, u) or \
+                    self.verify_result_bod(original, s, u)
                     # verify = False
                     verify_original += "(pop)\n"
         return verify
