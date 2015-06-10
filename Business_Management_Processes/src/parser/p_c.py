@@ -62,6 +62,8 @@ class p_c(object):
                                       ")" \
                                       "))\n"
 
+    dict_worst_time_completion_lists = []
+
     def __init__(self):
         self.users = []
         self.tasks = []
@@ -80,6 +82,7 @@ class p_c(object):
         self.dict_bod = []
         self.allocate_users = False
         self.dict_duration = {}
+        self.verification = True
 
     def p_prog(self, p):
         '''prog : begin
@@ -101,6 +104,7 @@ class p_c(object):
         global allocate_users
         global dict_before
         global dict_duration
+        global verification
         users = self.users
         tasks = self.tasks
         dict_eq_tasks = self.dict_eq_tasks
@@ -118,6 +122,7 @@ class p_c(object):
         allocate_users = self.allocate_users
         dict_before = self.dict_before
         dict_duration = self.dict_duration
+        verification = self.verification
         print "dict gt tasks", dict_gt_tasks
         print "dict lt tasks", dict_lt_tasks
         print "dict eq tasks", dict_eq_tasks
@@ -133,6 +138,7 @@ class p_c(object):
         print "dict or", dict_or_task
         print "dict xor", dict_xor_task
         print "user auth", dict_task_user_auth
+        print verification
 
     def p_begin(self, p):
         '''begin : TASKS COLON task_node USERS COLON user_node
@@ -147,8 +153,11 @@ class p_c(object):
                  | SENIORITY COLON user_node_pair
                  | AUTHORISED COLON authorised_pair
                  | EXECUTION COLON fork
+                 | VERIFICATION COLON OFF END
         '''
         p[0] = p[3]
+        if p[1] == 'Verification' and p[3] == 'Off':
+            self.verification = False
 
     def p_before_task_pair(self, p):
         '''before_task_node_pair : LPAREN NODE COMMA NODE RPAREN END rules
@@ -554,8 +563,8 @@ class p_c(object):
         print s
 
         lexer.input(s)
-        for token in lexer:
-                print(token)
+        # for token in lexer:
+        #         print(token)
         t = parser.parse(s, lexer=lexer)
         print t
 
@@ -615,7 +624,7 @@ class p_c(object):
         bottom_user_axiom = z3.parse_smt2_string(original)
         s.add(bottom_user_axiom)
         # print "after adding execution bottom axiom",
-        print s.check()
+        s.check()
         s.model
 
         try:
@@ -745,7 +754,7 @@ class p_c(object):
             for t in tasks:
                 if t not in dict_duration:
                     original += "(assert (= (duration " + t + ") 0))\n"
-            print dict_duration
+            # print dict_duration
             completion_time = "(declare-const completion_time Real)\n"
             original += completion_time
             total_executed_task_duration = "(assert (= completion_time " \
@@ -772,40 +781,46 @@ class p_c(object):
         # print original
 
         if s.check() == sat:
-            verified = True
-            verify_userlist = users[:]
-            verify_userlist.remove("bottom")
-            for u in itertools.product(verify_userlist, verify_userlist):
-                verify_sod = self.verify_result_sod(original, s, u)
-                if not verify_sod:
-                    print "verify sod", verify_sod, u
-                # verify_bod = self.verify_result_bod(original, s, u, False)
-                # verify_bod = self.verify_result_bod(original, s, u)
-                # if not verify_bod:
-                #     print "verify bod", verify_bod, u
-                # verify_seniority = self.verify_result_seniority(original, s, u)
-                # if not verify_seniority:
-                #     print "verify seniority", verify_seniority, u
-                # verified_ = verify_sod and verify_bod #and verify_seniority
-                # print "this user pair has verification:", verified_
-                # verified = verified and verified_
-                verified = verify_sod
+            if verification:
+                verified = True
+                verify_userlist = users[:]
+                verify_userlist.remove("bottom")
+                for u in itertools.product(verify_userlist, verify_userlist):
+                    verify_sod = self.verify_result_sod(original, s, u)
+                    # if not verify_sod:
+                    #     print "verify sod", verify_sod, u
+                    # verify_bod = self.verify_result_bod(original, s, u, False)
+                    # verify_bod = self.verify_result_bod(original, s, u)
+                    # if not verify_bod:
+                    #     print "verify bod", verify_bod, u
+                    # verify_seniority = self.verify_result_seniority(original, s, u)
+                    # if not verify_seniority:
+                    #     print "verify seniority", verify_seniority, u
+                    # verified_ = verify_sod and verify_bod #and verify_seniority
+                    # print "this user pair has verification:", verified_
+                    # verified = verified and verified_
+                    verified = verify_sod
+                    if verified:
+                        final_solver = z3.Solver()
+                        final = z3.parse_smt2_string(original)
+                        final_solver.add(final)
+                        final_solver.check()
+                        final_user_model = self.evaluate_final_model(final_solver.model(), worst_total_duration)
+                        print "VERIFIED!!!!!"
+                        s.check()
+                        print s.model()
+                        final_time = datetime.datetime.now()
+                        print "After verification", final_time - start_time
+                        return final_user_model
+            else:
+                print "without verification"
+                final_user_model = self.evaluate_final_model(s.model(), worst_total_duration)
+                return final_user_model
 
         else:
             return unsat
 
-        if verified:
-            final_solver = z3.Solver()
-            final = z3.parse_smt2_string(original)
-            final_solver.add(final)
-            final_solver.check()
-            final_user_model = self.evaluate_final_model(final_solver.model(), worst_total_duration)
-            print "VERIFIED!!!!!"
-            s.check()
-            print s.model()
-            final_time = datetime.datetime.now()
-            print "After verification", final_time - start_time
-            return final_user_model
+
 
     def worst_time_completion(self, x, delta, s):
         res = s.check()
@@ -813,7 +828,6 @@ class p_c(object):
             return unsat
         else:
             m = s.model()
-            # print "model in wct", m
         # Finding the upper bound time
         x_s = Real(x)
         # Unbounded search
@@ -844,18 +858,40 @@ class p_c(object):
         duration_total = 0
         dur_tot = Real('duration_total')
         Task = DeclareSort('Task')
+        print m
+        worst_time_completion_tasks = []
+        model_user_map = {}
         for ms in m:
+            if str(ms) in users:
+                model_user_map[ms] = m[ms]
+            if "alloc_user" in str(ms) and "!" not in str(ms):
+                model_list_list = []
+                for ts in tasks:
+                    t = Const(str(ts), Task)
+                    user_solution = m.eval(ms(t))
+                    for u_key, u_value in model_user_map.iteritems():
+                        if str(u_value) == str(user_solution):
+                            worst_time_completion_tasks.append((u_key, t))
             if "executed" in str(ms) and "!" not in str(ms):
                 for ts in tasks:
                     t = Const(ts, Task)
                     for mss in m:
                         if "duration" in str(mss):
                             duration_total = duration_total + m.eval(mss(t))
+        print "model user map", model_user_map
+        p_c.worst_time_completion_list = worst_time_completion_tasks
+        print p_c.worst_time_completion_list
         s.add(dur_tot >= duration_total)
         if s.check() == unsat:
             return unsat
         s.pop()
         return y
+
+    def merge_dicts(*dict_args):
+        result = {}
+        for dictionary in dict_args:
+            result.update(dictionary)
+        return result
 
     def verify_result_sod(self, original, s, u):
         verify_original = original[:]
@@ -1078,6 +1114,7 @@ class p_c(object):
                         senior_users_list.append(u)
                 model_result_map["seniority"] = senior_users_list
         model_result_map["worst time completion"] = round(total_worst_duration)
+        model_result_map["worst time completion allocation"] = p_c.worst_time_completion_list
         return model_result_map
 
     def prompt(self):
