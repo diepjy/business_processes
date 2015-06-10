@@ -197,18 +197,10 @@ class p_c(object):
                            | LPAREN NODE COMMA LSQPAREN user_list RSQPAREN RPAREN END
         '''
         p[0] = [p[2]] + [p[5]]
-        print list(ast.literal_eval(p[5]))
-        # t = ast.literal_eval(p[5])
-        # l = []
-        # for i in t:
-        #     l.append(t)
-        # print l
         if not p[2].replace("'", "") in self.dict_seniority:
-            # self.dict_task_user_auth[p[2].replace("'", "")] = []
             self.dict_task_user_auth[p[2].replace("'", "")] = list(ast.literal_eval(p[5]))
         else:
             self.dict_task_user_auth[p[2].replace("'", "")].append(p[5].replace("'", "")).split(",")
-            #self.dict_or_task[p[3].replace("'", "")] = (p[6].replace("'", "")).split(","
 
     def p_user_list(self, p):
         '''user_list : NODE COMMA user_list
@@ -460,7 +452,7 @@ class p_c(object):
             for elem in itertools.product(key_list, value):
                 or_execution += "(and (executed " + elem[0] + ") "
                 or_execution += "(executed " + elem[1] + "))"
-        or_execution += "))"
+            or_execution += "))\n"
         return or_execution
 
     def executed_xor_tasks(self, xor_task_list):
@@ -490,12 +482,9 @@ class p_c(object):
         for key, value in auth_list.iteritems():
             auth += "(assert (or "
             for u in value:
-                print value
                 auth += "(=(alloc_user " + key + ")" + u +")"
             auth += "(=(alloc_user " + key +") bottom)"
             auth += "))\n"
-            # z3_str = z3.parse_smt2_string(original)
-            # s.add(z3_str, "authorised_task_to_users_axiom")
         return auth
 
     def executable_sod(self, sod_list):
@@ -570,16 +559,7 @@ class p_c(object):
         t = parser.parse(s, lexer=lexer)
         print t
 
-        # x = Int('x')
-        # p3 = Bool('p3')
         s = Solver()
-        s.set(unsat_core=True)
-        # s.assert_and_track(x > 0,  'p1')
-        # s.assert_and_track(x != 1, 'p2')
-        # s.assert_and_track(x < 0,  p3)
-        # print(s.check())
-        # c = s.unsat_core()
-        # print c
 
         # smt_output = "(set-option :produce-unsat-cores true)" + \
         #     p_c.smt_sort_task + \
@@ -624,7 +604,6 @@ class p_c(object):
 
         auth = self.authorised_task_to_users_axiom(dict_task_user_auth)
         original += auth
-        print original
         a = z3.parse_smt2_string(original)
         s.add(a)
         # print "Result of authorised_task_to_users_axiom",
@@ -636,7 +615,7 @@ class p_c(object):
         bottom_user_axiom = z3.parse_smt2_string(original)
         s.add(bottom_user_axiom)
         # print "after adding execution bottom axiom",
-        s.check()
+        print s.check()
         s.model
 
         try:
@@ -720,12 +699,12 @@ class p_c(object):
                                         s.model()
                                 except Z3Exception as e:
                                     print "fail at executed or tasks", e
-                                    original += "(check-sat)"
-                                    original += "(get-unsat-core)"
-                                    smt_str = z3.parse_smt2_string(original)
-                                    s.add(smt_str)
-                                    print s.check()
-                                    print s.unsat_core()
+                                    # original += "(check-sat)"
+                                    # original += "(get-unsat-core)"
+                                    # smt_str = z3.parse_smt2_string(original)
+                                    # s.add(smt_str)
+                                    # print s.check()
+                                    # print s.unsat_core()
                                     # print s.unsat_core()
                                     # print len(s.unsat_core())
 
@@ -733,48 +712,52 @@ class p_c(object):
                                 print "Z3 error: model not avalible after adding executed tasks in and: error:", e
                                 # original += "(check-sat)"
                                 # original += "(get-unsat-core)"
-                                smt_str = z3.parse_smt2_string(original)
-                                s.add(smt_str)
-                                print s.check()
-                                print s.unsat_core()
-                                print original
+                                # smt_str = z3.parse_smt2_string(original)
+                                # s.add(smt_str)
+                                # print s.check()
+                                # print s.unsat_core()
+                                # print original
 
                         except Z3Exception as e:
                             print "not all input users are unique", e
-                            smt_str = z3.parse_smt2_string(original)
-                            s.add(smt_str)
-                            print s.check()
-                            print s.unsat_core()
-                            print original
+                            # smt_str = z3.parse_smt2_string(original)
+                            # s.add(smt_str)
+                            # print s.check()
+                            # print s.unsat_core()
+                            # print original
 
                     except Z3Exception as e:
                         print "executable SOD fail", e
-                        print s.unsat_core()
-                        print original
+                        # print s.unsat_core()
+                        # print original
 
                 except Z3Exception as e:
                     print "failed to add only_users axiom", e
-                    print s.unsat_core()
 
             except Z3Exception as e:
                 print "failed to sat with options", e
-                print s.unsat_core()
 
         except Z3Exception as e:
             print "z3 error", e
-            print s.unsat_core()
 
         if dict_duration:
-            completion_time = "(declare-const completion_time Real)"
+            # fill the rest of the durations as 0 if they haven't been specified
+            for t in tasks:
+                if t not in dict_duration:
+                    original += "(assert (= (duration " + t + ") 0))\n"
+            print dict_duration
+            completion_time = "(declare-const completion_time Real)\n"
             original += completion_time
             total_executed_task_duration = "(assert (= completion_time " \
                                            "(+"
             original += total_executed_task_duration
             for t in tasks:
                 original += "(ite (executed " + t + ") (duration " + t + ") 0)"
-            original += ")))"
+            original += ")))\n"
             c = z3.parse_smt2_string(original)
             s.add(c)
+
+            # print original
 
             worst_total_duration = self.worst_time_completion("completion_time", 0.001, s)
         else:
@@ -784,30 +767,9 @@ class p_c(object):
         c = end_time - start_time
         print "TIME TAKEN:", c
 
-        print s.check()
-        print s.model()
+        # print s.check()
+        # print s.model()
         # print original
-
-
-        #Assignment and verification of the model
-        # model_map_task = []
-        # model_map_user = []
-        # solution_map = []
-        # m = s.model()
-        # Task = DeclareSort('Task')
-        # for ms in m:
-        #     if str(ms) in tasks:
-        #         model_map_task.append((ms, m[ms]))
-        #     if str(ms) in users:
-        #         model_map_user.append((ms, m[ms]))
-        #     str_ms = str(ms)
-        #     if str_ms == "alloc_user":
-        #         for model_task in model_map_task:
-        #             t = Const(str(model_task[0]), Task)
-        #             user_solution = m.eval(ms(t))
-        #             for model_user in model_map_user:
-        #                 if str(model_user[1]) == str(user_solution):
-        #                     solution_map.append((t, model_user[0]))
 
         if s.check() == sat:
             verified = True
@@ -827,7 +789,7 @@ class p_c(object):
                 # verified_ = verify_sod and verify_bod #and verify_seniority
                 # print "this user pair has verification:", verified_
                 # verified = verified and verified_
-                verify = verify_sod
+                verified = verify_sod
 
         else:
             return unsat
@@ -851,6 +813,7 @@ class p_c(object):
             return unsat
         else:
             m = s.model()
+            # print "model in wct", m
         # Finding the upper bound time
         x_s = Real(x)
         # Unbounded search
@@ -906,6 +869,7 @@ class p_c(object):
             verify = False
             return verify
         for sod in dict_sod:
+            # print verify_original
             v = z3.parse_smt2_string(verify_original)
             s.add(v)
             s.push()
@@ -941,6 +905,8 @@ class p_c(object):
                     self.verify_result_bod(original, s, u)
                     # verify = False
                     verify_original += "(pop)\n"
+        if not dict_sod:
+            verify = self.verify_result_bod(original, s, u)
         return verify
 
     def verify_result_bod(self, original, s, u):
@@ -972,6 +938,8 @@ class p_c(object):
                     verify = self.verify_result_seniority(original, s, u)
             s.pop()
             verify_original += "(pop)\n"
+        if not dict_bod:
+            verify = self.verify_result_seniority(original, s, u)
         return verify
 
     def verify_result_seniority(self, original, s, u):
