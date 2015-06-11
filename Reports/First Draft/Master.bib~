@@ -1,3 +1,9 @@
+@manual{analysis,
+      title  = "Dynamic Analysis vs. Static Analysis",
+      author = "Intel Inspector",
+      note    = "\url{https://software.intel.com/sites/products/documentation/doclib/iss/2013/inspector/lin/ug_docs/GUID-E901AB30-1590-4706-94B1-9CD4736D8D2D.htm}",
+      year   = "2013, (accessed June, 2015)"
+    }
 @manual{Compliance,
       title  = "Breaking the law: study shows that big business is failing to stay compliant over social media",
       author = "Chloe Green",
@@ -132,3 +138,9 @@ through LTL(F) model checking",
     year      = "2013",
     note     = "(accessed November, 2015)",
 }
+@manual{SMTBenchmark,
+      title  = "SMT-LIB The satisfiability Modulo Theories Library - Benchmarks",
+      author = "The SMT-LIB Initiative ",
+      note    = "\url{http://smtlib.cs.uiowa.edu/benchmarks.shtml}",
+      year   = "(accessed April, 2015)"
+    }

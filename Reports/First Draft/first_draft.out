@@ -1,0 +1,70 @@
+\BOOKMARK [0][-]{chapter*.1}{Contents}{}% 1
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 2
+\BOOKMARK [1][-]{section.1.1}{Project Aims}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.2}{Approach}{chapter.1}% 4
+\BOOKMARK [1][-]{section.1.3}{Accomplishments}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.4}{Report Structure}{chapter.1}% 6
+\BOOKMARK [0][-]{chapter.2}{Background}{}% 7
+\BOOKMARK [1][-]{section.2.1}{Workflows}{chapter.2}% 8
+\BOOKMARK [2][-]{subsection.2.1.1}{Tasks}{section.2.1}% 9
+\BOOKMARK [2][-]{subsection.2.1.2}{Users}{section.2.1}% 10
+\BOOKMARK [1][-]{section.2.2}{Business and Security Rules}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.3}{Satisfiability Modulo Theories \(SMT\)}{chapter.2}% 12
+\BOOKMARK [1][-]{section.2.4}{Z3}{chapter.2}% 13
+\BOOKMARK [2][-]{subsection.2.4.1}{Basics}{section.2.4}% 14
+\BOOKMARK [2][-]{subsection.2.4.2}{Functions}{section.2.4}% 15
+\BOOKMARK [2][-]{subsection.2.4.3}{Stack}{section.2.4}% 16
+\BOOKMARK [2][-]{subsection.2.4.4}{Sorts}{section.2.4}% 17
+\BOOKMARK [2][-]{subsection.2.4.5}{Quantifiers}{section.2.4}% 18
+\BOOKMARK [2][-]{subsection.2.4.6}{Satisfiability and Validity}{section.2.4}% 19
+\BOOKMARK [0][-]{chapter.3}{Theory of Business Rules}{}% 20
+\BOOKMARK [1][-]{section.3.1}{Business Management Workflows}{chapter.3}% 21
+\BOOKMARK [1][-]{section.3.2}{Tasks and Users}{chapter.3}% 22
+\BOOKMARK [1][-]{section.3.3}{User Allocation}{chapter.3}% 23
+\BOOKMARK [1][-]{section.3.4}{Separation of Duty}{chapter.3}% 24
+\BOOKMARK [1][-]{section.3.5}{Binding of Duty}{chapter.3}% 25
+\BOOKMARK [1][-]{section.3.6}{Seniority}{chapter.3}% 26
+\BOOKMARK [1][-]{section.3.7}{Worst Time Completion}{chapter.3}% 27
+\BOOKMARK [1][-]{section.3.8}{Temporal Order of Task Execution}{chapter.3}% 28
+\BOOKMARK [1][-]{section.3.9}{Task Execution \(and, or, exclusive-or\)}{chapter.3}% 29
+\BOOKMARK [1][-]{section.3.10}{Authorised User Allocation}{chapter.3}% 30
+\BOOKMARK [0][-]{chapter.4}{Implementation}{}% 31
+\BOOKMARK [1][-]{section.4.1}{Project Focus}{chapter.4}% 32
+\BOOKMARK [1][-]{section.4.2}{Application Outline}{chapter.4}% 33
+\BOOKMARK [1][-]{section.4.3}{The Language}{chapter.4}% 34
+\BOOKMARK [2][-]{subsection.4.3.1}{Tasks and Users}{section.4.3}% 35
+\BOOKMARK [2][-]{subsection.4.3.2}{Separation of Duty}{section.4.3}% 36
+\BOOKMARK [2][-]{subsection.4.3.3}{Binding of Duty}{section.4.3}% 37
+\BOOKMARK [2][-]{subsection.4.3.4}{Seniority}{section.4.3}% 38
+\BOOKMARK [2][-]{subsection.4.3.5}{Worst Time to Completion}{section.4.3}% 39
+\BOOKMARK [2][-]{subsection.4.3.6}{Temporal Order of Execution}{section.4.3}% 40
+\BOOKMARK [2][-]{subsection.4.3.7}{Task Execution}{section.4.3}% 41
+\BOOKMARK [2][-]{subsection.4.3.8}{Authorised Users}{section.4.3}% 42
+\BOOKMARK [1][-]{section.4.4}{Lexer and Parser}{chapter.4}% 43
+\BOOKMARK [2][-]{subsection.4.4.1}{PLY}{section.4.4}% 44
+\BOOKMARK [2][-]{subsection.4.4.2}{Lexer}{section.4.4}% 45
+\BOOKMARK [2][-]{subsection.4.4.3}{Parser}{section.4.4}% 46
+\BOOKMARK [1][-]{section.4.5}{Code Generation}{chapter.4}% 47
+\BOOKMARK [2][-]{subsection.4.5.1}{Before Axioms}{section.4.5}% 48
+\BOOKMARK [2][-]{subsection.4.5.2}{Seniority Axioms}{section.4.5}% 49
+\BOOKMARK [2][-]{subsection.4.5.3}{Execution of Tasks in Worflows}{section.4.5}% 50
+\BOOKMARK [2][-]{subsection.4.5.4}{Unique Users}{section.4.5}% 51
+\BOOKMARK [2][-]{subsection.4.5.5}{Worst Time Completion}{section.4.5}% 52
+\BOOKMARK [1][-]{section.4.6}{Validation and Completeness of Z3 Model}{chapter.4}% 53
+\BOOKMARK [2][-]{subsection.4.6.1}{Separation of Duty}{section.4.6}% 54
+\BOOKMARK [2][-]{subsection.4.6.2}{Binding of Duty}{section.4.6}% 55
+\BOOKMARK [2][-]{subsection.4.6.3}{Seniority}{section.4.6}% 56
+\BOOKMARK [2][-]{subsection.4.6.4}{Lower Bound Worst Time Completion}{section.4.6}% 57
+\BOOKMARK [1][-]{section.4.7}{Handling The Result}{chapter.4}% 58
+\BOOKMARK [2][-]{subsection.4.7.1}{Making It Human Readable}{section.4.7}% 59
+\BOOKMARK [1][-]{section.4.8}{Unsatisfiable Core}{chapter.4}% 60
+\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 61
+\BOOKMARK [1][-]{section.5.1}{Results From Z3}{chapter.5}% 62
+\BOOKMARK [1][-]{section.5.2}{Verification}{chapter.5}% 63
+\BOOKMARK [1][-]{section.5.3}{Testing}{chapter.5}% 64
+\BOOKMARK [0][-]{chapter.6}{Conclusion}{}% 65
+\BOOKMARK [1][-]{section.6.1}{Achievements}{chapter.6}% 66
+\BOOKMARK [1][-]{section.6.2}{Future Work}{chapter.6}% 67
+\BOOKMARK [1][-]{section.6.3}{Future Work for a Product}{chapter.6}% 68
+\BOOKMARK [0][-]{chapter.7}{Appendix A: How to Use and Result Returned}{}% 69
+\BOOKMARK [0][-]{chapter*.34}{Bibliography}{}% 70

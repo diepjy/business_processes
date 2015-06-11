@@ -10,7 +10,7 @@
 \usepackage{listings}
 \usepackage{lipsum}
 \usepackage{mdframed}
-\usepackage{url}
+\usepackage[hyphens]{url}
 \usepackage{cite}
 \usepackage{dirtytalk}
 \usepackage{fixltx2e}
@@ -1320,6 +1320,15 @@ Users: `alice', `bob', `carol';
 Authorised: (`price_large_order', [`alice', `bob'])
 \end{lstlisting}
 
+\subsection{Verification}
+We enable the user to turn of verification if they are not interested in verifying that the model generated is complete with the user input.
+\begin{lstlisting} [frame=single]
+Tasks: `receive_order', `price_large_order',
+	`price_small_order', `checkout'; 
+Users: `alice', `bob', `carol';
+Verification:Off
+\end{lstlisting}
+
 \section{Lexer and Parser} 
 \subsection{PLY}
 The interpreter is designed using PLY\cite{ply} (Python Lex-Yacc) which is a Python module. It is made up of two compiler construction tools: lex and yacc\cite{plylexyacc}. Yacc is ``Yet another compiler compiler'' and lex is the lexical analyser generator. The type of parsing used in PLY is LALR(1)\cite{lalr} Look-Ahead Left-Right parser.\\
@@ -1331,8 +1340,6 @@ We considered other lexers and parsers, but unfortunately, their specifications 
 \item Antlr\cite{antlr} - It has a good lexer and parser with regular expressions. It generates a parsing tree visitor which is useful for code generation. However, the language that we have developed in this project is quite basic and does not need such complicated tools.
 \item Pyparsing\cite{pyparsing} - It has an alternative approach to creating and executing simple grammars. It is different to traditional lex and yacc approach and does not use regular expressions. Therefore it may have been too heavy weight for this project. The main aim of this project is to focus on simple grammars with regular expressions.
 \end{itemize}
-
-\newpage
 
 \subsection{Lexer}
 The lexer uses the PLY lexer module. It takes in a list of tokens and reserved words that are exclusive to the language which the user is not allowed to use. We will later use these tokens and reserved words to apply parsing rules to them. Reserved words are keywords that are used in the syntax and the tokens are symbols.
@@ -1409,9 +1416,6 @@ user_node : NODE end
 end : END
     | END begin
 \end{lstlisting}
-
-PLY does some error handling for the lexer and parser\\
-%TODO
 
 As the input is being parsed, reduced and shifted, these are being added to a symbol table ready to generate the correct code. The symbol table is made up of dictionaries, where each entry has a key and value. The key is the task or user that we have applied a rule on, and the value is a list of tasks or users that are used within the rule. \\
 
@@ -1762,7 +1766,6 @@ def verify_result_sod(original, s, u):
 		v = z3.parse_smt2_string(verify_original)
 		s.add(v)
 		s.push()
-		verify_original += "(push)\n"
 		verify_original += "(assert (and (executed " + sod[0] +") (= (alloc_user " + sod[0] +")" + u[0] + ")))\n"
 		verify_original += "(assert (and (executed " + sod[1] +") (= (alloc_user " + sod[1] +")" + u[1] + ")))\n"
 		v = z3.parse_smt2_string(verify_original)
@@ -1771,18 +1774,16 @@ def verify_result_sod(original, s, u):
 			if s.check() == sat:
 				verify = False
 				s.pop()
-				verify_original += "(pop)\n"
 			else:
 				s.pop()
-				verify_original += "(pop)\n"
 		elif u[0] != u[1]:
 			if s.check() == sat:
 				s.pop()
-				verify_original += "(pop)\n"
 			else:
 				s.pop()
-				verify = self.verify_result_seniority(original, s, u)
-				verify_original += "(pop)\n"
+				self.verify_result_bod(original, s, u)
+	if not dict_sod:
+            verify = self.verify_result_bod(original, s, u)
 	return verify
 \end{lstlisting}
 \caption{Verification of separation of duty}
@@ -1824,6 +1825,8 @@ def verify_result_bod(original, s, u):
 				verify = self.verify_result_seniority(original, s, u)
 		s.pop()
 		verify_original += "(pop)\n"
+	if not dict_bod:
+	verify = self.verify_result_seniority(original, s, u)
 	return verify
 \end{lstlisting}
 \caption{Verification of binding of duty}
@@ -2006,7 +2009,16 @@ Finally after going through the entire model, we piece together the final result
 
 \begin{figure}[!h]
 \begin{lstlisting}[frame=single]
-{'seniority': [('bob', 'carol'), ('alice', 'carol'), ('alice', 'bob')], 'alloc_user': [[(carol, receive_order), (alice, price_small_order), (alice, checkout), (alice, price_large_order)]], 'executed_tasks': [receive_order, price_small_order, checkout, price_large_order], 'worst time completion': 170.0, 'before': []}
+worst time completion allocation:[(alice, checkout), 
+	(bob, price_small_order), (bob, price_large_order), 
+	(carol, receive_order)]
+alloc_user:[(alice, checkout), (carol, receive_order), 
+	(alice, price_small_order), (alice, price_large_order)]
+executed_tasks:[checkout, receive_order, price_small_order, price_large_order]
+worst time completion:170.0
+seniority:[('bob', 'carol'), ('alice', 'carol'), ('alice', 'bob')]
+before:[]
+
 \end{lstlisting}
 \caption{Human readable output}
 \label{fig:Human readable output}
@@ -2021,7 +2033,6 @@ Finally after going through the entire model, we piece together the final result
 def evaluate_final_model(model, total_worst_duration):
 	model_user_map = { }
 	model_task_map = { }
-	model_list = []
 	model_result_map = { }
 	Task = DeclareSort('Task')
 	User = DeclareSort('User')
@@ -2047,8 +2058,6 @@ def evaluate_final_model(model, total_worst_duration):
 				for u_key, u_value in model_user_map.iteritems():
 					if str(u_value) == str(user_solution):
 						model_list_list.append((u_key, t_key))
-			if model_list_list not in model_list:
-				model_list.append(model_list_list)
 				model_result_map["alloc_user"] = model_list
 		if "executed" in str(ms):
 			executed_task_list = []
@@ -2068,10 +2077,46 @@ def evaluate_final_model(model, total_worst_duration):
 					senior_users_list.append(u)
 			model_result_map["seniority"] = senior_users_list
 	model_result_map["worst time completion"] = round(total_worst_duration)
-	return model_result_map
+	model_map_str = ''.join("%s:%r\n" % (key,val) for (key,val) in model_result_map.iteritems())
+	return model_map_str
 \end{lstlisting}
 \caption{Making the model more human readable}
 \label{fig:Making the model more human readable}
+\end{figure}
+
+\subsection{Including Worst Time Completion Task Allocation}
+What is interesting to businesses is calculating worst completion time of a workflow, so they can see how long executing a workflow can get. It is useful to give back to the user allocations to tasks lead up to this worst time completion. \\
+
+When we calculate the worst time completion, we must parse the task allocations before we return from the method as this is all calculated in a push-pop frame. We parse the model similarly to how we parse the output to make it more human readable. We then take this rewritten allocation and append it to the result we return back to the user. This is shown in Figure~\ref{fig:Human readable worst time allocations}\\
+
+\begin{figure}
+\lstset{numbers=left, showspaces=false,
+    showstringspaces=false, tabsize=2, breaklines=true,
+    xleftmargin=5.0ex,
+}
+\begin{lstlisting}[frame=single]
+worst_time_completion_tasks = []
+model_user_map = {}
+	for ms in m:
+		if str(ms) in users:
+			model_user_map[ms] = m[ms]
+		if "alloc_user" in str(ms) and "!" not in str(ms):
+			for ts in tasks:
+				t = Const(str(ts), Task)
+				user_solution = m.eval(ms(t))
+				for u_key, u_value in model_user_map.iteritems():
+					if str(u_value) == str(user_solution):
+             worst_time_completion_tasks.append((u_key, t))
+		if "executed" in str(ms) and "!" not in str(ms):
+			for ts in tasks:
+				t = Const(ts, Task)
+				for mss in m:
+					if "duration" in str(mss):
+						duration_total = duration_total + m.eval(mss(t))
+p_c.worst_time_completion_list = worst_time_completion_tasks
+\end{lstlisting}
+\caption{Human readable worst time allocations}
+\label{fig:Human readable worst time allocations}
 \end{figure}
 
 \section{Unsatisfiable Core}
@@ -2163,7 +2208,7 @@ unsat
 
 \chapter{Evaluation}
 \section{Results From Z3}
-As mentioned before, the reason why we chose Z3 SMT solver over other SMT solvers is that it is more scalable. However, we need to check whether the back end of this application is scalable with Z3 as our constraint solver. \\
+As mentioned before, the reason why we chose Z3 SMT solver over other SMT solvers is that it is more scalable\cite{SMTBenchmark}. However, we need to check whether the back end of this application is scalable with Z3 as our constraint solver. \\
 
 We have benchmarked our application by recording how long it takes to parse the result and get a model back from Z3 SMT solver and how long the verification takes. It is difficult to conduct this benchmark fairly as some constraints take longer to verify than others. In this test, we have added different constraints on top of each input of twenty users and ten tasks. \\
 
@@ -2175,96 +2220,224 @@ Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7',
 	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
 	`u15', `u16', `u17', `u18', `u19'; 
 \end{lstlisting}
+After calculating worst time completion and before verification of the model:\\
+00.137034s\\
+Returning the model after verification: \\
+01.720042s
 \item[2.] With separation of duty:
 \begin{lstlisting}[frame=single]
 Tasks: `t0', `t1', `t2', `t3', `t4', `t5', `t6', 
 	`t7', `t8', `t9';
 Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
-	`u8', `u9', `u10', `u11', `u12', `u13', `u14', `u15', 
-	`u16', `u17', `u18', `u19'; 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
 SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
 	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
 \end{lstlisting}
+After calculating worst time completion and before verification of the model:\\
+00.069104s\\
+Returning the model after verification: \\
+25.576375s\\
 \item[3.] With binding of duty
 \begin{lstlisting}[frame=single]
 Tasks: `t0', `t1', `t2', `t3', `t4', `t5', `t6', 
 	`t7', `t8', `t9';
 Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
-	`u8', `u9', `u10', `u11', `u12', `u13', `u14', `u15', 
-	`u16', `u17', `u18', `u19'; 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
 SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
 	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
-BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), (`t0', `t6'), (`t0', `t7'), (`t0', `t8');
+BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), 
+	(`t0', `t6'), (`t0', `t7'), (`t0', `t8');
 \end{lstlisting}
+After calculating worst time completion and before verification of the model:\\
+00.064547s\\
+Returning the model after verification: \\
+23.304050s\\
 \item[4.] With seniority:
 \begin{lstlisting}[frame=single]
 Tasks: `t0', `t1', `t2', `t3', `t4', `t5', `t6', 
 	`t7', `t8', `t9';
 Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
-	`u8', `u9', `u10', `u11', `u12', `u13', `u14', `u15', 
-	`u16', `u17', `u18', `u19'; 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
 SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
 	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
-BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), (`t0', `t6'), (`t0', `t7'), (`t0', `t8');
+BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), 
+	(`t0', `t6'), (`t0', `t7'), (`t0', `t8');
 Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11');
 \end{lstlisting}
+After calculating worst time completion and before verification of the model:\\
+00.113158s\\
+Returning the model after verification: \\
+29.060795s\\
 \item[5.] With seniority task constraints:
 \begin{lstlisting}[frame=single]
-Tasks: `t0' -min_sec_lv:=[`t6'], `t1' -min_sec_lv:>[`t3', `t2'], `t2' -min_sec_lv:!=[`t6'], `t3', `t4', `t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], `t7', `t8', `t9';
+Tasks: `t0' -min_sec_lv:=[`t6'], 
+`t1' -min_sec_lv:>[`t3', `t2'], 
+`t2' -min_sec_lv:!=[`t6'], `t3', `t4', 
+`t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], 
+`t7', `t8', `t9';
 Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
-	`u8', `u9', `u10', `u11', `u12', `u13', `u14', `u15', 
-	`u16', `u17', `u18', `u19'; 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
 SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
 	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
-BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), (`t0', `t6'), (`t0', `t7'), (`t0', `t8');
+BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), 
+	(`t0', `t6'), (`t0', `t7'), (`t0', `t8');
 Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11'); 
 \end{lstlisting}
-\item[6.] With execution
+After calculating worst time completion and before verification of the model:\\
+00.100984s\\
+Returning the model after verification: \\
+39.805471s\\
+\item[6.] With authorisation:
 \begin{lstlisting}[frame=single]
-Tasks: `t0' -min_sec_lv:=[`t6'], `t1' -min_sec_lv:>[`t3', `t2'], `t2' -min_sec_lv:!=[`t6'], `t3', `t4', `t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], `t7', `t8', `t9';
+Tasks: `t0' -min_sec_lv:=[`t6'], 
+`t1' -min_sec_lv:>[`t3', `t2'], 
+`t2' -min_sec_lv:!=[`t6'], `t3', `t4', 
+`t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], 
+`t7', `t8', `t9';
 Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
-	`u8', `u9', `u10', `u11', `u12', `u13', `u14', `u15', 
-	`u16', `u17', `u18', `u19'; 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
 SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
 	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
-BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), (`t0', `t6'), (`t0', `t7'), (`t0', `t8');
-Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11');
-Execution: Or(`t0', [`t1', `t2']), Xor(`t3', [`t4', `t5', `t6']); 
+BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), 
+	(`t0', `t6'), (`t0', `t7'), (`t0', `t8');
+Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11'); 
+Authorised: (`t5', [`u6', `u17']), 
+	(`t6', [`u6', `u17']);
+\end{lstlisting}
+After calculating worst time completion and before verification of the model:\\
+00.107644s\\
+Returning the model after verification: \\
+91.723381\\
+\item[7.] With execution:
+\begin{lstlisting}[frame=single]
+Tasks: `t0' -min_sec_lv:=[`t6'], 
+`t1' -min_sec_lv:>[`t3', `t2'], 
+`t2' -min_sec_lv:!=[`t6'], `t3', `t4', 
+`t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], 
+`t7', `t8', `t9';
+Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
+SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
+	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
+BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), 
+	(`t0', `t6'), (`t0', `t7'), (`t0', `t8');
+Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11'); 
+Authorised: (`t5', [`u6', `u17']), 
+	(`t6', [`u6', `u17']);
+Execution: Or(`t0', [`t1', `t2']), 
+	Xor(`t3', [`t4', `t5', `t6']); 
 \end{lstlisting} 
-\item[7.] With duration:
+After calculating worst time completion and before verification of the model:\\
+00.119209s\\
+Returning the model after verification: \\
+33.050251s\\
+\item[8.] With duration:
 \begin{lstlisting}[frame=single]
-Tasks: `t0' -min_sec_lv:=[`t6'] -duration:(10), `t1' -min_sec_lv:>[`t3', `t2'] -duration:(90), `t2' -min_sec_lv:!=[`t6'], `t3', `t4', `t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], `t7' -duration:(80), `t8' -duration:(99), `t9';
+Tasks: `t0' -min_sec_lv:=[`t6'] -duration:(10), 
+	`t1' -min_sec_lv:>[`t3', `t2'] -duration:(90), 
+	`t2' -min_sec_lv:!=[`t6'], `t3', `t4', 
+	`t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], 
+	`t7' -duration:(80), `t8' -duration:(99), `t9';
 Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
-	`u8', `u9', `u10', `u11', `u12', `u13', `u14', `u15', 
-	`u16', `u17', `u18', `u19'; 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
 SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
 	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
-BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), (`t0', `t6'), (`t0', `t7'), (`t0', `t8');
-Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11');
-Execution: Or(`t0', [`t1', `t2']), Xor(`t3', [`t4', `t5', `t6']); 
+BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), 
+	(`t0', `t6'), (`t0', `t7'), (`t0', `t8');
+Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11'); 
+Authorised: (`t5', [`u6', `u17']), 
+	(`t6', [`u6', `u17']);
+Execution: Or(`t0', [`t1', `t2']), 
+	Xor(`t3', [`t4', `t5', `t6']); 
 \end{lstlisting}
-\item[8.] With before:
+After calculating worst time completion and before verification of the model:\\
+00.286741s\\
+Returning the model after verification: \\
+50.159936s\\
+\item[9.] With before:
 \begin{lstlisting}[frame=single]
-Tasks: `t0' -min_sec_lv:=[`t6'] -duration:(10), `t1' -min_sec_lv:>[`t3', `t2'] -duration:(90), `t2' -min_sec_lv:!=[`t6'], `t3', `t4', `t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], `t7' -duration:(80), `t8' -duration:(99), `t9';
+Tasks: `t0' -min_sec_lv:=[`t6'] -duration:(10), 
+	`t1' -min_sec_lv:>[`t3', `t2'] -duration:(90), 
+	`t2' -min_sec_lv:!=[`t6'], `t3', `t4', 
+	`t5' -min_sec_lv:<[`t9'], `t6' -min_sec_lv:<[`t9'], 
+	`t7' -duration:(80), `t8' -duration:(99), `t9';
 Users: `u0', `u1', `u2', `u3', `u4', `u5', `u6', `u7', 
-	`u8', `u9', `u10', `u11', `u12', `u13', `u14', `u15', 
-	`u16', `u17', `u18', `u19'; 
+	`u8', `u9', `u10', `u11', `u12', `u13', `u14', 
+	`u15', `u16', `u17', `u18', `u19'; 
 SoD: (`t0', `t3'), (`t1', `t3'), (`t2', `t3'), 
 	(`t7', `t9'), (`t8', `t9'), (`t1', `t2');
-BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), (`t0', `t6'), (`t0', `t7'), (`t0', `t8');
-Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11');
-Execution: Or(`t0', [`t1', `t2']), Xor(`t3', [`t4', `t5', `t6']); 
-Before: (`t0', `t1'), (`t0', `t2'), (`t1', `t3'), (`t2', `t3'), (`t3', `t4'), (`t3', `t5'), (`t3', `t6'), (`t4', `t9'), (`t5', `t7'), (`t6', `t8'), (`t7', `t9'), (`t8', `t9');
+BoD: (`t0', `t1'), (`t0', `t4'), (`t0', `t5'), 
+	(`t0', `t6'), (`t0', `t7'), (`t0', `t8');
+Seniority: (`u0', `u1'), (`u0', `u2'), (`u5', `u2'), (`u11', `u0'), (`u11', `u5'), (`u12', `u11'); 
+Authorised: (`t5', [`u6', `u17']), 
+	(`t6', [`u6', `u17']);
+Execution: Or(`t0', [`t1', `t2']), 
+	Xor(`t3', [`t4', `t5', `t6']); 
+Before: (`t0', `t1'), (`t0', `t2'), (`t1', `t3'), 
+	(`t2', `t3'), (`t3', `t4'), (`t3', `t5'), 
+	(`t3', `t6'), (`t4', `t9'), (`t5', `t7'), 
+	(`t6', `t8'), (`t7', `t9'), (`t8', `t9');
 \end{lstlisting}
+After calculating worst time completion and before verification of the model:\\
+00.247599s\\
+Returning the model after verification: \\
+57.914044s\\
 \end{enumerate}
 
-As we can see, these work flows are not as big as realistic workflows. To just find the satisfiability of the model is fast since we are just generating code, but the verification takes a long time. \\
+\begin{figure}[!h]
+\includegraphics[scale=0.78]{benchmark.png}
+\end{figure}
+
+As we can see from the results from this benchmarks with twenty users and ten tasks. As we add more constraints before we do the verification on the model, it only takes Z3 about a second to generate each model. This shows how scalable Z3 can be. When we are adding more constraints, the time to solve the satisfiability of the workflow does not vary as much. \\
+
+However, the verification takes a very long time. From the results, what is interesting is that when we add the \texttt{Authorised} constraint, it takes triple the time. This is probably due to checking every combination of product of users and seeing if it can be allocated to tasks \texttt{t5} and \texttt{t6} and only two users can ever be allocated to both of them. A possible reason why this trend doesn't continue is that the next set of constraints that we add is the \texttt{Execution} rule. We do not necessarily need to execute task \texttt{t5} and \texttt{t6}. The result is satisfied in our verification and we do not need to check any further.\\
+
+However, we have anticipated the increase of time with the increase of users, tasks and constraints in the workflow as we need to check all combinations of users. This becomes a hard problem. We check each test if they have been mentioned in the input. So as the number of constraints increase, the more tests we need to do to check the correctness of the model returned by Z3.
 
 \section{Verification}
 Currently, the method of verification is quite slow as we have to check every combination of pairs of users in the universe besides \texttt{bottom} user. We are taking the product of each user. At the moment, we cannot skip any combination of pairs as we need the ordering of the user pair for seniority. We interpret seniority as the first user is more senior than the second. However, we don't check every constraint if it has not been specified in the overall workflow.\\
 
+Since verification takes a long time to compute as the workflow gets larger, we have implemented a feature where verification can be turned off. We have implemented this because some users may not be interested in the verification and might be more involved with the allocation of users to tasks and their executions. \\
+
 \section{Testing}
-It has been difficult to test this application on real industry case studies as businesses are not willing to share their secretive workflows with others. So for this project, we have only done unit testing on some example workflows. This has enabled us to test the correctness of the logic rules and axioms within the code generated. It would be nice perhaps in the future to have some sample workflows or to do some hall way testing with some industry experts to see if this is application is what they want and is correct with much larger workflows.\\
+It has been difficult to test this application on real industry case studies because businesses are not willing to share their secretive workflows with others and publish them online. So for this project, we have only done unit testing on some example workflows. This has enabled us to test the correctness of the logic rules and axioms within the code generated. It would be nice perhaps in the future to have some sample workflows or to do some hall way testing with some industry experts to see if this is application is what they want and is correct with much larger workflows.\\
+
+Since we do not have realistic examples, we can turn to examples in papers. We have a look that an example based on seniority constraints, shown in Figure~\ref{fig:Seniority constraints on workflow}.We have the following input that describes the constraints:
+\begin{lstlisting}[frame=single]
+Tasks: 'PrepC' -min_sec_lv:!=['PrepP'] 
+	-min_sec_lv:<['AppC'], 
+	'PrepP' -min_sec_lv:!=['AppC'] -min_sec_lv:<['AppP'], 
+	'AppC' -min_sec_lv:!=['AppP'], 'AppP';
+Users: 'u1', 'u2', 'u3';
+Seniority: ('u1', 'u2'), ('u3', 'u1');
+\end{lstlisting}
+
+Before executing the application to solve this workflow, we anticipate that the allocation will be:\\
+$alloc\_user(u1, PrepC), alloc\_user(u2, PrepP), alloc\_user(u3, AppC), alloc\_user(u1, AppP)$\\
+
+We look at the result which is consistent with the prediction:
+\begin{lstlisting}[frame=single]
+seniority:[('u3', 'u2'), ('u3', 'u1'), ('u1', 'u2')]
+alloc_user:[(u2, PrepP), (u1, PrepC), (u3, AppC), 
+	(u1, AppP)]
+executed_tasks:[PrepP, PrepC, AppC, AppP]
+worst time completion:0.0
+before:[]
+\end{lstlisting}
+
+\begin{figure}
+\center
+\includegraphics[scale=0.75]{example_benchmark.png}
+\caption{Seniority constraints on workflow}
+\label{fig:Seniority constraints on workflow}
+\end{figure}
 
 \chapter{Conclusion}
 The main aim of this project was to design a simple language in which important constraints on the execution of tasks within a business process can be specified, where our application would decide whether such a workflow is satisfiable subject to all constraints.\\
@@ -2279,7 +2452,7 @@ As stated in the introduction, we will revisit our original accomplishments for 
 \item We need to verify the results returned by the constraint solver to make sure the it is correct and complete in respect to the user input. This ensures that the rules and axioms generated are the correct ones. 
 \end{enumerate}
 
-We have created a language to describe  a workflow and its constraints. However, we have not been able to do any user testing with industry experts who work in the field of business processes, so we are not sure if this language is descriptive enough but basic and easy to use as we have not gotten any feedback. \\
+We have created a language to describe  a workflow and its constraints. However, we have not been able to do any user testing with industry experts who work in the field of business processes. Therefore, we are not sure if this language is descriptive enough but basic and easy to use as we have not gotten any feedback. \\
 
 For the second point, we believe that we have generated relevant rules and axioms in Z3. Using unit testing, we have ensured that the result are what we expect them to be. As well as unit testing, we have looked at verifying the correctness of the resulting model that is returned from Z3 with the actual user input. This makes sure that even though what the model returns is correct, that all other possible allocations under the workflow constraints also hold. \\
 
@@ -2291,7 +2464,7 @@ Finally, we have implemented verification steps to check that the model is consi
 
 \section{Future Work}
 %Nice to have UI, more constraints, dynamic.
-If this project were to be carried on, the most obvious implementation would be to extend the types of constraints on the workflow. It would have been nice to include some automated constraints such as a ``Chinese wall'' configuration where the user would only need to specify which tasks and users are behind the wall and which are not. \\
+If this project were to be carried on, the most obvious implementation would be to extend the different types of constraints on the workflow. It would have been nice to include some automated constraints such as a ``Chinese wall'' configuration where the user would only need to specify which tasks and users are behind the wall and which are not. \\
 
 Another constraint that would have been implemented if we had more time would be the number of times a task may be executed in a business. \\
 
@@ -2299,7 +2472,7 @@ Finally, we would have liked to have implemented concurrent or parallel tasks in
 
 In the implementation, we have discussed using \texttt{unsat-core} to report back to the user, a list of violated constraints. However, due to the current version of Z3 python library, we cannot currently implement this \texttt{unsat-core} feature as we are parsing direct SMT code rather than using the given python API language which is also supplied by Z3. It cannot currently handle labels on assertions as will skip these labels, giving us empty unsatisfied cores when we should be getting a non-empty unsatisfied core. If we had more time on this project, we would try to rewrite all the generated SMT code in the supplied Z3 Python language. However, this can be difficult as some of these rules are generated dynamically, and constraints are not seen until run-time, making code generation harder. \\
 
-Since this project represented workflows as acyclic directed graphs or flowcharts, an UI interface would have been helpful to the user as well as supplying a command line input and reading files. Below, we have designed a prototype for the UI. If we had more time, we would have implemented this as a web interface shown in Figure~\ref{fig:Application UI}. The user would be able to create and drag task nodes and specify certain rules for each task, similar to the command line. The directional arrows represent the \texttt{before} function. The two circles represent \texttt{binding of duty (BoD)} and \texttt{separation of duty (SoD)}. They would also be able to specify users in the workflow domain, and also their seniority relationships to one another in the seniority section. An example is given \texttt{Alice, Bob} so Alice is more senior than Bob.
+Since this project represented workflows as acyclic directed graphs or flowcharts, an UI interface would have been helpful to the user as well as supplying a command line input and reading files. Below in Figure~\ref{fig:Application UI}, we have designed a prototype for the UI. If we had more time, we would have implemented this as a web interface shown in Figure~\ref{fig:Application UI}. The user would be able to create and drag task nodes and specify certain rules for each task, similar to the command line. The directional arrows represent the \texttt{before} function. The two circles represent \texttt{binding of duty (BoD)} and \texttt{separation of duty (SoD)}. They would also be able to specify users in the workflow domain, and also their seniority relationships to one another in the seniority section. An example is given \texttt{Alice, Bob} so Alice is more senior than Bob.
 
 \begin{figure}
 \includegraphics[scale=0.35, angle=90,origin=c]{ui.png}
@@ -2310,9 +2483,48 @@ Since this project represented workflows as acyclic directed graphs or flowchart
 \section{Future Work for a Product}
 As the project stands, it is not ready to be used in industry as there are many other constraints that we have not explored that are currently conveyed in business processes. This application may have been aimed at organisations with moderately sized workflows. For example, we have defined a seniority rule where the user must input all the different users and who is senior from each other. Instead, what we could have done is have roles express levels of seniority such as ``associate'' and ``manager'' implemented as \texttt{associate(User)} and \texttt{manager(User)} receptively and then have underlying rules which roles and therefore users are senior to each other. This would save a lot of time for the user when using this application.\\
 
+Currently the verification process is too slow and needs to be optimised. If the workflows get too large, it could take minutes or more to evaluate the workflow. \\
+
 Hopefully in a few years time and if work continued on this application to build more constraints, it could be used as a workflow constraint solver. \\
 
 \chapter{Appendix A: How to Use and Result Returned}
+As discussed, there are two ways of inputting a workflow: though command line argument and as a file. We have already discussed the language in Section 4.3.\\
+
+When the user has an input, the list of tasks must be declared first, followed by the list of users. When these two are declared, the user can then choose to input constraints if they wish to. If no constraints are added, the application will simply try to check if it is satisfiable to allocate all tasks to users. IF constraints are considered, The constraints can be specified in any order.\\
+
+Here is an example of input without any constraints considered:
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order', `price_large_order', `price_small_order', `checkout';
+Users: `alice', `bob', `carol';
+\end{lstlisting}
+
+This is an example of input with constraints considered:
+\begin{lstlisting}[frame=single]
+Tasks: `receive_order' -min_sec_lv:<[`price_large_order', 
+	`price_small_order', `checkout'] -duration:(50), 
+	`price_large_order' -min_sec_lv:>[`receive_order'] 
+	-min_sec_lv:=[`price_small_order'] -duration:(10), 
+	`price_small_order' -min_sec_lv:>[`receive_order'] 
+	-min_sec_lv:=[`price_large_order'] -duration:(100), 
+	`checkout' -min_sec_lv:>[`receive_order'] -
+	duration:(10); 
+Users: `alice', `bob', `carol'; 
+Seniority: (`alice', `bob'), (`alice', `carol'), (`bob', `carol');
+\end{lstlisting}
+
+\section{Command Line}
+To simply run from command line, run the script:\\
+\texttt{\$ > python workflow\_parser.py} \\
+And the following prompt will occur and is ready for a workflow input:\\
+\texttt{busines\_process > }
+
+\section{Read File}
+To read a file, run the script, followed by the file name.\\
+\texttt{\$ > python workflow\_parser.py name\textbackslash of\textbackslash file}
+
+\section{Output To File}
+To output to a file, the user needs to pass two arguments when running the script. The first being the file to read, and the second is the file to output the result.\\
+\texttt{\$ > python workflow\_parser.py name\textbackslash of\textbackslash input\textbackslash file name\textbackslash of\textbackslash output\textbackslash file}
 
 \bibliography{Master}
 

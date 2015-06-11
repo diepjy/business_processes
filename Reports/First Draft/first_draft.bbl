@@ -12,7 +12,8 @@ Chloe Green.
 \newblock {\em Breaking the law: study shows that big business is failing to
   stay compliant over social media}, May 2015, (accessed June, 2015).
 \newblock
-  \url{http://www.information-age.com/it-management/risk-and-compliance/123459478/breaking-law-study-shows-big-business-failing-stay-compliant-over-social-media}.
+  \url{http://www.information-age.com/it-management/risk-and-compliance/123459478/breaking-law-study-shows-big-business-failing-stay-compliant-over
+  -social-media}.
 
 \bibitem{analysis}
 Intel Inspector.
@@ -132,5 +133,11 @@ Terence Parr.
 Pyparsing.
 \newblock {\em Pyparsing}, 2015.
 \newblock \url{https://pyparsing.wikispaces.com/}, (accessed March, 2014).
+
+\bibitem{SMTBenchmark}
+The SMT-LIB Initiative.
+\newblock {\em SMT-LIB The satisfiability Modulo Theories Library -
+  Benchmarks}, (accessed April, 2015).
+\newblock \url{http://smtlib.cs.uiowa.edu/benchmarks.shtml}.
 
 \end{thebibliography}
