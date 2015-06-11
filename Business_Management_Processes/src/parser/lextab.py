@@ -4,6 +4,6 @@ _lextokens    = {'OPTION': 1, 'AUTHORISED': 1, 'NUMBER': 1, 'LSQPAREN': 1, 'DURA
 _lexreflags   = 0
 _lexliterals  = ''
 _lexstateinfo = {'INITIAL': 'inclusive'}
-_lexstatere   = {'INITIAL': [('(?P<t_ID>[a-zA-Z_][a-zA-Z_0-9]*)|(?P<t_NUMBER>[0-9]+[\\.[0.9]+]?)|(?P<t_newline>\\n+)|(?P<t_NODE>("(\\\\"|[^"])*"|\'(\\\\\'|[^\'])*\'))|(?P<t_RSQPAREN>\\])|(?P<t_LSQPAREN>\\[)|(?P<t_LPAREN>\\()|(?P<t_NEQ>!=)|(?P<t_RPAREN>\\))|(?P<t_OPTION>-)|(?P<t_COLON>:)|(?P<t_COMMA>,)|(?P<t_EQ>=)|(?P<t_LEQ><)|(?P<t_GEQ>>)|(?P<t_END>;)', [None, ('t_ID', 'ID'), ('t_NUMBER', 'NUMBER'), ('t_newline', 'newline'), (None, 'NODE'), None, None, None, (None, 'RSQPAREN'), (None, 'LSQPAREN'), (None, 'LPAREN'), (None, 'NEQ'), (None, 'RPAREN'), (None, 'OPTION'), (None, 'COLON'), (None, 'COMMA'), (None, 'EQ'), (None, 'LEQ'), (None, 'GEQ'), (None, 'END')])]}
-_lexstateignore = {'INITIAL': ''}
+_lexstatere   = {'INITIAL': [("(?P<t_ID>[a-zA-Z_][a-zA-Z_0-9]*)|(?P<t_NUMBER>[0-9]+[\\.[0.9]+]?)|(?P<t_newline>\\n+)|(?P<t_NODE>\\'([^\\\\\\n]|(\\\\.))*?\\')|(?P<t_RSQPAREN>\\])|(?P<t_LSQPAREN>\\[)|(?P<t_LPAREN>\\()|(?P<t_NEQ>!=)|(?P<t_RPAREN>\\))|(?P<t_OPTION>-)|(?P<t_COLON>:)|(?P<t_COMMA>,)|(?P<t_EQ>=)|(?P<t_LEQ><)|(?P<t_GEQ>>)|(?P<t_END>;)", [None, ('t_ID', 'ID'), ('t_NUMBER', 'NUMBER'), ('t_newline', 'newline'), (None, 'NODE'), None, None, (None, 'RSQPAREN'), (None, 'LSQPAREN'), (None, 'LPAREN'), (None, 'NEQ'), (None, 'RPAREN'), (None, 'OPTION'), (None, 'COLON'), (None, 'COMMA'), (None, 'EQ'), (None, 'LEQ'), (None, 'GEQ'), (None, 'END')])]}
+_lexstateignore = {'INITIAL': ' \t'}
 _lexstateerrorf = {'INITIAL': 't_error'}
