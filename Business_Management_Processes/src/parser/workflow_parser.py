@@ -62,7 +62,7 @@ class WorkflowParser(object):
                                       ")" \
                                       "))\n"
 
-    dict_worst_time_completion_lists = []
+    dict_worst_time_completion_list = []
 
     def __init__(self):
         self.users = []
@@ -702,7 +702,6 @@ class WorkflowParser(object):
 
         if s.check() == sat:
             if verification:
-                verified = True
                 verify_userlist = users[:]
                 verify_userlist.remove("bottom")
                 for u in itertools.product(verify_userlist, verify_userlist):
@@ -727,7 +726,6 @@ class WorkflowParser(object):
 
         else:
             return unsat
-
 
     def worst_time_completion(self, x, delta, s):
         res = s.check()
@@ -792,12 +790,6 @@ class WorkflowParser(object):
             return unsat
         s.pop()
         return y
-
-    def merge_dicts(*dict_args):
-        result = {}
-        for dictionary in dict_args:
-            result.update(dictionary)
-        return result
 
     def verify_result_sod(self, original, s, u):
         verify_original = original[:]
@@ -1017,8 +1009,10 @@ class WorkflowParser(object):
                         senior_users_list.append(u)
                 model_result_map["seniority"] = senior_users_list
         model_result_map["worst time completion"] = round(total_worst_duration)
-        model_result_map["worst time completion allocation"] = WorkflowParser.worst_time_completion_list
-        return model_result_map
+        if total_worst_duration != 0:
+            model_result_map["worst time completion allocation"] = WorkflowParser.worst_time_completion_list
+        model_map_str = ''.join("%s:%r\n" % (key,val) for (key,val) in model_result_map.iteritems())
+        return model_map_str
 
     def prompt(self):
         return raw_input('busines_process > ')
@@ -1026,12 +1020,17 @@ class WorkflowParser(object):
 if __name__ == '__main__':
     p = WorkflowParser()
     args = sys.argv[1:]
-    if args:
-        for arg in args:
-            f = open(arg)
-            content = f.read()
-            print content
-            print p.main(content)
-            f.close()
+    if len(args) == 1:
+        f = open(sys.argv[1],"r")
+        contents = f.read()
+        print p.main(contents)
+        f.close()
+    elif len(args) == 2:
+        f = open(sys.argv[1], "r")
+        contents = f.read()
+        f.close()
+        f = open(sys.argv[2], "w")
+        f.write(str(p.main(contents)))
+        f.close()
     else:
         print p.main(p.prompt())
