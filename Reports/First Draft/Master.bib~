@@ -1,3 +1,9 @@
+@manual{enterpriseSystems,
+      title  = "Three Different Types of Enterprise Systems",
+      author = "Billie Nordmeyer",
+      note    = "\url{http://smallbusiness.chron.com/three-different-types-enterprise-systems-73267.html}",
+      year   = "(accessed June, 2015)"
+    }
 @manual{analysis,
       title  = "Dynamic Analysis vs. Static Analysis",
       author = "Intel Inspector",
@@ -7,7 +13,8 @@
 @manual{Compliance,
       title  = "Breaking the law: study shows that big business is failing to stay compliant over social media",
       author = "Chloe Green",
-      note    = "\url{http://www.information-age.com/it-management/risk-and-compliance/123459478/breaking-law-study-shows-big-business-failing-stay-compliant-over-social-media}",
+      note    = "\url{http://www.information-age.com/it-management/risk-and-compliance/123459478/breaking-law-study-shows-big-business-failing-stay-compliant-over
+      -social-media}",
       year   = "May 2015, (accessed June, 2015)"
     }
 @manual{ChineseWall,

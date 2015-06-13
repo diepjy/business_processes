@@ -3,49 +3,51 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: first_draft.aux
 The style file: unsrt.bst
 Database file #1: Master.bib
-Warning--empty journal in smt_appetizer
-Warning--empty journal in bod
 Warning--empty journal in seniority
+Warning--empty journal in smt_appetizer
+Warning--empty journal in Z3Interpreter
+Warning--empty year in Z3Interpreter
+Warning--empty journal in bod
 Warning--empty journal in rbac
-You've used 22 entries,
+You've used 24 entries,
             1791 wiz_defined-function locations,
-            555 strings with 6943 characters,
-and the built_in function-call counts, 3545 in all, are:
-= -- 309
-> -- 111
-< -- 6
-+ -- 50
-- -- 28
-* -- 126
-:= -- 553
-add.period$ -- 72
-call.type$ -- 22
-change.case$ -- 6
+            567 strings with 7377 characters,
+and the built_in function-call counts, 3868 in all, are:
+= -- 335
+> -- 123
+< -- 7
++ -- 55
+- -- 31
+* -- 139
+:= -- 604
+add.period$ -- 79
+call.type$ -- 24
+change.case$ -- 7
 chr.to.int$ -- 0
-cite$ -- 26
-duplicate$ -- 200
-empty$ -- 391
-format.name$ -- 28
-if$ -- 819
+cite$ -- 30
+duplicate$ -- 219
+empty$ -- 424
+format.name$ -- 31
+if$ -- 892
 int.to.chr$ -- 0
-int.to.str$ -- 22
-missing$ -- 6
-newline$ -- 118
-num.names$ -- 23
-pop$ -- 72
+int.to.str$ -- 24
+missing$ -- 7
+newline$ -- 129
+num.names$ -- 25
+pop$ -- 81
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 107
+skip$ -- 116
 stack$ -- 0
-substring$ -- 84
-swap$ -- 67
-text.length$ -- 6
+substring$ -- 86
+swap$ -- 72
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 4
-while$ -- 32
-width$ -- 24
-write$ -- 232
-(There were 4 warnings)
+warning$ -- 6
+while$ -- 35
+width$ -- 26
+write$ -- 253
+(There were 6 warnings)
